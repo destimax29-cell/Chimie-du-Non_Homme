@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Chimie du Non_Homme</title>
 <style>
-:root{--bg:#0f1720;--card:#18232f;--tx:#e8eef4;--mu:#8fa3b5;--ac:#35d0a0;--er:#ff6b6b;--bl:#4a90ff}
+:root{--bg:#0f1720;--card:#18232f;--tx:#e8eef4;--ac:#35d0a0;--er:#ff6b6b;--fs:16px;--mu:color-mix(in srgb,var(--tx) 60%,var(--bg));--g:color-mix(in srgb,var(--tx) 16%,var(--card))}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px system-ui,sans-serif;padding-bottom:78px}
+body{margin:0;background:var(--bg);color:var(--tx);font:var(--fs) system-ui,sans-serif;padding-bottom:78px}
 header{padding:14px 16px;font-weight:800;font-size:20px;color:var(--ac);background:var(--card);position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center}
 header button{background:none;border:0;font-size:22px;color:var(--tx)}
 main{padding:0 12px;max-width:700px;margin:auto}
 nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);padding-bottom:env(safe-area-inset-bottom);z-index:6}
 nav button{flex:1;padding:12px 2px;background:none;border:0;color:var(--mu);font-size:13px}
 nav button.on{color:var(--ac);font-weight:700}
-input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #2c3e50;background:var(--card);color:var(--tx);font-size:16px;margin:6px 0;font-family:inherit}
+input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--g);background:var(--card);color:var(--tx);font-size:16px;margin:6px 0;font-family:inherit}
 button.b{background:var(--ac);color:#04251c;border:0;padding:12px 18px;border-radius:10px;font-weight:700;font-size:16px;margin:4px 4px 4px 0}
-button.g{background:#2c3e50;color:var(--tx)}
+button.g{background:var(--g);color:var(--tx)}
 .c{background:var(--card);border-radius:12px;padding:12px;margin:10px 0}
 .c b{color:var(--ac)}
 .q{font-size:19px;line-height:1.4;min-height:110px}
@@ -31,30 +31,38 @@ small{color:var(--mu)}
 .prof h1{font-size:20px;margin:30px 0 0}
 .post{padding:14px}
 .ph{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.ph .av{width:42px;height:42px;font-size:22px;border:0;background:#223244}
+.ph .av{width:42px;height:42px;font-size:22px;border:0;background:var(--g)}
 .ph div small{display:block}
-.acts{display:flex;gap:8px;margin-top:10px;border-top:1px solid #2c3e50;padding-top:10px}
+.acts{display:flex;gap:8px;margin-top:10px;border-top:1px solid var(--g);padding-top:10px}
 .acts button{flex:1;margin:0;padding:10px 4px;font-size:15px}
 .stats{display:flex;gap:8px;text-align:center}
-.stats div{flex:1;background:#223244;border-radius:10px;padding:10px 4px}
+.stats div{flex:1;background:var(--g);border-radius:10px;padding:10px 4px}
 .stats b{display:block;font-size:24px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:10px 0}
+.row input[type=checkbox]{width:26px;height:26px;margin:0;accent-color:var(--ac)}
+.row input[type=color]{width:64px;height:40px;padding:2px;margin:0}
+.row input[type=range],.row input[type=text]{margin:0}
+select{padding:10px;border-radius:10px;background:var(--card);color:var(--tx);border:1px solid var(--g);font-size:16px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.pre{display:flex;flex-wrap:wrap}
+label.f{display:inline-block;background:var(--g);padding:10px 14px;border-radius:10px;margin:4px 4px 4px 0;font-weight:700}
 </style>
 </head>
 <body>
-<header><span>⚗️ Chimie du Non_Homme</span><button id="snd2" onclick="toggleSnd()">🔊</button></header>
+<header><span>⚗️ Chimie du Non_Homme</span><span><button id="snd2" onclick="toggleSnd()">🔊</button><button onclick="go('set')">⚙️</button></span></header>
 <main>
 
 <section id="home" class="sec on">
-  <div class="cover">⚗️</div>
-  <div class="prof"><div class="av">🧪</div><h1>Bienvenue Le Non_Homme 👋</h1></div>
+  <div class="cover" id="cov">⚗️</div>
+  <div class="prof"><div class="av" id="av0">🧪</div><h1>Bienvenue <span id="nm">Le Non_Homme</span> 👋</h1></div>
   <div class="c post">
     <div class="ph"><div class="av">🔥</div><div><b>Alors, on s'entraîne ?</b><small>Prêt à battre ton record aujourd'hui ?</small></div></div>
     <div class="stats" id="stats"></div>
   </div>
   <div class="c post">
-    <div class="ph"><div class="av">⏱</div><div><b>Challenge 60 secondes</b><small>Questions en rafale, ça va vite !</small></div></div>
+    <div class="ph"><div class="av">⏱</div><div><b>Challenge <span class="dur">60</span> secondes</b><small>Questions en rafale, ça va vite !</small></div></div>
     Écris un maximum de termes à partir de leur définition avant la fin du chrono.
-    <div class="acts"><button class="b" onclick="go('ch');play('time')">▶ Lancer le 60 s</button></div>
+    <div class="acts"><button class="b" onclick="go('ch');play('time')">▶ Lancer le <span class="dur">60</span> s</button></div>
   </div>
   <div class="c post">
     <div class="ph"><div class="av">♾️</div><div><b>Challenge illimité</b><small>Sans chrono, à ton rythme</small></div></div>
@@ -77,15 +85,17 @@ small{color:var(--mu)}
 <section id="ch" class="sec">
   <div id="start" class="c">
     <p>Choisis ton mode. Écris le terme défini puis valide.</p>
-    <button class="b" onclick="play('time')">⏱ 60 secondes</button>
+    <button class="b" onclick="play('time')">⏱ <span class="dur">60</span> secondes</button>
     <button class="b" onclick="play('inf')">♾️ Illimité</button>
     <button class="b g" id="snd" onclick="toggleSnd()">🔊 Son : oui</button>
   </div>
   <div id="game" style="display:none">
     <div class="hud"><span class="t" id="tm">60</span><span>Score : <b id="sc">0</b></span></div>
     <div class="c q" id="q"></div>
-    <input id="a" placeholder="Ta réponse…" autocomplete="off" autocapitalize="off" autocorrect="off">
+    <div id="opts"></div>
+    <div id="typed"><input id="a" placeholder="Ta réponse…" autocomplete="off" autocapitalize="off" autocorrect="off">
     <button class="b" onclick="submit()">Valider</button>
+    <button class="b" id="mic" onclick="listen()" style="background:#4a90ff;color:#fff">🎤 Parler</button></div>
     <button class="b g" onclick="skip()">Passer</button>
     <button class="b g" id="fin" onclick="finish()" style="display:none">🏁 Terminer</button>
     <div id="fb"></div>
@@ -106,6 +116,48 @@ small{color:var(--mu)}
     <button class="b" onclick="addBulk()">Importer</button>
   </div>
   <div class="c"><b>Mes termes ajoutés</b><div id="mine"></div></div>
+</section>
+
+<section id="set" class="sec">
+  <div class="c"><b>👤 Profil</b>
+    <div class="row"><span>Nom</span><input type="text" id="c_name" oninput="set('name',this.value)" style="width:60%"></div>
+    <label class="f">🖼 Photo de profil<input type="file" accept="image/*" hidden onchange="pickImg(this,'avatar',200)"></label>
+    <label class="f">🌄 Image de couverture<input type="file" accept="image/*" hidden onchange="pickImg(this,'cover',900)"></label><br>
+    <button class="b g" onclick="set('avatar','');set('cover','')">Retirer les images</button>
+  </div>
+  <div class="c"><b>🎨 Couleurs</b>
+    <div class="pre">
+      <button class="b g" onclick="theme('#35d0a0','#0f1720','#18232f','#e8eef4')">Menthe</button>
+      <button class="b g" onclick="theme('#4a90ff','#0b1220','#141f33','#e8eef4')">Océan</button>
+      <button class="b g" onclick="theme('#a78bfa','#140f20','#211a33','#efe9ff')">Violet</button>
+      <button class="b g" onclick="theme('#ff6fa8','#1c0f16','#2a1822','#ffe9f2')">Rose</button>
+      <button class="b g" onclick="theme('#0a9d74','#eef3f7','#ffffff','#10202e')">Clair</button>
+    </div>
+    <div class="row"><span>Couleur principale</span><input type="color" id="c_ac" oninput="set('ac',this.value)"></div>
+    <div class="row"><span>Fond</span><input type="color" id="c_bg" oninput="set('bg',this.value)"></div>
+    <div class="row"><span>Cartes</span><input type="color" id="c_card" oninput="set('card',this.value)"></div>
+    <div class="row"><span>Texte</span><input type="color" id="c_tx" oninput="set('tx',this.value)"></div>
+    <div class="row"><span>Taille du texte</span><input type="range" id="c_fs" min="14" max="22" oninput="set('fs',+this.value)"></div>
+  </div>
+  <div class="c"><b>🔊 Son</b>
+    <div class="row"><span>Son activé</span><input type="checkbox" id="c_snd" onchange="toggleSnd()"></div>
+    <div class="row"><span>Musique</span><input type="checkbox" id="c_music" onchange="set('music',this.checked);music()"></div>
+    <div class="row"><span>Effets (bonne / mauvaise réponse)</span><input type="checkbox" id="c_sfx" onchange="set('sfx',this.checked)"></div>
+    <div class="row"><span>Volume</span><input type="range" id="c_vol" min="0" max="1.5" step=".1" oninput="set('vol',+this.value)"></div>
+  </div>
+  <div class="c"><b>⏱ Challenge</b>
+    <div class="row"><span>Durée du challenge</span><select id="c_dur" onchange="set('dur',+this.value)"><option>30</option><option>60</option><option>90</option><option>120</option><option>180</option></select></div>
+    <div class="row"><span>Réponses en QCM (4 boutons)</span><input type="checkbox" id="c_qcm" onchange="set('qcm',this.checked)"></div>
+  </div>
+  <div class="c"><b>🎤 Voix</b><br><small id="vn"></small>
+    <div class="row"><span>Lire la question à voix haute</span><input type="checkbox" id="c_tts" onchange="set('tts',this.checked)"></div>
+    <div class="row"><span>Micro automatique (j'écoute après chaque question)</span><input type="checkbox" id="c_auto" onchange="set('auto',this.checked)"></div>
+    <small>Sinon, touche 🎤 Parler pour répondre. Dis « passer » pour passer une question.</small>
+  </div>
+  <div class="c"><b>🗑 Données</b><br>
+    <button class="b g" onclick="resetRec()">Effacer les records</button>
+    <button class="b g" onclick="resetCfg()">Réinitialiser les paramètres</button>
+  </div>
 </section>
 
 </main>
@@ -319,6 +371,8 @@ const $=id=>document.getElementById(id);
 const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||d)}catch(e){return JSON.parse(d)}};
 const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let custom=rd('cnh','[]'),best=rd('cnhb','{"time":0,"inf":0}'),snd=rd('cnhs','true');
+const DEF={ac:'#35d0a0',bg:'#0f1720',card:'#18232f',tx:'#e8eef4',fs:16,name:'Le Non_Homme',cover:'',avatar:'',vol:1,music:true,sfx:true,dur:60,qcm:false,tts:false,auto:false};
+let cfg=Object.assign({},DEF,rd('cnhc','{}'));if(best.time&&!best.t60)best.t60=best.time;
 const parse=l=>{const i=l.indexOf('::');return i<0?null:{t:l.slice(0,i).trim(),d:l.slice(i+2).trim()}};
 const all=()=>BASE.split('\n').map(parse).filter(Boolean).concat(custom);
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/^(le |la |les |l'|un |une |des )/,'').replace(/[^a-z0-9]/g,'');
@@ -329,11 +383,11 @@ function go(id){
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===id));
   if(id!=='ch')stop();
   if(id==='ch'&&!running){$('start').style.display='block';$('game').style.display=$('end').style.display='none';}
-  if(id==='home')home();
+  if(id==='home')home();if(id==='set')fillSet();
   window.scrollTo(0,0);
 }
 function home(){
-  $('stats').innerHTML=`<div><b>${best.time}</b><small>Record 60 s</small></div><div><b>${best.inf}</b><small>Record illimité</small></div><div><b>${all().length}</b><small>Termes</small></div>`;
+  $('stats').innerHTML=`<div><b>${best['t'+cfg.dur]||0}</b><small>Record ${cfg.dur} s</small></div><div><b>${best.inf||0}</b><small>Record illimité</small></div><div><b>${all().length}</b><small>Termes</small></div>`;
   $('cnt').textContent=all().length+' termes de chimie';
 }
 
@@ -360,8 +414,8 @@ function unlock(){ // doit être appelé depuis un tap : débloque l'audio sur t
     sil.play().catch(()=>{}); // aide à contourner le mode silencieux iOS
   }catch(e){}
 }
-function tone(f,d,type,v,delay){
-  if(!snd||!ac)return;
+function tone(f,d,type,v,delay,cat){
+  if(!snd||!ac||(cat==='m'?!cfg.music:!cfg.sfx))return;v*=cfg.vol;if(v<=0)return;
   const t=ac.currentTime+(delay||0),o=ac.createOscillator(),g=ac.createGain();
   o.type=type;o.frequency.value=f;
   g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
@@ -370,7 +424,7 @@ function tone(f,d,type,v,delay){
 function music(){
   clearInterval(loop);if(!snd||!running)return;
   const notes=[262,262,392,262,330,262,392,494];let i=0;
-  loop=setInterval(()=>{const n=notes[i++%8];tone(n,.2,'square',.07);tone(n/2,.2,'triangle',.12);},230);
+  loop=setInterval(()=>{const n=notes[i++%8];tone(n,.2,'square',.07,0,'m');tone(n/2,.2,'triangle',.12,0,'m');},230);
 }
 function sfx(ok){ok?(tone(660,.12,'sine',.3),tone(990,.18,'sine',.3,.1)):tone(160,.3,'sawtooth',.2);}
 function toggleSnd(){
@@ -382,22 +436,22 @@ function toggleSnd(){
 // --- Challenge ---
 function next(){
   if(!bag.length)bag=all().sort(()=>Math.random()-.5);
-  cur=bag.pop();$('q').textContent=cur.d;$('a').value='';$('a').focus();
+  cur=bag.pop();$('q').textContent=cur.d;$('a').value='';qcm();if(!cfg.qcm&&!cfg.auto)$('a').focus();if(cfg.tts)say(cur.d);else if(cfg.auto)listen();
 }
 function play(m){
-  unlock();mode=m;score=0;asked=0;left=60;miss=[];bag=[];running=true;
+  unlock();mode=m;score=0;asked=0;left=cfg.dur;bk=m==='inf'?'inf':'t'+cfg.dur;blocked=false;miss=[];bag=[];running=true;
   clearInterval(tick);
   $('start').style.display=$('end').style.display='none';$('game').style.display='block';
   $('sc').textContent=0;$('fb').innerHTML='';
   $('fin').style.display=m==='inf'?'inline-block':'none';
-  $('tm').textContent=m==='inf'?'♾️':60;
+  $('tm').textContent=m==='inf'?'♾️':left;
   next();music();
   if(m==='time')tick=setInterval(()=>{left--;$('tm').textContent=left;if(left<=3&&left>0)tone(880,.1,'sine',.2);if(left<=0)finish();},1000);
 }
-function stop(){clearInterval(tick);clearInterval(loop);running=false;}
-function submit(){
+function stop(){clearInterval(tick);clearInterval(loop);running=false;stopListen();try{speechSynthesis.cancel()}catch(e){}}
+function submit(val){
   if(!running)return;
-  const v=norm($('a').value);if(!v)return;
+  const v=norm(typeof val==='string'?val:$('a').value);if(!v)return;
   asked++;
   const ok=cur.t.split('|').some(x=>norm(x)===v);
   if(ok){score++;$('sc').textContent=score;$('fb').innerHTML='<span class="ok">✓ Correct</span>';}
@@ -409,7 +463,7 @@ $('a').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
 function finish(){
   if(!running)return;
   stop();
-  const rec=score>best[mode];if(rec){best[mode]=score;wr('cnhb',best);}
+  const rec=score>(best[bk]||0);if(rec){best[bk]=score;wr('cnhb',best);}
   tone(523,.15,'sine',.3);tone(659,.15,'sine',.3,.15);tone(784,.3,'sine',.3,.3);
   $('game').style.display='none';$('end').style.display='block';
   $('end').innerHTML=`<b>${mode==='inf'?'Session terminée !':'Temps écoulé !'}</b><p class="t">${score} / ${asked}</p>
@@ -418,9 +472,68 @@ function finish(){
   <button class="b" onclick="play('${mode}')">↻ Rejouer</button><button class="b g" onclick="go('home')">🏠 Accueil</button>`;
 }
 $('snd').textContent='🔊 Son : '+(snd?'oui':'non');$('snd2').textContent=snd?'🔊':'🔇';
+let bk='t60',reco,got=false,blocked=false,opts=[];
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function set(k,v){cfg[k]=v;wr('cnhc',cfg);applyCfg();}
+function theme(a,b,c,d){Object.assign(cfg,{ac:a,bg:b,card:c,tx:d});wr('cnhc',cfg);applyCfg();fillSet();}
+function img(el,u,e){el.style.backgroundImage=u?`url(${u})`:'';el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.textContent=u?'':e;}
+function applyCfg(){
+  const r=document.documentElement.style;
+  r.setProperty('--ac',cfg.ac);r.setProperty('--bg',cfg.bg);r.setProperty('--card',cfg.card);r.setProperty('--tx',cfg.tx);r.setProperty('--fs',cfg.fs+'px');
+  $('nm').textContent=cfg.name||'Le Non_Homme';
+  img($('cov'),cfg.cover,'⚗️');img($('av0'),cfg.avatar,'🧪');
+  document.querySelectorAll('.dur').forEach(e=>e.textContent=cfg.dur);
+  home();
+}
+function fillSet(){
+  ['ac','bg','card','tx','fs','name','vol','dur'].forEach(k=>$('c_'+k).value=cfg[k]);
+  ['music','sfx','qcm','tts','auto'].forEach(k=>$('c_'+k).checked=cfg[k]);
+  $('c_snd').checked=snd;
+  $('vn').textContent=SR?'':'⚠️ Reconnaissance vocale indisponible sur ce navigateur (utilise Chrome ou Safari).';
+}
+function pickImg(inp,key,max){
+  const f=inp.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);set(key,c.toDataURL('image/jpeg',.8));};im.src=r.result;};
+  r.readAsDataURL(f);inp.value='';
+}
+function resetRec(){if(confirm('Effacer tous les records ?')){best={time:0,inf:0};wr('cnhb',best);home();}}
+function resetCfg(){if(confirm('Remettre tous les paramètres par défaut ?')){cfg=Object.assign({},DEF);wr('cnhc',cfg);applyCfg();fillSet();}}
+// QCM
+function qcm(){
+  $('typed').style.display=cfg.qcm?'none':'block';
+  if(!cfg.qcm){$('opts').innerHTML='';return;}
+  const good=cur.t.split('|')[0];
+  const bad=[...new Set(all().map(e=>e.t.split('|')[0]))].filter(n=>n!==good).sort(()=>Math.random()-.5).slice(0,3);
+  opts=bad.concat(good).sort(()=>Math.random()-.5);
+  $('opts').innerHTML=opts.map((o,i)=>`<button class="b g opt" onclick="submit(opts[${i}])">${o}</button>`).join('');
+}
+// Voix
+function say(t){
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';u.onend=()=>{if(cfg.auto&&running)listen();};speechSynthesis.speak(u);}
+  catch(e){if(cfg.auto)listen();}
+}
+function setMic(on){const m=$('mic');m.textContent=on?'🎙️ J\'écoute…':'🎤 Parler';m.style.background=on?'var(--er)':'#4a90ff';}
+function stopListen(){if(reco){reco.onend=reco.onresult=reco.onerror=null;try{reco.abort()}catch(e){}reco=null;}setMic(false);}
+function listen(){
+  if(!running)return;
+  if(!SR){$('fb').innerHTML='<span class="ko">Micro indisponible sur ce navigateur.</span>';return;}
+  stopListen();got=false;
+  reco=new SR();reco.lang='fr-FR';reco.maxAlternatives=5;
+  reco.onresult=e=>{got=true;heard([...e.results[0]].map(r=>r.transcript));};
+  reco.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){blocked=true;$('fb').innerHTML='<span class="ko">Micro refusé : autorise-le dans les réglages du navigateur.</span>';}};
+  reco.onend=()=>{setMic(false);if(!got&&running&&cfg.auto&&!blocked)setTimeout(listen,300);};
+  try{reco.start();setMic(true);}catch(e){}
+}
+function heard(a){
+  const n=a.map(norm);
+  if(n.some(x=>x==='passer'||x==='suivant'))return skip();
+  const hit=cur.t.split('|').map(norm);
+  const m=a.find((x,i)=>hit.some(h=>n[i]===h||n[i]==='cest'+h||n[i]==='cestun'+h||n[i]==='cestune'+h));
+  submit(m||a[0]);
+}
 document.addEventListener('touchstart',unlock,{once:true});
 document.addEventListener('click',unlock,{once:true});
-render();home();
+applyCfg();render();home();
 </script>
 </body>
 </html>
