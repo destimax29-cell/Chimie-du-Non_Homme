@@ -1,545 +1,426 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chimie du Non_Homme</title>
-    <style>
-        /* Styles de base et mobile-first */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            line-height: 1.6;
-            padding-bottom: 70px; /* Espace pour la barre de navigation */
-        }
-        header {
-            background-color: #1f1f1f;
-            padding: 15px;
-            text-align: center;
-            border-bottom: 2px solid #00bcd4;
-        }
-        header h1 { font-size: 1.4em; color: #00bcd4; }
-        header p { font-size: 0.8em; color: #b0b0b0; }
-
-        /* Barre de navigation inférieure */
-        .navbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #1f1f1f;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #333;
-            z-index: 100;
-        }
-        .navbar button {
-            background: none;
-            border: none;
-            color: #b0b0b0;
-            font-size: 0.9em;
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: all 0.2s;
-        }
-        .navbar button.active, .navbar button:hover {
-            color: #00bcd4;
-            background-color: #2a2a2a;
-        }
-
-        /* Contenu principal */
-        .container { padding: 15px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Recherche */
-        #searchInput {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background-color: #2a2a2a;
-            color: #e0e0e0;
-            font-size: 1em;
-        }
-
-        /* Liste des définitions */
-        #definitionsList { list-style: none; }
-        .definition-item {
-            background-color: #1e1e1e;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 4px solid #00bcd4;
-        }
-        .definition-item .term {
-            font-weight: bold;
-            color: #00bcd4;
-            font-size: 1.1em;
-            cursor: pointer;
-        }
-        .definition-item .definition {
-            margin-top: 5px;
-            color: #ccc;
-            font-size: 0.95em;
-        }
-        .category-badge {
-            display: inline-block;
-            background-color: #333;
-            color: #b0b0b0;
-            font-size: 0.7em;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-top: 5px;
-            margin-right: 5px;
-        }
-
-        /* Challenge */
-        #challenge-area { text-align: center; padding: 20px 10px; }
-        #timer { font-size: 2.5em; font-weight: bold; color: #ff4081; margin: 10px 0; }
-        #challenge-question { font-size: 1.3em; font-weight: bold; color: #00bcd4; margin: 20px 0 10px; }
-        #challenge-input {
-            width: 90%;
-            padding: 12px;
-            font-size: 1.1em;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background-color: #2a2a2a;
-            color: #fff;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        #feedback { height: 25px; font-weight: bold; margin: 10px 0; }
-        .correct { color: #4caf50; }
-        .incorrect { color: #f44336; }
-        #start-challenge {
-            background-color: #00bcd4;
-            color: #121212;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        #start-challenge:hover { background-color: #00e5ff; }
-        #score { font-size: 1.2em; margin-top: 15px; color: #ff4081; font-weight: bold; }
-        .hidden { display: none; }
-
-        /* Ajouter un terme */
-        #add-term-form input, #add-term-form textarea, #add-term-form select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background-color: #2a2a2a;
-            color: #e0e0e0;
-            font-size: 1em;
-        }
-        #add-term-form button {
-            background-color: #00bcd4;
-            color: #121212;
-            border: none;
-            padding: 15px;
-            font-size: 1.1em;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
-        }
-        #add-term-form button:hover { background-color: #00e5ff; }
-        #add-message { text-align: center; margin-top: 10px; font-weight: bold; }
-
-        /* Styles pour les petits écrans */
-        @media (min-width: 600px) {
-            .container { max-width: 600px; margin: 0 auto; }
-            header h1 { font-size: 1.8em; }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Chimie du Non_Homme</title>
+<style>
+:root{--bg:#0f1720;--card:#18232f;--tx:#e8eef4;--mu:#8fa3b5;--ac:#35d0a0;--er:#ff6b6b;--bl:#4a90ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px system-ui,sans-serif;padding-bottom:78px}
+header{padding:14px 16px;font-weight:800;font-size:20px;color:var(--ac);background:var(--card);position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center}
+header button{background:none;border:0;font-size:22px;color:var(--tx)}
+main{padding:0 12px;max-width:700px;margin:auto}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);padding-bottom:env(safe-area-inset-bottom);z-index:6}
+nav button{flex:1;padding:12px 2px;background:none;border:0;color:var(--mu);font-size:13px}
+nav button.on{color:var(--ac);font-weight:700}
+input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #2c3e50;background:var(--card);color:var(--tx);font-size:16px;margin:6px 0;font-family:inherit}
+button.b{background:var(--ac);color:#04251c;border:0;padding:12px 18px;border-radius:10px;font-weight:700;font-size:16px;margin:4px 4px 4px 0}
+button.g{background:#2c3e50;color:var(--tx)}
+.c{background:var(--card);border-radius:12px;padding:12px;margin:10px 0}
+.c b{color:var(--ac)}
+.q{font-size:19px;line-height:1.4;min-height:110px}
+.hud{display:flex;justify-content:space-between;align-items:center;color:var(--mu);font-size:18px}
+.t{font-size:34px;font-weight:800;color:var(--ac)}
+.ok{color:var(--ac)}.ko{color:var(--er)}
+.sec{display:none}.sec.on{display:block}
+small{color:var(--mu)}
+.cover{height:130px;border-radius:0 0 14px 14px;background:linear-gradient(135deg,#35d0a0,#4a90ff 60%,#8a5cff);display:flex;align-items:center;justify-content:center;font-size:56px;margin:0 -12px}
+.prof{display:flex;align-items:center;gap:12px;margin-top:-34px;padding:0 6px}
+.av{width:76px;height:76px;border-radius:50%;background:var(--card);border:4px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:38px;flex:none}
+.prof h1{font-size:20px;margin:30px 0 0}
+.post{padding:14px}
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.ph .av{width:42px;height:42px;font-size:22px;border:0;background:#223244}
+.ph div small{display:block}
+.acts{display:flex;gap:8px;margin-top:10px;border-top:1px solid #2c3e50;padding-top:10px}
+.acts button{flex:1;margin:0;padding:10px 4px;font-size:15px}
+.stats{display:flex;gap:8px;text-align:center}
+.stats div{flex:1;background:#223244;border-radius:10px;padding:10px 4px}
+.stats b{display:block;font-size:24px}
+</style>
 </head>
 <body>
-    <header>
-        <h1>Chimie du Non_Homme</h1>
-        <p>Prêt pour le concours ?</p>
-    </header>
+<header><span>⚗️ Chimie du Non_Homme</span><button id="snd2" onclick="toggleSnd()">🔊</button></header>
+<main>
 
-    <main class="container">
-        <!-- Onglet Base de Connaissances -->
-        <section id="tab-definitions" class="tab-content active">
-            <input type="text" id="searchInput" placeholder="Rechercher un terme ou une définition...">
-            <ul id="definitionsList"></ul>
-        </section>
+<section id="home" class="sec on">
+  <div class="cover">⚗️</div>
+  <div class="prof"><div class="av">🧪</div><h1>Bienvenue Le Non_Homme 👋</h1></div>
+  <div class="c post">
+    <div class="ph"><div class="av">🔥</div><div><b>Alors, on s'entraîne ?</b><small>Prêt à battre ton record aujourd'hui ?</small></div></div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="c post">
+    <div class="ph"><div class="av">⏱</div><div><b>Challenge 60 secondes</b><small>Questions en rafale, ça va vite !</small></div></div>
+    Écris un maximum de termes à partir de leur définition avant la fin du chrono.
+    <div class="acts"><button class="b" onclick="go('ch');play('time')">▶ Lancer le 60 s</button></div>
+  </div>
+  <div class="c post">
+    <div class="ph"><div class="av">♾️</div><div><b>Challenge illimité</b><small>Sans chrono, à ton rythme</small></div></div>
+    Pas de limite de temps : enchaîne les questions aussi longtemps que tu veux, puis termine quand tu veux.
+    <div class="acts"><button class="b" onclick="go('ch');play('inf')">▶ Lancer l'illimité</button></div>
+  </div>
+  <div class="c post">
+    <div class="ph"><div class="av">📖</div><div><b>Le lexique</b><small id="cnt"></small></div></div>
+    Révise les définitions et cherche un terme ou un mot clé.
+    <div class="acts"><button class="b g" onclick="go('lex')">📖 Ouvrir</button><button class="b g" onclick="go('ad')">➕ Ajouter</button></div>
+  </div>
+</section>
 
-        <!-- Onglet Challenge -->
-        <section id="tab-challenge" class="tab-content">
-            <div id="challenge-area">
-                <div id="challenge-start">
-                    <p>Prêt à te défier ? Tu as 1 minute pour répondre à un maximum de questions.</p>
-                    <button id="start-challenge">Démarrer le Challenge</button>
-                </div>
-                <div id="challenge-game" class="hidden">
-                    <div id="timer">01:00</div>
-                    <div id="challenge-question">Question...</div>
-                    <input type="text" id="challenge-input" placeholder="Ta réponse ici" autocomplete="off">
-                    <div id="feedback"></div>
-                    <div id="score">Score: 0</div>
-                </div>
-            </div>
-        </section>
+<section id="lex" class="sec">
+  <input id="s" placeholder="Rechercher un terme ou un mot de la définition…">
+  <small id="n"></small>
+  <div id="list"></div>
+</section>
 
-        <!-- Onglet Ajouter un Terme -->
-        <section id="tab-add" class="tab-content">
-            <form id="add-term-form">
-                <input type="text" id="new-term" placeholder="Terme (ex: Ion)" required>
-                <textarea id="new-definition" placeholder="Définition (ex: Atome ou molécule ayant perdu ou gagné un ou plusieurs électrons.)" rows="3" required></textarea>
-                <select id="new-category">
-                    <option value="Général">Général</option>
-                    <option value="Chimie Organique">Chimie Organique</option>
-                    <option value="Chimie Inorganique">Chimie Inorganique</option>
-                    <option value="Chimie Analytique">Chimie Analytique</option>
-                    <option value="Chimie Physique">Chimie Physique</option>
-                    <option value="Chimie des Matériaux">Chimie des Matériaux</option>
-                </select>
-                <button type="submit">Ajouter le Terme</button>
-            </form>
-            <div id="add-message"></div>
-        </section>
-    </main>
+<section id="ch" class="sec">
+  <div id="start" class="c">
+    <p>Choisis ton mode. Écris le terme défini puis valide.</p>
+    <button class="b" onclick="play('time')">⏱ 60 secondes</button>
+    <button class="b" onclick="play('inf')">♾️ Illimité</button>
+    <button class="b g" id="snd" onclick="toggleSnd()">🔊 Son : oui</button>
+  </div>
+  <div id="game" style="display:none">
+    <div class="hud"><span class="t" id="tm">60</span><span>Score : <b id="sc">0</b></span></div>
+    <div class="c q" id="q"></div>
+    <input id="a" placeholder="Ta réponse…" autocomplete="off" autocapitalize="off" autocorrect="off">
+    <button class="b" onclick="submit()">Valider</button>
+    <button class="b g" onclick="skip()">Passer</button>
+    <button class="b g" id="fin" onclick="finish()" style="display:none">🏁 Terminer</button>
+    <div id="fb"></div>
+  </div>
+  <div id="end" class="c" style="display:none"></div>
+</section>
 
-    <nav class="navbar">
-        <button class="active" data-tab="definitions">📚 Définitions</button>
-        <button data-tab="challenge">⚡ Challenge</button>
-        <button data-tab="add">➕ Ajouter</button>
-    </nav>
+<section id="ad" class="sec">
+  <div class="c">
+    <b>Ajouter un terme</b>
+    <input id="nt" placeholder="Terme (variantes acceptées : terme|variante)">
+    <textarea id="nd" rows="3" placeholder="Définition"></textarea>
+    <button class="b" onclick="addOne()">Ajouter</button>
+  </div>
+  <div class="c">
+    <b>Ajout en masse</b><br><small>Une ligne par terme : <code>terme :: définition</code></small>
+    <textarea id="bulk" rows="6"></textarea>
+    <button class="b" onclick="addBulk()">Importer</button>
+  </div>
+  <div class="c"><b>Mes termes ajoutés</b><div id="mine"></div></div>
+</section>
 
-    <script>
-        // Base de données initiale (extraite de sources fiables)
-        const initialData = [
-            { term: "Acide", definition: "Espèce moléculaire capable de céder un proton H+ (acide de Bronsted) pour donner la base conjuguée correspondante, ou d'accepter un doublet électronique (acide de Lewis).", category: "Général" },
-            { term: "Base", definition: "Espèce chimique capable de capter un proton H+ ou de donner un doublet électronique.", category: "Général" },
-            { term: "Atome", definition: "Plus petite partie d'un élément chimique qui conserve les propriétés de cet élément. Il est composé d'un noyau (protons et neutrons) et d'électrons.", category: "Général" },
-            { term: "Molécule", definition: "Ensemble d'atomes liés entre eux par des liaisons chimiques, formant la plus petite particule d'un composé chimique qui conserve ses propriétés.", category: "Général" matière },
-            { term: "Ion.", definition: "Atome ou moléc Uneule ayant perdu ou gagné un ou plusieurs électrons, portant ainsi une charge électrique nette.", category: "Général" },
-            { term: "Cation", definition: "Ion chargé positivement, ayant perdu un ou plusieurs électrons.", category: "Général" },
-            { term: "Anion", definition: "Ion chargé négativement, ayant gagné un ou plusieurs électrons.", category: "Général" },
-            { term: "Réaction chimique", definition: "Processus au cours duquel des substances (réactifs) se transforment en d'autres substances (produits).", category: "Général" },
-            { term: "Catalyseur", definition: "Substance qui accélère une réaction chimique sans être consommée par celle-ci.", category: "Général" },
-            { term: "Équation chimique", definition: "Représentation symbolique d'une réaction chimique, montrant les réactifs et les produits avec leurs coefficients stœchiométriques.", category: "Général" },
-            { term: "Mole", definition: "Unité de mesure de la quantité de mole contient exactement 6,02214076×10^23 entités élémentaires (atomes, molécules, ions, etc.).", category: "Général" },
-            { term: "Nombre d'Avogadro", definition: "Constante valant 6,02214076×10^23 mol^-1, représentant le nombre d'entités dans une mole.", category: "Général" },
-            { term: "Masse molaire", definition: "Masse d'une mole d'une substance, exprimée en g/mol.", category: "Général" },
-            { term: "Concentration molaire", definition: "Quantité de matière de soluté dissoute par unité de volume de solution, exprimée en mol/L.", category: "Général" },
-            { term: "pH", definition: "Potentiel hydrogène, mesure de l'acidité ou de la basicité d'une solution. pH = -log[H+].", category: "Général" },
-            { term: "Oxydation", definition: "Perte d'électrons par une espèce chimique.", category: "Général" },
-            { term: "Réduction", definition: "Gain d'électrons par une espèce chimique.", category: "Général" },
-            { term: "Endothermique", definition: "Se dit d'une transformation qui absorbe de la chaleur.", category: "Chimie Physique" },
-            { term: "Exothermique", definition: "Se dit d'une transformation qui libère de la chaleur.", category: "Chimie Physique" },
-            { term: "Enthalpie", definition: "Fonction d'état définie par la somme de l'énergie interne d'un système et du produit de sa pression par son volume.", category: "Chimie Physique" },
-            { term: "Entropie", definition: "Fonction d'état qui sert à mesurer le degré de désordre d'un système.", category: "Chimie Physique" },
-            { term: "Énergie d'activation", definition: "Énergie minimale qu'il faut fournir à des réactifs pour qu'il y ait une réaction chimique.", category: "Chimie Physique" },
-            { term: "Isomère", definition: "Molécule organique qui possède la même formule brute qu'une autre molécule, mais qui a une formule semi-développée ou une formule développée différente.", category: "Chimie Organique" },
-            { term: "Groupe fonctionnel", definition: "Atome ou groupe d'atomes qui confère des propriétés caractéristiques à une molécule organique (ex: hydroxyle -OH, carboxyle -COOH).", category: "Chimie Organique" },
-            { term: "Alcane", definition: "Hydrocarbure saturé, de formule générale CnH2n+2.", category: "Chimie Organique" },
-            { term: "Alcène", definition: "Hydrocarbure insaturé comportant au moins une double liaison carbone-carbone, de formule générale CnH2n.", category: "Chimie Organique" },
-            { term: "Alcyne", definition: "Hydrocarbure insaturé comportant au moins une triple liaison carbone-carbone, de formule générale CnH2n-2.", category: "Chimie Organique" },
-            { term: "Alcool", definition: "Composé organique contenant un groupe hydroxyle (-OH) lié à un atome de carbone saturé.", category: "Chimie Organique" },
-            { term: "Aldéhyde", definition: "Composé organique contenant un groupe carbonyle (C=O) lié à un atome d'hydrogène et à un atome de carbone.", category: "Chimie Organique" },
-            { term: "Cétone", definition: "Composé organique contenant un groupe carbonyle (C=O) lié à deux atomes de carbone.", category: "Chimie Organique" },
-            { term: "Acide carboxylique", definition: "Composé organique contenant un groupe carboxyle (-COOH).", category: "Chimie Organique" },
-            { term: "Amine", definition: "Composé organique dérivé de l'ammoniac (NH3) par remplacement d'un ou plusieurs atomes d'hydrogène par des groupes alkyles ou aryles.", category: "Chimie Organique" },
-            { term: "Polymère", definition: "Macromolécule constituée de l'enchaînement répétitif d'unités monomères.", category: "Chimie Organique" },
-            { term: "Analyte", definition: "Espèce chimique recherchée, détectée et éventuellement dosée selon un protocole analytique.", category: "Chimie Analytique" },
-            { term: "Chromatographie", definition: "Technique de séparation des constituants d'un mélange basée sur leur distribution différentielle entre une phase mobile et une phase stationnaire.", category: "Chimie Analytique" },
-            { term: "Titrage", definition: "Dosage volumétrique permettant de déterminer la concentration d'une espèce en solution en utilisant une réaction chimique.", category: "Chimie Analytique" },
-            { term: "Spectroscopie", definition: "Étude de l'interaction entre la matière et un rayonnement électromagnétique.", category: "Chimie Analytique" },
-            { term: "Ligand", definition: "Ion ou molécule lié à un atome central (souvent un métal) dans un complexe de coordination.", category: "Chimie Inorganique" },
-            { term: "Hapticité", definition: "Aptitude d'un ligand comportant deux ou plusieurs atomes consécutifs reliés par un système d'électrons π à s'attacher globalement, par une seule liaison impliquant les électrons π délocalisés à l'atome central d'une entité de coordination.", category: "Chimie Inorganique" },
-            { term: "Graphène", definition: "Variété allotropique du carbone, qui se présente sous la forme d'un feuillet constitué d'un pavage hexagonal régulier d'atomes de carbone.", category: "Chimie des Matériaux" },
-            { term: "Nanocomposite", definition: "Matériau nanostructuré composé de plusieurs phases dont une au moins présente des éléments structuraux de dimension nanométrique.", category: "Chimie des Matériaux" }
-        ];
+</main>
+<nav>
+  <button data-t="home" class="on" onclick="go('home')">🏠<br>Accueil</button>
+  <button data-t="lex" onclick="go('lex')">📖<br>Lexique</button>
+  <button data-t="ch" onclick="go('ch')">⏱<br>Challenge</button>
+  <button data-t="ad" onclick="go('ad')">➕<br>Ajouter</button>
+</nav>
 
-        // --- Gestion des données ---
-        let terms = [];
-        let challengeInterval;
-        let challengeTimeout;
-        let currentChallengeTerm = null;
-        let score = 0;
-        let timeLeft = 60;
+<script>
+const BASE=`atome :: Plus petite particule d'un élément chimique, constituée d'un noyau (protons et neutrons) entouré d'électrons.
+molécule :: Assemblage électriquement neutre d'atomes liés par des liaisons covalentes.
+élément chimique :: Ensemble d'atomes (et d'ions) ayant le même nombre de protons dans leur noyau.
+corps pur :: Substance constituée d'une seule espèce chimique.
+composé :: Corps pur formé d'atomes d'au moins deux éléments différents.
+mélange homogène :: Mélange dont les constituants ne sont pas distinguables à l'œil nu.
+mélange hétérogène :: Mélange dont les constituants sont visibles à l'œil nu.
+alliage :: Mélange homogène à propriétés métalliques, formé d'un métal et d'un ou plusieurs autres éléments.
+ion :: Atome ou groupe d'atomes portant une charge électrique globale non nulle, parce qu'il a gagné ou perdu un ou plusieurs électrons. Un ion positif est un cation, un ion négatif est un anion, et les ions conduisent le courant en solution.
+cation :: Ion chargé positivement, formé lorsqu'un atome perd un ou plusieurs électrons. Les métaux forment en général des cations, comme Na⁺, Ca²⁺ ou Al³⁺, et ils sont attirés par la cathode lors d'une électrolyse.
+anion :: Ion chargé négativement, formé lorsqu'un atome ou un groupe d'atomes gagne un ou plusieurs électrons. Les non-métaux forment souvent des anions, comme Cl⁻ ou O²⁻, qui sont attirés par l'anode lors d'une électrolyse.
+isotope :: Atome d'un même élément ayant le même nombre de protons mais un nombre de neutrons différent.
+numéro atomique :: Nombre de protons d'un noyau, noté Z.
+nombre de masse :: Nombre total de nucléons (protons et neutrons) d'un noyau, noté A.
+nucléon :: Particule qui constitue le noyau d'un atome : il s'agit soit d'un proton chargé positivement, soit d'un neutron électriquement neutre. Le nombre de nucléons d'un noyau est appelé nombre de masse et noté A.
+électron de valence :: Électron de la couche électronique la plus externe d'un atome.
+couche électronique :: Niveau d'énergie sur lequel se répartissent les électrons autour du noyau.
+orbitale :: Région de l'espace où la probabilité de trouver un électron est maximale.
+tableau périodique :: Classement des éléments chimiques par numéro atomique croissant, en périodes et en groupes.
+période :: Ligne horizontale du tableau périodique. Les éléments d'une même période ont leurs électrons répartis sur le même nombre de couches électroniques, et leurs propriétés évoluent progressivement de gauche à droite.
+groupe :: Colonne verticale du tableau périodique réunissant des éléments qui ont le même nombre d'électrons de valence. Ils forment donc une famille aux propriétés chimiques voisines, comme les halogènes ou les métaux alcalins.
+métal :: Élément bon conducteur de chaleur et d'électricité, qui tend à former des cations.
+non-métal :: Élément mauvais conducteur, qui tend à gagner des électrons pour former des anions.
+métalloïde :: Élément aux propriétés intermédiaires entre celles des métaux et des non-métaux.
+gaz noble|gaz rare :: Élément du groupe 18, chimiquement très peu réactif car sa couche externe est saturée.
+halogène :: Élément du groupe 17 du tableau périodique (fluor, chlore, brome, iode…), qui possède sept électrons de valence. Très électronégatif et très oxydant, il gagne facilement un électron pour former un anion halogénure.
+métal alcalin :: Élément du groupe 1, hors hydrogène, très réducteur et très réactif avec l'eau.
+alcalino-terreux :: Élément du groupe 2 du tableau périodique (béryllium, magnésium, calcium, strontium, baryum…), possédant deux électrons de valence. Ce métal réducteur perd facilement ces deux électrons pour former un cation de charge 2+.
+électronégativité :: Aptitude d'un atome à attirer vers lui les électrons d'une liaison.
+liaison covalente :: Liaison dans laquelle deux atomes partagent une ou plusieurs paires d'électrons.
+liaison ionique :: Attraction électrostatique entre un cation et un anion.
+liaison métallique :: Liaison due à la mise en commun d'électrons délocalisés entre atomes métalliques.
+liaison hydrogène :: Interaction attractive entre un H lié à un atome très électronégatif (O, N, F) et un doublet non liant d'une autre molécule.
+mole|mol :: Unité de quantité de matière du Système international, qui correspond à un paquet de 6,02·10²³ entités élémentaires (atomes, molécules, ions…). Elle permet de relier le monde microscopique aux masses mesurables en laboratoire.
+nombre d'Avogadro :: Nombre d'entités dans une mole : 6,02·10²³ mol⁻¹.
+masse molaire :: Masse d'une mole d'entités chimiques, exprimée en g/mol.
+volume molaire :: Volume occupé par une mole de gaz dans des conditions données de température et de pression.
+solution :: Mélange homogène obtenu par dissolution d'un ou plusieurs solutés dans un solvant.
+solvant :: Espèce chimique, en général liquide et majoritaire, qui dissout le soluté.
+soluté :: Espèce chimique dissoute dans un solvant.
+solubilité :: Quantité maximale de soluté que l'on peut dissoudre dans un volume donné de solvant.
+solution saturée :: Solution qui ne peut plus dissoudre de soluté à une température donnée.
+dissolution :: Passage d'une espèce chimique dans un solvant pour former une solution.
+dilution :: Opération consistant à diminuer la concentration d'une solution en y ajoutant du solvant.
+concentration molaire :: Quantité de matière de soluté par litre de solution, en mol/L.
+concentration massique :: Masse de soluté par litre de solution, en g/L.
+acide :: Espèce chimique capable de céder un proton H⁺ (Brønsted).
+base :: Espèce chimique capable de capter un proton H⁺ (Brønsted).
+couple acide-base :: Ensemble d'un acide et de sa base conjuguée, reliés par l'échange d'un proton.
+ampholyte|espèce amphotère :: Espèce pouvant se comporter à la fois comme un acide et comme une base.
+pH :: Grandeur sans unité mesurant l'acidité d'une solution : pH = −log [H₃O⁺].
+acide fort :: Acide qui réagit totalement avec l'eau, c'est-à-dire que toutes ses molécules cèdent un proton H⁺ pour former des ions oxonium H₃O⁺. Le pH d'une solution d'acide fort se calcule directement à partir de sa concentration.
+base forte :: Base qui réagit totalement avec l'eau en captant un proton, ce qui produit des ions hydroxyde HO⁻ en quantité égale à la quantité de base introduite. La soude NaOH est un exemple de base forte.
+solution tampon :: Solution dont le pH varie peu par ajout modéré d'acide, de base ou par dilution.
+neutralisation :: Réaction entre un acide et une base qui forme de l'eau et un sel.
+sel :: Composé ionique, électriquement neutre, formé d'un cation et d'un anion, qui résulte par exemple de la neutralisation d'un acide par une base. Le chlorure de sodium NaCl en est l'exemple le plus courant.
+titrage :: Technique de dosage qui détermine une concentration par une réaction chimique totale et rapide.
+point d'équivalence|équivalence :: Moment d'un titrage où les réactifs ont été mélangés dans les proportions stœchiométriques.
+indicateur coloré :: Espèce chimique dont la couleur change selon le pH de la solution.
+produit ionique de l'eau :: Constante Ke = [H₃O⁺][HO⁻], égale à 10⁻¹⁴ à 25 °C.
+réaction chimique :: Transformation au cours de laquelle des espèces disparaissent et d'autres se forment.
+réactif :: Espèce chimique présente au début d'une transformation, qui est consommée au cours de la réaction. Les réactifs sont écrits à gauche de la flèche dans l'équation de la réaction, avec leurs nombres stœchiométriques.
+produit :: Espèce chimique qui n'existe pas au départ et qui est formée au cours d'une réaction chimique. Les produits sont écrits à droite de la flèche dans l'équation de la réaction.
+réactif limitant :: Réactif entièrement consommé en premier, qui arrête la réaction.
+stœchiométrie :: Étude des proportions dans lesquelles les espèces réagissent et se forment.
+rendement :: Rapport entre la quantité de produit réellement obtenue et la quantité maximale théorique.
+équilibre chimique :: État où les vitesses des réactions directe et inverse sont égales et les concentrations constantes.
+loi de Le Chatelier :: Tout système à l'équilibre soumis à une perturbation évolue de manière à s'opposer à celle-ci.
+catalyseur :: Espèce qui accélère une réaction sans être consommée.
+inhibiteur :: Espèce qui ralentit une réaction chimique.
+énergie d'activation :: Énergie minimale à fournir aux réactifs pour déclencher une réaction.
+cinétique chimique :: Étude de la vitesse des réactions et des facteurs qui l'influencent.
+exothermique :: Se dit d'une transformation qui libère de la chaleur.
+endothermique :: Se dit d'une transformation qui absorbe de la chaleur.
+enthalpie :: Fonction d'état qui mesure l'énergie échangée sous forme de chaleur à pression constante.
+entropie :: Grandeur mesurant le degré de désordre d'un système.
+oxydant :: Espèce capable de capter un ou plusieurs électrons.
+réducteur :: Espèce capable de céder un ou plusieurs électrons.
+oxydation :: Transformation au cours de laquelle une espèce chimique perd un ou plusieurs électrons, ce qui augmente son nombre d'oxydation. Elle se produit à l'anode et s'accompagne toujours d'une réduction ailleurs dans le système.
+réduction :: Transformation au cours de laquelle une espèce chimique gagne un ou plusieurs électrons, ce qui diminue son nombre d'oxydation. Elle se produit à la cathode et s'accompagne toujours d'une oxydation.
+oxydoréduction|réaction d'oxydoréduction :: Réaction avec transfert d'électrons entre un réducteur et un oxydant.
+nombre d'oxydation :: Charge fictive d'un atome si tous les électrons de ses liaisons étaient attribués à l'atome le plus électronégatif.
+anode :: Électrode où a lieu l'oxydation.
+cathode :: Électrode où a lieu la réduction.
+électrolyte :: Substance dont la solution ou le liquide fondu conduit le courant par déplacement d'ions.
+électrolyse :: Transformation forcée par un courant électrique imposé de l'extérieur.
+pile :: Dispositif convertissant l'énergie chimique d'une réaction d'oxydoréduction en énergie électrique.
+corrosion :: Dégradation d'un métal par oxydation due à son environnement.
+combustion :: Réaction d'oxydation vive d'un combustible par un comburant, avec dégagement de chaleur.
+comburant :: Espèce qui permet la combustion d'un combustible, généralement le dioxygène.
+hydrocarbure :: Composé organique formé uniquement de carbone et d'hydrogène.
+alcane :: Hydrocarbure saturé, de formule CₙH₂ₙ₊₂.
+alcène :: Hydrocarbure comportant au moins une double liaison C=C.
+alcyne :: Hydrocarbure comportant au moins une triple liaison C≡C.
+alcool :: Composé organique portant un groupe hydroxyle –OH sur un carbone saturé.
+aldéhyde :: Composé carbonylé dont le groupe C=O est en bout de chaîne carbonée.
+cétone :: Composé carbonylé dont le groupe C=O est lié à deux atomes de carbone.
+acide carboxylique :: Composé organique portant le groupe –COOH.
+ester :: Composé organique de groupe –COO–, obtenu à partir d'un acide carboxylique et d'un alcool.
+amine :: Composé organique dérivé de l'ammoniac, où des H sont remplacés par des groupes carbonés.
+amide :: Composé organique portant le groupe –CO–N<.
+éther-oxyde|éther :: Composé organique de formule R–O–R'.
+groupe fonctionnel|groupe caractéristique :: Atome ou groupe d'atomes qui détermine les propriétés chimiques d'une famille de composés.
+isomère :: Molécule de même formule brute qu'une autre mais de structure différente.
+chiralité :: Propriété d'une molécule non superposable à son image dans un miroir.
+énantiomère :: Isomère chiral, image miroir non superposable d'une autre molécule.
+carbone asymétrique :: Atome de carbone lié à quatre groupes différents.
+polymère :: Macromolécule formée par l'enchaînement de nombreux motifs identiques ou voisins.
+monomère :: Petite molécule, souvent porteuse d'une double liaison ou de deux groupes réactifs, qui peut se lier à d'autres identiques à elle. En s'enchaînant par réactions successives, les monomères forment un polymère.
+polymérisation :: Réaction chimique au cours de laquelle un grand nombre de monomères s'assemblent en chaîne pour former un polymère. Elle peut se faire par addition, comme pour le polyéthylène, ou par condensation, comme pour le nylon.
+estérification :: Réaction entre un acide carboxylique et un alcool qui forme un ester et de l'eau.
+saponification :: Hydrolyse basique d'un ester qui donne un alcool et un carboxylate, notamment pour fabriquer du savon.
+hydrolyse :: Réaction de décomposition d'une espèce chimique par l'eau.
+nucléophile :: Espèce riche en électrons qui attaque un site pauvre en électrons.
+électrophile :: Espèce pauvre en électrons qui attaque un site riche en électrons.
+radical :: Espèce chimique possédant un électron non apparié, très réactive.
+allotrope :: Se dit des formes physiques différentes d'un même élément, comme le diamant et le graphite pour le carbone.
+distillation :: Séparation de liquides miscibles selon leurs températures d'ébullition.
+filtration :: Technique de séparation d'un solide non dissous et d'un liquide : le mélange traverse un filtre qui retient les particules solides et laisse passer le liquide appelé filtrat. On peut l'accélérer avec un dispositif sous vide.
+décantation :: Séparation de deux liquides non miscibles ou d'un solide déposé et d'un liquide.
+chromatographie :: Méthode de séparation et d'identification d'espèces selon leur affinité pour une phase mobile et une phase fixe.
+cristallisation :: Formation d'un solide cristallin à partir d'un liquide ou d'une solution.
+sublimation :: Passage direct de l'état solide à l'état gazeux.
+condensation :: Changement d'état qui fait passer un corps de l'état gazeux à l'état liquide, en libérant de la chaleur. Il se produit par refroidissement ou par compression du gaz, par exemple sur la buée d'une vitre froide.
+fusion :: Changement d'état qui fait passer un corps de l'état solide à l'état liquide, en absorbant de la chaleur. Pour un corps pur, il se produit à température constante, appelée température de fusion.
+osmose :: Passage de solvant à travers une membrane semi-perméable vers la solution la plus concentrée.
+émulsion :: Dispersion de fines gouttelettes d'un liquide dans un autre liquide non miscible.
+colloïde :: Mélange où des particules très fines restent dispersées sans se déposer.
+gaz parfait :: Modèle de gaz dont les particules sont sans interaction, vérifiant PV = nRT.
+radioactivité :: Désintégration spontanée de noyaux instables avec émission de rayonnements.
+demi-vie|temps de demi-vie :: Durée au bout de laquelle la moitié des noyaux radioactifs d'un échantillon s'est désintégrée.
+fission nucléaire :: Cassure d'un noyau lourd en deux noyaux plus légers avec libération d'énergie.
+fusion nucléaire :: Union de deux noyaux légers en un noyau plus lourd avec libération d'énergie.
+spectroscopie :: Étude des espèces chimiques par l'analyse de leur interaction avec un rayonnement.
+burette :: Verrerie graduée à robinet servant à verser un volume précis de liquide, notamment en titrage.
+pipette jaugée :: Verrerie prélevant avec précision un volume unique de liquide.
+fiole jaugée :: Récipient à col étroit, marqué d'un trait de jauge, servant à préparer une solution de volume précis.
+erlenmeyer :: Flacon conique à col étroit utilisé pour les réactions et les titrages.
+ampoule à décanter :: Verrerie à robinet servant à séparer deux liquides non miscibles.
+bécher :: Récipient cylindrique gradué servant à contenir et chauffer des liquides.
+règle de l'octet :: Règle selon laquelle les atomes tendent à acquérir huit électrons sur leur couche externe, comme les gaz nobles, pour devenir stables. Ils y parviennent en formant des liaisons covalentes ou en gagnant ou perdant des électrons pour devenir des ions. Pour les éléments très légers, la règle du duet s'applique.
+formule de Lewis|schéma de Lewis :: Représentation d'une molécule ou d'un ion qui montre tous les doublets d'électrons, liants (traits entre atomes) et non liants (traits autour d'un atome), ainsi que les éventuelles charges. Elle permet de vérifier la règle de l'octet et de prévoir la géométrie de la molécule.
+modèle VSEPR|VSEPR :: Méthode qui prévoit la géométrie d'une molécule en considérant que les doublets d'électrons autour d'un atome central se repoussent et se placent le plus loin possible les uns des autres. Elle explique par exemple la forme coudée de l'eau ou la forme pyramidale de l'ammoniac.
+liaison polarisée :: Liaison covalente entre deux atomes d'électronégativités différentes, dans laquelle le doublet d'électrons est attiré davantage par l'atome le plus électronégatif. Celui-ci porte alors une charge partielle négative et l'autre une charge partielle positive.
+molécule polaire :: Molécule dont les barycentres des charges partielles positives et négatives ne sont pas confondus, ce qui crée un moment dipolaire. L'eau est polaire et dissout bien les espèces ioniques et polaires, alors que le dioxyde de carbone, de géométrie linéaire, est apolaire.
+interaction de Van der Waals :: Ensemble d'interactions électrostatiques faibles entre molécules, dues à des dipôles permanents ou temporaires. Elles sont bien plus faibles que les liaisons covalentes, mais elles expliquent la cohésion des liquides et des solides moléculaires et influencent les températures de changement d'état.
+avancement :: Grandeur notée x, exprimée en mole, qui permet de suivre l'évolution d'une transformation chimique. Il indique combien de fois la réaction s'est produite, et les quantités de matière de chaque espèce se déduisent de x grâce aux nombres stœchiométriques.
+tableau d'avancement :: Tableau qui décrit les quantités de matière de chaque réactif et produit à l'état initial, en cours de transformation et à l'état final. Il permet de déterminer l'avancement maximal, d'identifier le réactif limitant et de calculer la composition finale du système.
+quotient de réaction :: Grandeur notée Qr, calculée à partir des concentrations des espèces dissoutes à un instant donné, avec la même expression que la constante d'équilibre. En comparant Qr à K, on prévoit le sens d'évolution spontanée du système.
+constante d'équilibre :: Grandeur notée K, qui ne dépend que de la température et qui vaut le quotient de réaction à l'état d'équilibre. Plus K est grand, plus la transformation est avancée vers les produits, et une valeur très grande correspond à une réaction quasi totale.
+vitesse de réaction :: Grandeur qui mesure la rapidité avec laquelle une transformation chimique se déroule, en général par la variation de l'avancement par unité de temps et de volume. Elle diminue généralement au cours du temps, car les concentrations des réactifs baissent.
+temps de demi-réaction :: Durée nécessaire pour que l'avancement de la réaction atteigne la moitié de sa valeur finale. Il permet de comparer la rapidité de deux transformations et de choisir une durée adaptée pour suivre une réaction.
+facteur cinétique :: Paramètre qui modifie la vitesse d'une réaction chimique, comme la température, la concentration des réactifs, la présence d'un catalyseur ou l'état de division d'un solide. Une température plus élevée augmente le nombre de chocs efficaces entre entités.
+constante d'acidité :: Grandeur notée Ka, constante d'équilibre de la réaction d'un acide avec l'eau. Plus Ka est grande, plus l'acide est fort, et on utilise plus souvent le pKa = −log Ka pour comparer les couples acide-base.
+pKa :: Grandeur définie par pKa = −log Ka, caractéristique d'un couple acide-base à une température donnée. Lorsque le pH est égal au pKa, l'acide et sa base conjuguée sont en concentrations égales, et le diagramme de prédominance s'en déduit.
+diagramme de prédominance :: Représentation qui indique, selon la valeur du pH, quelle forme d'un couple acide-base domine en solution. L'acide prédomine quand le pH est inférieur au pKa, et la base conjuguée prédomine quand il est supérieur.
+précipité :: Solide formé par la réaction d'ions en solution, lorsque la solubilité du composé ionique obtenu est dépassée. Il apparaît sous forme de particules qui se déposent, comme le précipité blanc de chlorure d'argent formé lors d'un test aux ions chlorure.
+produit de solubilité :: Constante notée Ks, égale au produit des concentrations des ions d'un solide ionique à l'équilibre avec sa solution saturée. Elle sert à comparer les solubilités de composés semblables et à prévoir l'apparition d'un précipité.
+complexe :: Édifice formé d'un ion métallique central lié à plusieurs ligands par des liaisons de coordination. Ces espèces sont souvent colorées et interviennent dans de nombreux dosages et dans le fonctionnement du vivant, comme l'hème de l'hémoglobine.
+ligand :: Espèce chimique, ion ou molécule, qui possède au moins un doublet non liant et qui peut le mettre en commun avec un ion métallique central pour former un complexe. L'eau, l'ammoniac et les ions cyanure sont des ligands courants.
+absorbance :: Grandeur sans unité, notée A, qui mesure la quantité de lumière absorbée par une solution à une longueur d'onde donnée. Elle est proportionnelle à la concentration de l'espèce colorée, d'après la loi de Beer-Lambert, et se mesure avec un spectrophotomètre.
+loi de Beer-Lambert :: Loi qui affirme que l'absorbance d'une solution diluée est proportionnelle à la concentration de l'espèce absorbante et à l'épaisseur de solution traversée, A = ε·l·c. Elle permet de déterminer une concentration inconnue grâce à une courbe d'étalonnage.
+conductivité :: Grandeur notée σ, qui mesure l'aptitude d'une solution à conduire le courant électrique grâce aux ions qu'elle contient. Elle augmente avec la concentration en ions et avec leur mobilité, et elle sert à réaliser des dosages par conductimétrie.
+potentiel standard :: Grandeur notée E°, exprimée en volt, qui caractérise un couple oxydant-réducteur dans des conditions de référence. Plus E° est élevé, plus l'oxydant du couple est fort, ce qui permet de prévoir le sens spontané d'une réaction d'oxydoréduction.
+équation de Nernst :: Relation qui donne le potentiel d'un couple oxydant-réducteur en fonction du potentiel standard et des concentrations des espèces présentes. Elle permet de calculer la tension d'une pile et de prévoir son évolution au cours de son fonctionnement.
+force électromotrice :: Grandeur notée E, exprimée en volt, qui correspond à la tension à vide d'une pile, c'est-à-dire la différence de potentiel entre ses deux électrodes. Elle dépend des couples mis en jeu et des concentrations des espèces.
+énergie interne :: Grandeur notée U, qui représente la somme de toutes les énergies microscopiques d'un système, cinétiques et potentielles, liées à l'agitation et aux interactions de ses particules. Sa variation est égale à la somme du travail et de la chaleur échangés avec l'extérieur.
+énergie de liaison :: Énergie qu'il faut fournir pour rompre une mole de liaisons covalentes d'un type donné, à l'état gazeux. Elle permet d'estimer l'énergie libérée ou absorbée par une réaction en comparant les liaisons rompues et celles qui se forment.
+calorimétrie :: Ensemble de techniques qui mesurent la chaleur échangée au cours d'une transformation, à l'aide d'un calorimètre, en suivant la variation de température. On l'utilise pour déterminer une enthalpie de réaction ou une capacité thermique.
+capacité thermique :: Grandeur qui indique l'énergie à apporter à un corps pour élever sa température de un kelvin. La capacité thermique massique de l'eau est particulièrement élevée, ce qui explique son rôle d'accumulateur de chaleur.
+enthalpie libre :: Grandeur notée G, qui combine enthalpie et entropie selon G = H − TS. À température et pression constantes, une transformation est spontanée si elle fait diminuer G, et l'équilibre correspond à un minimum de cette grandeur.
+masse volumique :: Grandeur notée ρ, égale au rapport de la masse d'un échantillon à son volume, exprimée par exemple en g/mL ou en kg/m³. Elle dépend de la température et permet d'identifier une substance ou de convertir une masse en volume.
+densité :: Rapport sans unité entre la masse volumique d'un corps et celle d'un corps de référence, l'eau pour les liquides et solides, l'air pour les gaz. Un corps de densité inférieure à 1 flotte sur l'eau.
+fraction molaire :: Rapport entre la quantité de matière d'un constituant et la quantité de matière totale d'un mélange. Elle est sans unité, comprise entre 0 et 1, et la somme des fractions molaires de tous les constituants vaut toujours 1.
+pression partielle :: Pression qu'exercerait un gaz d'un mélange s'il occupait seul tout le volume disponible. D'après la loi de Dalton, la pression totale du mélange est égale à la somme des pressions partielles de ses constituants.
+miscibilité :: Aptitude de deux liquides à se mélanger pour former un mélange homogène. L'eau et l'éthanol sont miscibles, alors que l'eau et l'huile ne le sont pas, ce qui conduit à deux phases séparées.
+solvant polaire :: Solvant dont les molécules possèdent un moment dipolaire important, comme l'eau ou l'éthanol. Il dissout bien les espèces ioniques et polaires, tandis qu'un solvant apolaire comme le cyclohexane dissout surtout les espèces apolaires.
+extraction liquide-liquide :: Technique qui consiste à faire passer une espèce d'un solvant dans un autre non miscible avec le premier, dans lequel elle est plus soluble. On l'effectue dans une ampoule à décanter, puis on sépare les deux phases.
+recristallisation :: Méthode de purification d'un solide qui consiste à le dissoudre dans un solvant chaud, puis à refroidir la solution pour que le solide pur cristallise à nouveau. Les impuretés, présentes en faible quantité, restent dissoutes dans le solvant.
+température d'ébullition :: Température à laquelle un liquide passe à l'état gazeux à une pression donnée. Constante pendant le changement d'état d'un corps pur, elle sert à l'identifier et elle augmente avec les interactions entre molécules.
+stéréoisomère :: Isomère qui possède le même enchaînement d'atomes qu'un autre mais dont les atomes sont disposés différemment dans l'espace. On distingue les énantiomères, images miroir l'une de l'autre, et les diastéréoisomères, qui ne le sont pas, comme les isomères Z et E.
+diastéréoisomère :: Stéréoisomère qui n'est pas l'image dans un miroir d'un autre. Les isomères Z et E d'un alcène et les molécules à plusieurs carbones asymétriques en fournissent des exemples, et leurs propriétés physiques sont différentes.
+isomérie Z/E :: Stéréoisomérie propre aux alcènes, due à l'impossibilité de rotation autour de la double liaison C=C. Dans l'isomère Z, les groupes prioritaires sont du même côté de la double liaison, dans l'isomère E ils sont de part et d'autre.
+mélange racémique :: Mélange contenant deux énantiomères en proportions égales. Il n'a pas d'action sur la lumière polarisée, car les effets des deux énantiomères se compensent, et il est souvent obtenu lors d'une synthèse sans catalyseur chiral.
+formule topologique :: Représentation simplifiée d'une molécule organique où la chaîne carbonée est dessinée en ligne brisée. Les atomes de carbone et d'hydrogène liés à eux ne sont pas écrits, seuls les groupes caractéristiques et les hétéroatomes apparaissent.
+réaction de substitution :: Réaction organique au cours de laquelle un atome ou un groupe d'atomes d'une molécule est remplacé par un autre. Par exemple, un halogénoalcane peut réagir avec un nucléophile qui prend la place de l'halogène.
+réaction d'addition :: Réaction organique au cours de laquelle deux réactifs s'unissent en un seul produit, sans perte d'atome. Elle se produit typiquement sur une double ou triple liaison, comme l'addition de dihydrogène ou de dibrome sur un alcène.
+réaction d'élimination :: Réaction organique au cours de laquelle une molécule perd deux atomes ou groupes d'atomes portés par des carbones voisins, ce qui crée une double liaison. La déshydratation d'un alcool en alcène en est un exemple.
+spectroscopie infrarouge :: Technique qui analyse l'absorption du rayonnement infrarouge par une molécule. Les liaisons vibrent à des fréquences caractéristiques, ce qui produit des bandes d'absorption qui permettent d'identifier les groupes caractéristiques, comme C=O ou O–H.
+spectroscopie RMN :: Technique qui exploite le comportement des noyaux d'hydrogène placés dans un champ magnétique. Chaque groupe d'hydrogènes équivalents donne un signal dont la position et la multiplicité renseignent sur l'environnement des atomes et la structure de la molécule.
+spectrométrie de masse :: Technique qui ionise les molécules, puis sépare les ions selon leur rapport masse sur charge. Le spectre obtenu donne la masse molaire de la molécule, grâce au pic de l'ion moléculaire, et ses fragments aident à déterminer sa structure.
+chimie verte :: Démarche qui vise à concevoir des produits et des procédés limitant leur impact sur l'environnement et la santé. Elle recommande notamment de réduire les déchets, d'économiser l'énergie, d'utiliser des matières premières renouvelables et des catalyseurs.
+économie d'atomes :: Indicateur de chimie verte qui compare la masse des atomes des réactifs réellement présents dans le produit désiré à la masse de tous les réactifs. Plus elle est proche de 100 %, moins la synthèse produit de déchets.
+loi de Boyle-Mariotte :: Loi qui indique que, pour une quantité de gaz donnée à température constante, le produit de la pression par le volume reste constant. Si on comprime le gaz, sa pression augmente proportionnellement, ce qui découle de la loi des gaz parfaits.
+loi de Dalton :: Loi selon laquelle la pression totale d'un mélange de gaz parfaits est égale à la somme des pressions partielles de chacun de ses constituants. Chaque pression partielle est proportionnelle à la fraction molaire du gaz.
+loi de Hess :: Loi qui affirme que l'enthalpie d'une réaction ne dépend que de l'état initial et de l'état final, et non du chemin suivi. On peut donc la calculer en combinant les enthalpies de plusieurs réactions dont la somme redonne la réaction étudiée.
+loi de Faraday :: Loi qui relie la quantité de matière transformée à une électrode à la charge électrique qui a traversé le circuit. Elle permet de calculer, lors d'une électrolyse ou du fonctionnement d'une pile, la masse d'un dépôt métallique ou le volume d'un gaz produit.`;
 
-        // Charger les données depuis localStorage ou utiliser les données initiales
-        function loadData() {
-            const stored = localStorage.getItem('chimieNonHommeData');
-            if (stored) {
-                terms = JSON.parse(stored);
-            } else {
-                terms = [...initialData];
-                saveData();
-            }
-        }
+const $=id=>document.getElementById(id);
+const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||d)}catch(e){return JSON.parse(d)}};
+const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let custom=rd('cnh','[]'),best=rd('cnhb','{"time":0,"inf":0}'),snd=rd('cnhs','true');
+const parse=l=>{const i=l.indexOf('::');return i<0?null:{t:l.slice(0,i).trim(),d:l.slice(i+2).trim()}};
+const all=()=>BASE.split('\n').map(parse).filter(Boolean).concat(custom);
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/^(le |la |les |l'|un |une |des )/,'').replace(/[^a-z0-9]/g,'');
+const save=()=>wr('cnh',custom);
 
-        // Sauvegarder les données dans localStorage
-        function saveData() {
-            localStorage.setItem('chimieNonHommeData', JSON.stringify(terms));
-        }
+function go(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on',s.id===id));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===id));
+  if(id!=='ch')stop();
+  if(id==='ch'&&!running){$('start').style.display='block';$('game').style.display=$('end').style.display='none';}
+  if(id==='home')home();
+  window.scrollTo(0,0);
+}
+function home(){
+  $('stats').innerHTML=`<div><b>${best.time}</b><small>Record 60 s</small></div><div><b>${best.inf}</b><small>Record illimité</small></div><div><b>${all().length}</b><small>Termes</small></div>`;
+  $('cnt').textContent=all().length+' termes de chimie';
+}
 
-        // --- Navigation par onglets ---
-        const navButtons = document.querySelectorAll('.navbar button');
-        const tabContents = document.querySelectorAll('.tab-content');
+function render(){
+  const q=norm($('s').value),a=all().sort((x,y)=>x.t.localeCompare(y.t,'fr'));
+  const f=a.filter(e=>!q||norm(e.t).includes(q)||norm(e.d).includes(q));
+  $('n').textContent=f.length+' / '+a.length+' termes';
+  $('list').innerHTML=f.map(e=>`<div class="c"><b>${e.t.split('|')[0]}</b><br>${e.d}</div>`).join('');
+  $('mine').innerHTML=custom.length?custom.map((e,i)=>`<div class="c"><b>${e.t}</b> <small>${e.d}</small><br><button class="b g" onclick="del(${i})">Supprimer</button></div>`).join(''):'<small>Aucun pour l\'instant.</small>';
+}
+$('s').oninput=render;
+function addOne(){const t=$('nt').value.trim(),d=$('nd').value.trim();if(!t||!d)return;custom.push({t,d});save();$('nt').value=$('nd').value='';render();}
+function addBulk(){const n=$('bulk').value.split('\n').map(parse).filter(e=>e&&e.t&&e.d);custom=custom.concat(n);save();$('bulk').value='';render();alert(n.length+' terme(s) ajouté(s)');}
+function del(i){custom.splice(i,1);save();render();}
 
-        navButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Mettre à jour l'état actif des boutons
-                navButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
+// --- Son (corrigé) ---
+let ac,loop,sil,tick,left,score,asked,bag=[],cur,miss=[],running=false,mode='time';
+const WAV='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+function unlock(){ // doit être appelé depuis un tap : débloque l'audio sur téléphone
+  try{
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state!=='running')ac.resume();
+    if(!sil){sil=new Audio(WAV);sil.loop=true;}
+    sil.play().catch(()=>{}); // aide à contourner le mode silencieux iOS
+  }catch(e){}
+}
+function tone(f,d,type,v,delay){
+  if(!snd||!ac)return;
+  const t=ac.currentTime+(delay||0),o=ac.createOscillator(),g=ac.createGain();
+  o.type=type;o.frequency.value=f;
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);
+}
+function music(){
+  clearInterval(loop);if(!snd||!running)return;
+  const notes=[262,262,392,262,330,262,392,494];let i=0;
+  loop=setInterval(()=>{const n=notes[i++%8];tone(n,.2,'square',.07);tone(n/2,.2,'triangle',.12);},230);
+}
+function sfx(ok){ok?(tone(660,.12,'sine',.3),tone(990,.18,'sine',.3,.1)):tone(160,.3,'sawtooth',.2);}
+function toggleSnd(){
+  snd=!snd;wr('cnhs',snd);unlock();
+  $('snd').textContent='🔊 Son : '+(snd?'oui':'non');$('snd2').textContent=snd?'🔊':'🔇';
+  if(snd){sfx(true);music();}else clearInterval(loop);
+}
 
-                // Afficher l'onglet correspondant
-                const tabId = button.dataset.tab;
-                tabContents.forEach(tab => {
-                    tab.classList.remove('active');
-                    if (tab.id === `tab-${tabId}`) {
-                        tab.classList.add('active');
-                    }
-                });
-
-                // Actions spécifiques lors du changement d'onglet
-                if (tabId === 'definitions') {
-                    renderDefinitions();
-                } else if (tabId === 'challenge') {
-                    resetChallenge();
-                }
-            });
-        });
-
-        // --- Onglet Définitions ---
-        const definitionsList = document.getElementById('definitionsList');
-        const searchInput = document.getElementById('searchInput');
-
-        function renderDefinitions(filter = '') {
-            definitionsList.innerHTML = '';
-            const filteredTerms = terms.filter(item =>
-                item.term.toLowerCase().includes(filter.toLowerCase()) ||
-                item.definition.toLowerCase().includes(filter.toLowerCase())
-            );
-
-            if (filteredTerms.length === 0) {
-                definitionsList.innerHTML = '<li class="definition-item">Aucun résultat trouvé.</li>';
-                return;
-            }
-
-            filteredTerms.forEach(item => {
-                const li = document.createElement('li');
-                li.className = 'definition-item';
-                li.innerHTML = `
-                    <div class="term">${item.term}</div>
-                    <div class="definition">${item.definition}</div>
-                    <span class="category-badge">${item.category}</span>
-                `;
-                definitionsList.appendChild(li);
-            });
-        }
-
-        searchInput.addEventListener('input', (e) => {
-            renderDefinitions(e.target.value);
-        });
-
-        // --- Onglet Challenge ---
-        const startBtn = document.getElementById('start-challenge');
-        const challengeStartDiv = document.getElementById('challenge-start');
-        const challengeGameDiv = document.getElementById('challenge-game');
-        const timerEl = document.getElementById('timer');
-        const questionEl = document.getElementById('challenge-question');
-        const challengeInput = document.getElementById('challenge-input');
-        const feedbackEl = document.getElementById('feedback');
-        const scoreEl = document.getElementById('score');
-
-        // Audio context pour le son d'ambiance (un simple bip périodique)
-        let audioCtx;
-
-        function playBackgroundSound() {
-            if (!audioCtx) return;
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(220, audioCtx.currentTime); // La 3
-            gainNode.gain.setValueAtTime(0.03, audioCtx.currentTime); // Volume bas
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.1); // Bip court
-        }
-
-        function startChallenge() {
-            // Initialiser l'audio context au premier clic (nécessaire sur mobile)
-            if (!audioCtx) {
-                try {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                } catch (e) {
-                    console.warn("AudioContext non supporté");
-                }
-            }
-
-            resetChallenge();
-            challengeStartDiv.classList.add('hidden');
-            challengeGameDiv.classList.remove('hidden');
-            score = 0;
-            scoreEl.textContent = `Score: ${score}`;
-            timeLeft = 60;
-            timerEl.textContent = '01:00';
-            feedbackEl.textContent = '';
-            feedbackEl.className = '';
-            challengeInput.value = '';
-            challengeInput.focus();
-
-            // Lancer le chrono
-            challengeInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-                const seconds = (timeLeft % 60).toString().padStart(2, '0');
-                timerEl.textContent = `${minutes}:${seconds}`;
-
-                // Jouer un son de fond périodique
-                if (audioCtx && timeLeft > 0 && timeLeft % 2 === 0) {
-                    playBackgroundSound();
-                }
-
-                if (timeLeft <= 0) {
-                    endChallenge();
-                }
-            }, 1000);
-
-            // Afficher la première question
-            askQuestion();
-        }
-
-        function endChallenge() {
-            clearInterval(challengeInterval);
-            clearTimeout(challengeTimeout);
-            challengeGameDiv.classList.add('hidden');
-            challengeStartDiv.classList.remove('hidden');
-            alert(`Temps écoulé ! Ton score est de ${score}.`);
-            resetChallenge();
-        }
-
-        function resetChallenge() {
-            clearInterval(challengeInterval);
-            clearTimeout(challengeTimeout);
-            challengeStartDiv.classList.remove('hidden');
-            challengeGameDiv.classList.add('hidden');
-            feedbackEl.textContent = '';
-            feedbackEl.className = '';
-            challengeInput.value = '';
-            questionEl.textContent = 'Question...';
-            timerEl.textContent = '01:00';
-            scoreEl.textContent = 'Score: 0';
-            currentChallengeTerm = null;
-        }
-
-        function askQuestion() {
-            if (terms.length === 0) {
-                questionEl.textContent = "Ajoutez des termes pour commencer !";
-                return;
-            }
-            // Choisir une définition au hasard
-            const randomIndex = Math.floor(Math.random() * terms.length);
-            currentChallengeTerm = terms[randomIndex];
-            questionEl.textContent = `Quel terme correspond à cette définition : "${currentChallengeTerm.definition}"`;
-            challengeInput.value = '';
-            challengeInput.focus();
-        }
-
-        function checkAnswer() {
-            if (!currentChallengeTerm) return;
-            const userAnswer = challengeInput.value.trim().toLowerCase();
-            const correctAnswer = currentChallengeTerm.term.toLowerCase();
-
-            if (userAnswer === correctAnswer) {
-                score++;
-                scoreEl.textContent = `Score: ${score}`;
-                feedbackEl.textContent = 'Correct !';
-                feedbackEl.className = 'correct';
-                // Passer à la question suivante après un court délai
-                clearTimeout(challengeTimeout);
-                challengeTimeout = setTimeout(() => {
-                    askQuestion();
-                }, 500);
-            } else {
-                feedbackEl.textContent = 'Incorrect !';
-                feedbackEl.className = 'incorrect';
-                // Ne pas passer à la question suivante immédiatement pour laisser le temps de lire
-                // On efface le feedback après un délai
-                clearTimeout(challengeTimeout);
-                challengeTimeout = setTimeout(() => {
-                    feedbackEl.textContent = '';
-                    feedbackEl.className = '';
-                }, 1000);
-            }
-        }
-
-        startBtn.addEventListener('click', startChallenge);
-
-        challengeInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                checkAnswer();
-            }
-        });
-
-        // --- Onglet Ajouter un Terme ---
-        const addForm = document.getElementById('add-term-form');
-        const newTermInput = document.getElementById('new-term');
-        const newDefinitionInput = document.getElementById('new-definition');
-        const newCategorySelect = document.getElementById('new-category');
-        const addMessage = document.getElementById('add-message');
-
-        addForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const term = newTermInput.value.trim();
-            const definition = newDefinitionInput.value.trim();
-            const category = newCategorySelect.value;
-
-            if (!term || !definition) {
-                addMessage.textContent = 'Veuillez remplir tous les champs.';
-                addMessage.style.color = '#f44336';
-                return;
-            }
-
-            // Vérifier si le terme existe déjà
-            const exists = terms.some(item => item.term.toLowerCase() === term.toLowerCase());
-            if (exists) {
-                addMessage.textContent = 'Ce terme existe déjà dans la base.';
-                addMessage.style.color = '#f44336';
-                return;
-            }
-
-            // Ajouter le nouveau terme
-            terms.push({ term, definition, category });
-            saveData();
-
-            // Réinitialiser le formulaire
-            newTermInput.value = '';
-            newDefinitionInput.value = '';
-            addMessage.textContent = 'Terme ajouté avec succès !';
-            addMessage.style.color = '#4caf50';
-
-            // Re-render la liste des définitions si elle est visible
-            renderDefinitions(searchInput.value);
-
-            // Effacer le message après quelques secondes
-            setTimeout(() => {
-                addMessage.textContent = '';
-            }, 3000);
-        });
-
-        // --- Initialisation ---
-        loadData();
-        renderDefinitions();
-    </script>
+// --- Challenge ---
+function next(){
+  if(!bag.length)bag=all().sort(()=>Math.random()-.5);
+  cur=bag.pop();$('q').textContent=cur.d;$('a').value='';$('a').focus();
+}
+function play(m){
+  unlock();mode=m;score=0;asked=0;left=60;miss=[];bag=[];running=true;
+  clearInterval(tick);
+  $('start').style.display=$('end').style.display='none';$('game').style.display='block';
+  $('sc').textContent=0;$('fb').innerHTML='';
+  $('fin').style.display=m==='inf'?'inline-block':'none';
+  $('tm').textContent=m==='inf'?'♾️':60;
+  next();music();
+  if(m==='time')tick=setInterval(()=>{left--;$('tm').textContent=left;if(left<=3&&left>0)tone(880,.1,'sine',.2);if(left<=0)finish();},1000);
+}
+function stop(){clearInterval(tick);clearInterval(loop);running=false;}
+function submit(){
+  if(!running)return;
+  const v=norm($('a').value);if(!v)return;
+  asked++;
+  const ok=cur.t.split('|').some(x=>norm(x)===v);
+  if(ok){score++;$('sc').textContent=score;$('fb').innerHTML='<span class="ok">✓ Correct</span>';}
+  else{miss.push(cur);$('fb').innerHTML='<span class="ko">✗ C\'était : '+cur.t.split('|')[0]+'</span>';}
+  sfx(ok);next();
+}
+function skip(){asked++;miss.push(cur);$('fb').innerHTML='<span class="ko">Passé : '+cur.t.split('|')[0]+'</span>';sfx(false);next();}
+$('a').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
+function finish(){
+  if(!running)return;
+  stop();
+  const rec=score>best[mode];if(rec){best[mode]=score;wr('cnhb',best);}
+  tone(523,.15,'sine',.3);tone(659,.15,'sine',.3,.15);tone(784,.3,'sine',.3,.3);
+  $('game').style.display='none';$('end').style.display='block';
+  $('end').innerHTML=`<b>${mode==='inf'?'Session terminée !':'Temps écoulé !'}</b><p class="t">${score} / ${asked}</p>
+  ${rec?'<p class="ok">🏆 Nouveau record !</p>':''}
+  ${miss.length?'<b>À revoir :</b>'+miss.map(m=>`<p><b>${m.t.split('|')[0]}</b><br><small>${m.d}</small></p>`).join(''):'<p>Aucune erreur 🎉</p>'}
+  <button class="b" onclick="play('${mode}')">↻ Rejouer</button><button class="b g" onclick="go('home')">🏠 Accueil</button>`;
+}
+$('snd').textContent='🔊 Son : '+(snd?'oui':'non');$('snd2').textContent=snd?'🔊':'🔇';
+document.addEventListener('touchstart',unlock,{once:true});
+document.addEventListener('click',unlock,{once:true});
+render();home();
+</script>
 </body>
 </html>
