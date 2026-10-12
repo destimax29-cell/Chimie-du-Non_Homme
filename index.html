@@ -70,6 +70,11 @@ label.f{display:inline-block;background:var(--g);padding:10px 14px;border-radius
     <div class="acts"><button class="b" onclick="go('ch');play('inf')">▶ Lancer l'illimité</button></div>
   </div>
   <div class="c post">
+    <div class="ph"><div class="av">📝</div><div><b>Mes erreurs</b><small id="ecnt"></small></div></div>
+    Rejoue uniquement les termes ratés ou passés, jusqu'à ce que tu les maîtrises tous.
+    <div class="acts"><button class="b" onclick="go('ch');play('err')">▶ Réviser</button></div>
+  </div>
+  <div class="c post">
     <div class="ph"><div class="av">📖</div><div><b>Le lexique</b><small id="cnt"></small></div></div>
     Révise les définitions et cherche un terme ou un mot clé.
     <div class="acts"><button class="b g" onclick="go('lex')">📖 Ouvrir</button><button class="b g" onclick="go('ad')">➕ Ajouter</button></div>
@@ -87,6 +92,7 @@ label.f{display:inline-block;background:var(--g);padding:10px 14px;border-radius
     <p>Choisis ton mode. Écris le terme défini puis valide.</p>
     <button class="b" onclick="play('time')">⏱ <span class="dur">60</span> secondes</button>
     <button class="b" onclick="play('inf')">♾️ Illimité</button>
+    <button class="b" onclick="play('err')">📝 Mes erreurs</button>
     <button class="b g" id="snd" onclick="toggleSnd()">🔊 Son : oui</button>
   </div>
   <div id="game" style="display:none">
@@ -144,6 +150,10 @@ label.f{display:inline-block;background:var(--g);padding:10px 14px;border-radius
     <div class="row"><span>Musique</span><input type="checkbox" id="c_music" onchange="set('music',this.checked);music()"></div>
     <div class="row"><span>Effets (bonne / mauvaise réponse)</span><input type="checkbox" id="c_sfx" onchange="set('sfx',this.checked)"></div>
     <div class="row"><span>Volume</span><input type="range" id="c_vol" min="0" max="1.5" step=".1" oninput="set('vol',+this.value)"></div>
+    <div class="row"><span>Musique du challenge</span><select id="c_mus" onchange="set('mus',this.value);music()"><option value="mix">⏱ Horloge + suspense</option><option value="tictac">⌚ Tic-tac de montre</option><option value="fast">⚡ Tic-tac rapide</option><option value="suspense">💓 Suspense (battements)</option><option value="arcade">🕹 Arcade</option><option value="zen">🎐 Zen</option><option value="off">🔇 Aucune</option></select></div>
+    <button class="b g" onclick="previewMus()">▶ Écouter 4 s</button>
+    <div class="row"><span>Accélérer vers la fin du chrono</span><input type="checkbox" id="c_speedup" onchange="set('speedup',this.checked)"></div>
+    <div class="row"><span>Vibrations (bonne / mauvaise réponse)</span><input type="checkbox" id="c_vib" onchange="set('vib',this.checked)"></div>
   </div>
   <div class="c"><b>⏱ Challenge</b>
     <div class="row"><span>Durée du challenge</span><select id="c_dur" onchange="set('dur',+this.value)"><option>30</option><option>60</option><option>90</option><option>120</option><option>180</option></select></div>
@@ -371,7 +381,7 @@ const $=id=>document.getElementById(id);
 const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||d)}catch(e){return JSON.parse(d)}};
 const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let custom=rd('cnh','[]'),best=rd('cnhb','{"time":0,"inf":0}'),snd=rd('cnhs','true');
-const DEF={ac:'#35d0a0',bg:'#0f1720',card:'#18232f',tx:'#e8eef4',fs:16,name:'Le Non_Homme',cover:'',avatar:'',vol:1,music:true,sfx:true,dur:60,qcm:false,tts:false,auto:false};
+const DEF={ac:'#35d0a0',bg:'#0f1720',card:'#18232f',tx:'#e8eef4',fs:16,name:'Le Non_Homme',cover:'',avatar:'',vol:1,music:true,sfx:true,dur:60,qcm:false,tts:false,auto:false,mus:'mix',speedup:true,vib:true};
 let cfg=Object.assign({},DEF,rd('cnhc','{}'));if(best.time&&!best.t60)best.t60=best.time;
 const parse=l=>{const i=l.indexOf('::');return i<0?null:{t:l.slice(0,i).trim(),d:l.slice(i+2).trim()}};
 const all=()=>BASE.split('\n').map(parse).filter(Boolean).concat(custom);
@@ -388,7 +398,7 @@ function go(id){
 }
 function home(){
   $('stats').innerHTML=`<div><b>${best['t'+cfg.dur]||0}</b><small>Record ${cfg.dur} s</small></div><div><b>${best.inf||0}</b><small>Record illimité</small></div><div><b>${all().length}</b><small>Termes</small></div>`;
-  $('cnt').textContent=all().length+' termes de chimie';
+  $('ecnt').textContent=all().filter(e=>err[e.t]).length+' terme(s) à revoir';$('cnt').textContent=all().length+' termes de chimie';
 }
 
 function render(){
@@ -421,11 +431,37 @@ function tone(f,d,type,v,delay,cat){
   g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
   o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);
 }
-function music(){
-  clearInterval(loop);if(!snd||!running)return;
-  const notes=[262,262,392,262,330,262,392,494];let i=0;
-  loop=setInterval(()=>{const n=notes[i++%8];tone(n,.2,'square',.07,0,'m');tone(n/2,.2,'triangle',.12,0,'m');},230);
+let prev=false,streak=0,err=rd('cnhe','{}');
+const buzz=p=>{if(cfg.vib&&navigator.vibrate)navigator.vibrate(p)};
+function mark(t,ok){if(ok){if(mode==='err')delete err[t.t];}else err[t.t]=1;wr('cnhe',err);}
+function click(f,v){ // "tic" sec de montre (bruit filtré)
+  if(!snd||!ac||!cfg.music)return;v*=cfg.vol;if(v<=0)return;
+  const n=ac.sampleRate*.03|0,b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  const so=ac.createBufferSource(),fl=ac.createBiquadFilter(),g=ac.createGain();
+  so.buffer=b;fl.type='bandpass';fl.frequency.value=f;fl.Q.value=4;g.gain.value=v*4;
+  so.connect(fl);fl.connect(g);g.connect(ac.destination);so.start();
 }
+function music(){
+  clearInterval(loop);if(!snd||!(running||prev)||cfg.mus==='off')return;
+  let i=0;const m=cfg.mus;
+  const base={tictac:260,fast:170,suspense:500,arcade:230,zen:420,mix:250}[m]||250;
+  const spd=()=>base*((cfg.speedup&&running&&mode==='time')?(left<=10?.6:left<=20?.8:1):1);
+  const step=()=>{
+    if(m==='tictac'||m==='fast'||m==='mix')i%2?click(1100,.18):click(2200,.22);
+    if(m==='mix'){if(i%4===0)tone(55,.3,'sine',.5,0,'m');if(i%16===0)tone(185,1,'sawtooth',.04,0,'m');}
+    else if(m==='suspense'){
+      if(i%2===0){tone(55,.25,'sine',.5,0,'m');tone(55,.2,'sine',.4,.16,'m');}
+      if(i%8===0)tone(185,1.2,'sawtooth',.04,0,'m');
+      if(i%8===4)tone(196,1.2,'sawtooth',.04,0,'m');
+    }
+    else if(m==='arcade'){const n=[262,262,392,262,330,262,392,494][i%8];tone(n,.2,'square',.07,0,'m');tone(n/2,.2,'triangle',.12,0,'m');}
+    else if(m==='zen'){tone([262,330,392,523,392,330][i%6],.5,'sine',.15,0,'m');}
+    i++;loop=setTimeout(step,spd());
+  };
+  step();
+}
+function previewMus(){if(running)return;unlock();prev=true;music();setTimeout(()=>{prev=false;if(!running)clearInterval(loop);},4000);}
 function sfx(ok){ok?(tone(660,.12,'sine',.3),tone(990,.18,'sine',.3,.1)):tone(160,.3,'sawtooth',.2);}
 function toggleSnd(){
   snd=!snd;wr('cnhs',snd);unlock();
@@ -435,16 +471,17 @@ function toggleSnd(){
 
 // --- Challenge ---
 function next(){
-  if(!bag.length)bag=all().sort(()=>Math.random()-.5);
+  if(mode==='err'&&!all().some(e=>err[e.t])){finish();return;}
+  if(!bag.length)bag=(mode==='err'?all().filter(e=>err[e.t]):all()).sort(()=>Math.random()-.5);
   cur=bag.pop();$('q').textContent=cur.d;$('a').value='';qcm();if(!cfg.qcm&&!cfg.auto)$('a').focus();if(cfg.tts)say(cur.d);else if(cfg.auto)listen();
 }
-function play(m){
-  unlock();mode=m;score=0;asked=0;left=cfg.dur;bk=m==='inf'?'inf':'t'+cfg.dur;blocked=false;miss=[];bag=[];running=true;
+function play(m){if(m==='err'&&!all().some(e=>err[e.t])){alert('Aucune erreur à réviser pour le moment 🎉');return;}
+  unlock();mode=m;score=0;asked=0;left=cfg.dur;bk=m==='time'?'t'+cfg.dur:m;blocked=false;streak=0;miss=[];bag=[];running=true;
   clearInterval(tick);
   $('start').style.display=$('end').style.display='none';$('game').style.display='block';
   $('sc').textContent=0;$('fb').innerHTML='';
-  $('fin').style.display=m==='inf'?'inline-block':'none';
-  $('tm').textContent=m==='inf'?'♾️':left;
+  $('fin').style.display=m!=='time'?'inline-block':'none';
+  $('tm').textContent=m==='time'?left:(m==='err'?'📝':'♾️');
   next();music();
   if(m==='time')tick=setInterval(()=>{left--;$('tm').textContent=left;if(left<=3&&left>0)tone(880,.1,'sine',.2);if(left<=0)finish();},1000);
 }
@@ -454,11 +491,11 @@ function submit(val){
   const v=norm(typeof val==='string'?val:$('a').value);if(!v)return;
   asked++;
   const ok=cur.t.split('|').some(x=>norm(x)===v);
-  if(ok){score++;$('sc').textContent=score;$('fb').innerHTML='<span class="ok">✓ Correct</span>';}
-  else{miss.push(cur);$('fb').innerHTML='<span class="ko">✗ C\'était : '+cur.t.split('|')[0]+'</span>';}
+  if(ok){score++;streak++;$('sc').textContent=score;$('fb').innerHTML='<span class="ok">✓ Correct'+(streak>=3?' 🔥 série de '+streak:'')+'</span>';mark(cur,true);buzz(30);}
+  else{streak=0;mark(cur,false);buzz([80,40,80]);miss.push(cur);$('fb').innerHTML='<span class="ko">✗ C\'était : '+cur.t.split('|')[0]+'</span>';}
   sfx(ok);next();
 }
-function skip(){asked++;miss.push(cur);$('fb').innerHTML='<span class="ko">Passé : '+cur.t.split('|')[0]+'</span>';sfx(false);next();}
+function skip(){asked++;streak=0;mark(cur,false);buzz([80,40,80]);miss.push(cur);$('fb').innerHTML='<span class="ko">Passé : '+cur.t.split('|')[0]+'</span>';sfx(false);next();}
 $('a').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
 function finish(){
   if(!running)return;
@@ -466,7 +503,7 @@ function finish(){
   const rec=score>(best[bk]||0);if(rec){best[bk]=score;wr('cnhb',best);}
   tone(523,.15,'sine',.3);tone(659,.15,'sine',.3,.15);tone(784,.3,'sine',.3,.3);
   $('game').style.display='none';$('end').style.display='block';
-  $('end').innerHTML=`<b>${mode==='inf'?'Session terminée !':'Temps écoulé !'}</b><p class="t">${score} / ${asked}</p>
+  $('end').innerHTML=`<b>${mode!=='time'?'Session terminée !':'Temps écoulé !'}</b><p class="t">${score} / ${asked}</p>
   ${rec?'<p class="ok">🏆 Nouveau record !</p>':''}
   ${miss.length?'<b>À revoir :</b>'+miss.map(m=>`<p><b>${m.t.split('|')[0]}</b><br><small>${m.d}</small></p>`).join(''):'<p>Aucune erreur 🎉</p>'}
   <button class="b" onclick="play('${mode}')">↻ Rejouer</button><button class="b g" onclick="go('home')">🏠 Accueil</button>`;
@@ -486,8 +523,8 @@ function applyCfg(){
   home();
 }
 function fillSet(){
-  ['ac','bg','card','tx','fs','name','vol','dur'].forEach(k=>$('c_'+k).value=cfg[k]);
-  ['music','sfx','qcm','tts','auto'].forEach(k=>$('c_'+k).checked=cfg[k]);
+  ['ac','bg','card','tx','fs','name','vol','dur','mus'].forEach(k=>$('c_'+k).value=cfg[k]);
+  ['music','sfx','qcm','tts','auto','speedup','vib'].forEach(k=>$('c_'+k).checked=cfg[k]);
   $('c_snd').checked=snd;
   $('vn').textContent=SR?'':'⚠️ Reconnaissance vocale indisponible sur ce navigateur (utilise Chrome ou Safari).';
 }
