@@ -76,39 +76,57 @@ label.f{display:inline-block;background:var(--g);padding:11px 14px;border-radius
 .t{font-size:46px;font-weight:800;color:var(--ac);margin:8px 0}
 .lt{position:sticky;top:64px;z-index:2;color:var(--ac);font-weight:800;font-size:18px;padding:6px 6px;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(8px)}
 .term b{font-size:17px}.term p{margin:6px 0 0;line-height:1.55;color:color-mix(in srgb,var(--tx) 82%,var(--bg))}
+
+header>span:first-child{background:none;-webkit-background-clip:initial;background-clip:initial;color:var(--tx);display:flex;align-items:center;gap:8px;font-size:19px}
+header em{font-style:normal;background:linear-gradient(90deg,var(--ac),#4a90ff 70%,#8a5cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover{height:170px;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+.prof{align-items:flex-start;margin-top:-42px}
+.prof h1{margin:52px 0 0;font-size:19px;line-height:1.25}
+.c{box-shadow:0 4px 14px rgba(0,0,0,.09)}
+nav{background:color-mix(in srgb,var(--card) 96%,transparent);box-shadow:0 6px 22px rgba(0,0,0,.22)}
+.hello{padding:16px}
+.stats div{background:color-mix(in srgb,var(--ac) 13%,var(--card));border:1px solid color-mix(in srgb,var(--ac) 25%,transparent)}
+.stats{margin-top:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.tile{border:0;border-radius:24px;padding:16px;text-align:left;color:#fff;min-height:138px;display:flex;flex-direction:column;justify-content:flex-end;gap:3px;box-shadow:0 8px 20px rgba(0,0,0,.2);transition:transform .1s;font-family:inherit}
+.tile:active{transform:scale(.96)}
+.tile .e{font-size:40px;margin-bottom:auto;line-height:1}
+.tile b{font-size:18px;color:#fff}.tile small{color:rgba(255,255,255,.88);font-size:13px}
+.t1{background:linear-gradient(135deg,var(--ac),#2b8cff)}
+.t2{background:linear-gradient(135deg,#8a5cff,#ff5fa2)}
+.t3{background:linear-gradient(135deg,#ff9a3c,#ff4d4d)}
+.t4{background:linear-gradient(135deg,#17c3b2,#2b6cff)}
+.wide{width:100%;margin:0 0 8px}
+.hud .x{width:40px;height:40px;border-radius:50%;border:1px solid var(--bd);background:var(--g);color:var(--tx);font-size:17px}
+.ring{width:76px;height:76px}.ring span{font-size:24px}
+.q{min-height:130px;padding:18px}
+.actions{display:flex;gap:12px;align-items:stretch;margin:12px 0 4px}
+.mic{width:88px;height:88px;flex:none;font-size:38px}
+.side{flex:1;display:flex;flex-direction:column;gap:8px}
+.side button{flex:1;margin:0;font-size:17px}
+.hl{text-align:center;min-height:42px}
+#fb{min-height:24px;margin:2px 0}
+.opt{padding:14px;margin:6px 0}
+body.play nav{display:none}
+body.play{padding-bottom:24px}
 </style>
 </head>
 <body>
-<header><span>⚗️ Chimie du Non_Homme</span><span><button id="snd2" onclick="toggleSnd()">🔊</button><button onclick="go('set')">⚙️</button></span></header>
+<header><span><i class="lg">⚗️</i> <em>Chimie du Non_Homme</em></span><span><button id="snd2" onclick="toggleSnd()">🔊</button><button onclick="go('set')">⚙️</button></span></header>
 <main>
 
 <section id="home" class="sec on">
   <div class="cover" id="cov">⚗️</div>
   <div class="prof"><div class="av" id="av0">🧪</div><h1>Bienvenue <span id="nm">Le Non_Homme</span> 👋</h1></div>
-  <div class="c post">
-    <div class="ph"><div class="av">🔥</div><div><b>Alors, on s'entraîne ?</b><small>Prêt à battre ton record aujourd'hui ?</small></div></div>
-    <div class="stats" id="stats"></div>
+  <div class="c hello"><b>Alors, on s'entraîne ?</b><br><small>Prêt à battre ton record aujourd'hui ?</small>
+    <div class="stats" id="stats"></div></div>
+  <div class="grid">
+    <button class="tile t1" onclick="go('ch');play('time')"><span class="e">⏱</span><b>Challenge <span class="dur">60</span> s</b><small>Questions en rafale</small></button>
+    <button class="tile t2" onclick="go('ch');play('inf')"><span class="e">♾️</span><b>Illimité</b><small>Sans chrono, à ton rythme</small></button>
+    <button class="tile t3" onclick="go('ch');play('err')"><span class="e">📝</span><b>Mes erreurs</b><small id="ecnt"></small></button>
+    <button class="tile t4" onclick="go('lex')"><span class="e">📖</span><b>Lexique</b><small id="cnt"></small></button>
   </div>
-  <div class="c post">
-    <div class="ph"><div class="av">⏱</div><div><b>Challenge <span class="dur">60</span> secondes</b><small>Questions en rafale, ça va vite !</small></div></div>
-    Écris un maximum de termes à partir de leur définition avant la fin du chrono.
-    <div class="acts"><button class="b" onclick="go('ch');play('time')">▶ Lancer le <span class="dur">60</span> s</button></div>
-  </div>
-  <div class="c post">
-    <div class="ph"><div class="av">♾️</div><div><b>Challenge illimité</b><small>Sans chrono, à ton rythme</small></div></div>
-    Pas de limite de temps : enchaîne les questions aussi longtemps que tu veux, puis termine quand tu veux.
-    <div class="acts"><button class="b" onclick="go('ch');play('inf')">▶ Lancer l'illimité</button></div>
-  </div>
-  <div class="c post">
-    <div class="ph"><div class="av">📝</div><div><b>Mes erreurs</b><small id="ecnt"></small></div></div>
-    Rejoue uniquement les termes ratés ou passés, jusqu'à ce que tu les maîtrises tous.
-    <div class="acts"><button class="b" onclick="go('ch');play('err')">▶ Réviser</button></div>
-  </div>
-  <div class="c post">
-    <div class="ph"><div class="av">📖</div><div><b>Le lexique</b><small id="cnt"></small></div></div>
-    Révise les définitions et cherche un terme ou un mot clé.
-    <div class="acts"><button class="b g" onclick="go('lex')">📖 Ouvrir</button><button class="b g" onclick="go('ad')">➕ Ajouter</button></div>
-  </div>
+  <button class="b g wide" onclick="go('ad')">➕ Ajouter mes propres termes</button>
 </section>
 
 <section id="lex" class="sec">
@@ -127,16 +145,20 @@ label.f{display:inline-block;background:var(--g);padding:11px 14px;border-radius
   </div>
   <div id="game" style="display:none">
     <div class="hud">
+      <button class="x" onclick="quit()">✕</button>
       <div class="ring" id="rg"><svg viewBox="0 0 44 44"><circle class="rb" cx="22" cy="22" r="19"/><circle class="rf" id="rf" cx="22" cy="22" r="19"/></svg><span id="tm">60</span></div>
       <div class="sc"><small>SCORE</small><b id="sc">0</b></div>
     </div>
     <div class="c q" id="card"><small class="lab">DÉFINITION</small><div id="q"></div></div>
+    <div class="actions">
+      <button class="mic" id="mic" onclick="listen()">🎤</button>
+      <div class="side"><button class="b g" onclick="skip()">⏭ Passer</button><button class="b g" id="fin" onclick="finish()" style="display:none">🏁 Terminer</button></div>
+    </div>
+    <div class="hl"><small id="mlab">Touche pour parler</small><div id="heard"></div></div>
     <div id="fb"></div>
     <div id="opts"></div>
-    <div id="typed"><input id="a" placeholder="Écris ta réponse…" autocomplete="off" autocapitalize="off" autocorrect="off">
+    <div id="typed"><input id="a" placeholder="Ou écris ta réponse…" autocomplete="off" autocapitalize="off" autocorrect="off">
     <button class="b" style="width:100%;margin:4px 0" onclick="submit()">Valider</button></div>
-    <div class="micwrap"><button class="mic" id="mic" onclick="listen()">🎤</button><small id="mlab">Touche pour parler</small><div id="heard"></div></div>
-    <div class="row2"><button class="b g" onclick="skip()">⏭ Passer</button><button class="b g" id="fin" onclick="finish()" style="display:none">🏁 Terminer</button></div>
   </div>
   <div id="end" class="c" style="display:none"></div>
 </section>
@@ -512,7 +534,7 @@ function next(){
   cur=bag.pop();$('q').textContent=cur.d;$('a').value='';$('heard').textContent='';qcm();if(!cfg.qcm&&!cfg.auto)$('a').focus();if(cfg.tts)say(cur.d);else if(cfg.auto)listen();
 }
 function play(m){if(m==='err'&&!all().some(e=>err[e.t])){alert('Aucune erreur à réviser pour le moment 🎉');return;}
-  unlock();mode=m;score=0;asked=0;left=cfg.dur;bk=m==='time'?'t'+cfg.dur:m;blocked=false;streak=0;miss=[];bag=[];running=true;
+  unlock();document.body.classList.add('play');mode=m;score=0;asked=0;left=cfg.dur;bk=m==='time'?'t'+cfg.dur:m;blocked=false;streak=0;miss=[];bag=[];running=true;
   clearInterval(tick);
   $('start').style.display=$('end').style.display='none';$('game').style.display='block';
   $('sc').textContent=0;$('fb').innerHTML='';
@@ -521,7 +543,8 @@ function play(m){if(m==='err'&&!all().some(e=>err[e.t])){alert('Aucune erreur à
   next();music();
   if(m==='time')tick=setInterval(()=>{left--;$('tm').textContent=left;ring();if(left<=3&&left>0)tone(880,.1,'sine',.2);if(left<=0)finish();},1000);
 }
-function stop(){clearInterval(tick);clearInterval(loop);running=false;stopListen();try{speechSynthesis.cancel()}catch(e){}}
+function quit(){stop();go('home');}
+function stop(){document.body.classList.remove('play');clearInterval(tick);clearInterval(loop);running=false;stopListen();try{speechSynthesis.cancel()}catch(e){}}
 function submit(val){
   if(!running)return;
   const v=norm(typeof val==='string'?val:$('a').value);if(!v)return;
