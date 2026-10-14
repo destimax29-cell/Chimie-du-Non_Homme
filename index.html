@@ -876,5 +876,194 @@ const i0=importData;importData=async function(inp){let d=null;try{d=JSON.parse(a
 home();
 })();
 </script>
+  <style>.cmic.on{background:linear-gradient(135deg,#ff6b6b,#ff3d81);color:#fff;animation:mr 1.2s infinite}</style>
+<script>
+(function(){
+// ---------- Synonymes (terme>variante|variante) ----------
+const SYN=new Map();
+`élément chimique>élément
+alcalino-terreux>métal alcalino-terreux|alcalino terreux
+métal alcalin>alcalin|métaux alcalins
+réactif limitant>limitant
+indicateur coloré>indicateur|indicateur de pH
+pile>pile électrochimique|pile galvanique|cellule galvanique
+alcane>hydrocarbure saturé
+alcène>hydrocarbure insaturé
+énantiomère>antipode optique
+molécule polaire>dipôle
+mélange racémique>racémique
+concentration molaire>molarité
+concentration massique>titre massique
+solution tampon>tampon
+produit de solubilité>ks
+constante d'acidité>ka
+corps pur>espèce chimique pure
+liaison hydrogène>pont hydrogène
+interaction de Van der Waals>forces de van der waals|van der waals
+économie d'atomes>économie atomique
+chimie verte>chimie durable
+spectroscopie RMN>rmn|résonance magnétique nucléaire
+spectroscopie infrarouge>infrarouge|spectroscopie ir
+spectrométrie de masse>spectrométrie
+force électromotrice>fem|tension à vide
+équation de Nernst>nernst
+loi de Beer-Lambert>beer lambert|loi de beer
+enthalpie libre>énergie de gibbs|énergie libre
+nombre d'oxydation>degré d'oxydation
+cinétique chimique>cinétique
+équilibre chimique>équilibre
+nombre d'Avogadro>constante d'avogadro
+numéro atomique>nombre de protons
+nombre de masse>nombre de nucléons
+extraction liquide-liquide>extraction
+diastéréoisomère>diastéréomère
+isomérie Z/E>isomérie z e|stéréoisomérie z e
+capacité thermique>capacité calorifique
+carbone asymétrique>carbone stéréogène|centre stéréogène
+liaison polarisée>liaison polaire
+produit ionique de l'eau>ke
+oxydoréduction>redox
+polymère>macromolécule
+pH>pé ache|pé-ache
+pKa>pé ka
+électron de valence>électrons de valence
+formule topologique>formule en bâtons`.split('\n').forEach(l=>{const[a,b]=l.split('>');SYN.set(norm(a),b.split('|'))});
+
+// ---------- Clé phonétique : "chiral" = "kiral", homophones, pluriels, e muet… ----------
+const pk=s=>{let x=norm(s);if(!x)return'';
+ x=x.replace(/tion/g,'sion').replace(/sch|ch/g,'k').replace(/ph/g,'f').replace(/th/g,'t').replace(/qu|q/g,'k')
+  .replace(/c(?=[eiy])/g,'s').replace(/c/g,'k').replace(/g(?=[eiy])/g,'j').replace(/gu(?=[eiy])/g,'g')
+  .replace(/x/g,'ks').replace(/w/g,'v').replace(/y/g,'i').replace(/z/g,'s').replace(/h/g,'')
+  .replace(/(?:ain|ein|aim|in|im)(?![aeiou])/g,'E').replace(/(?:an|am|en|em)(?![aeiou])/g,'A')
+  .replace(/(?:on|om)(?![aeiou])/g,'O').replace(/(?:un|um)(?![aeiou])/g,'U')
+  .replace(/eau|au/g,'o').replace(/ou/g,'u').replace(/oi/g,'ua').replace(/oeu|oe|eu/g,'e').replace(/ai|ei/g,'e')
+  .replace(/(.)\1+/g,'$1');
+ for(let i=0;i<4&&x.length>2&&/[sdte]$/.test(x);i++)x=x.slice(0,-1);
+ return x;};
+const lv=(a,b)=>{const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]};
+// distance : 0 exact, 1 proche (radical, mot contenu, 1-2 fautes), 99 non
+const match=(k,e)=>{
+ if(k===e)return 0;
+ if(e.length>=5&&k.includes(e)&&k.length<=e.length+14)return 1;
+ const s=k.length<e.length?k:e,l=k.length<e.length?e:k;
+ if(s.length>=5&&l.startsWith(s)&&l.length-s.length<=3)return 1;
+ if(e.length>=6&&k.length>=6){const d=lv(k,e);if(d<=(Math.max(k.length,e.length)>=12?2:1))return d}
+ return 99};
+// enlève « c'est un… », « je pense que… »
+const strip=s=>String(s).toLowerCase().replace(/[’`]/g,"'")
+ .replace(/^(?:\s*(?:euh+|alors|bon|donc|ben|je dirais|je pense que|je pense|je crois que|je crois|peut-être)\s+)+/,'')
+ .replace(/^(?:c'est|c est|ce sont|ça s'appelle|ca s'appelle|cela s'appelle|on appelle ça|il s'agit de|il s'agit d'|la réponse est|la réponse c'est)\b\s*(?:(?:un|une|le|la|les|du|de la|des)\s+|l'|d')?/,'').trim();
+const vars=t=>{const p=t.split('|');return[...new Set(p.concat(SYN.get(norm(p[0]))||[]).map(pk).filter(Boolean))]};
+const words=t=>new Set(t.split('|')[0].split(/[\s'’\-\/]+/).map(pk).filter(x=>x.length>=6));
+let IX=null,IK='';
+const idx=()=>{const A=all(),k=A.length+'|'+(A.length?A[A.length-1].t:'');if(IX&&IK===k)return IX;
+ const W=new Map();IX={arr:A.map(e=>{const w=words(e.t);w.forEach(x=>W.set(x,(W.get(x)||0)+1));return{t:e.t,vs:vars(e.t)}}),W};IK=k;return IX};
+// Juge : accepte exact, homophone, proche, ou mot-clé unique — sauf si un AUTRE terme colle mieux
+function JG(h,t){
+ const alts=[...new Set((Array.isArray(h)?h:[h]).map(strip).filter(Boolean))],{arr,W}=idx(),me=vars(t),mw=words(t);
+ for(const a of alts){
+  const k=pk(a);if(!k)continue;
+  let d=99;me.forEach(e=>{d=Math.min(d,match(k,e))});
+  let how=d===0?'exact':d<99?'proche':'';
+  if(!how&&mw.has(k)&&W.get(k)===1){d=1;how='partiel'}
+  if(!how)continue;
+  let worse=false;
+  for(const o of arr){if(o.t===t)continue;if(o.vs.some(v=>match(k,v)<d)){worse=true;break}}
+  if(!worse)return{ok:true,how};
+ }
+ return{ok:false,how:''};
+}
+window.VOXJG=JG;
+const ex=(a,t)=>{const r=JG(a,t);return r.ok&&r.how==='exact'&&pk(strip(a[0]||'')).length>=3};
+
+// ---------- Moteur de reconnaissance partagé ----------
+const VOX={r:null,got:false,blocked:false};
+if(SR){try{const st=SR.prototype.start;SR.prototype.start=function(){if(this._v)return st.apply(this,arguments)}}catch(e){}} // neutralise l'ancien micro du cursus
+function voxStop(){const r=VOX.r;if(r){r.onstart=r.onend=r.onresult=r.onerror=null;try{r.abort()}catch(e){}}VOX.r=null}
+function vox(o){
+ voxStop();if(!SR)return;VOX.got=false;
+ const r=new SR();r._v=1;VOX.r=r;r.lang='fr-FR';r.maxAlternatives=8;r.interimResults=true;r.continuous=false;
+ r.onstart=()=>{resumeAc();o.state(true)};
+ r.onresult=e=>{
+  const res=e.results[e.results.length-1],a=[...res].map(x=>x.transcript);
+  o.interim(a[0]);
+  if(!VOX.got&&(res.isFinal||o.early(a))){VOX.got=true;voxStop();o.state(false);resumeAc();o.final(a)}};
+ r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){VOX.blocked=true;o.err('Micro refusé : autorise-le dans les réglages du navigateur.')}};
+ r.onend=()=>{if(VOX.r!==r)return;VOX.r=null;o.state(false);if(!VOX.got&&!VOX.blocked&&o.again())setTimeout(o.restart,300)};
+ try{r.start()}catch(e){}
+}
+
+// ---------- Challenge ----------
+stopListen=function(){voxStop();setMic(false)};
+listen=function(){
+ if(!running)return;
+ if(!SR){$('fb').innerHTML='<span class="ko">Micro indisponible sur ce navigateur.</span>';return}
+ vox({early:a=>ex(a,cur.t),final:a=>heard(a),interim:t=>{$('heard').textContent='« '+t+' »'},state:setMic,
+  again:()=>running&&cfg.auto,restart:listen,err:m=>{$('fb').innerHTML='<span class="ko">'+m+'</span>'}});
+};
+heard=function(a){
+ if(!running)return;
+ if(a.some(x=>/^(passer|suivant|je passe|next)$/.test(strip(x))))return skip();
+ const m=a.find(x=>JG(x,cur.t).ok);
+ submit(m||a[0]);$('heard').textContent='🗣 « '+a[0]+' »';
+};
+const sub0=submit;
+submit=function(val){
+ if(!running)return;
+ const s=typeof val==='string'?val:$('a').value,r=JG(s,cur.t),t=cur.t.split('|')[0];
+ sub0(r.ok?t:s);
+ if(r.ok&&r.how!=='exact')$('fb').innerHTML+=' <small>(accepté · terme : '+t+')</small>';
+};
+
+// ---------- Cursus ----------
+const ans0=CUR.ans,q0=CUR.quit;
+CUR.ans=function(v){
+ const T=CUR.T();if(!T||!T.cur)return;
+ const a=(Array.isArray(v)?v:[v]).map(String);
+ if(a.some(x=>/^(passer|suivant|je passe)$/.test(strip(x))))return ans0('§');
+ const r=JG(a,T.cur.t),t=T.cur.t.split('|')[0];
+ ans0(r.ok?t:(a[0]||''));
+ const f=$('cfb');
+ if(r.ok&&r.how!=='exact'&&f&&!/accepté/.test(f.innerHTML))f.innerHTML+=' <small>(accepté · terme : '+t.replace(/[<>&]/g,'')+')</small>';
+};
+CUR.quit=function(){voxStop();q0()};
+CUR.mic=function(){
+ const T=CUR.T();if(!T||!SR)return;const i=T.i;
+ vox({early:a=>ex(a,T.cur.t),final:a=>CUR.ans(a),
+  interim:t=>{const h=$('cheard');if(h)h.textContent='« '+t+' »'},
+  state:on=>{const m=$('cmic');if(m){m.textContent=on?'🎙️':'🎤';m.classList.toggle('on',on)}},
+  again:()=>cfg.auto&&CUR.T()===T&&T.i===i,restart:CUR.mic,
+  err:m=>{const f=$('cfb');if(f)f.innerHTML='<span class="ko">'+m+'</span>'}});
+};
+let lk='';const cb=$('curbox');
+if(cb)new MutationObserver(()=>{
+ const T=CUR.T(),b=cb.querySelector('button[onclick="CUR.mic()"]');
+ if(b&&!b.id){b.id='cmic';b.classList.add('cmic')}
+ const f=$('cfb');if(f&&!$('cheard'))f.insertAdjacentHTML('afterend','<div id="cheard" style="text-align:center;color:var(--mu);font-style:italic;min-height:22px"></div>');
+ if(!T){lk='';return}
+ const k=T.n+':'+T.i;if(k===lk)return;lk=k;
+ if(cfg.auto&&!cfg.tts)setTimeout(()=>CUR.mic(),350);
+}).observe(cb,{childList:true,subtree:true});
+
+// ---------- Prononciation de la synthèse vocale ----------
+const SPK=[[/chiral/gi,'kiral'],[/chlor/gi,'klor'],[/chrom/gi,'krom'],[/\bpKa\b/g,'pé ka'],[/\bpH\b/g,'pé ache'],[/\bKs\b/g,'ka esse'],[/\bKa\b/g,'ka'],[/\bRMN\b/g,'R M N'],[/Z\/E/g,'Z E'],[/E°/g,'E zéro'],[/σ/g,'sigma'],[/ρ/g,'rho'],[/ε/g,'epsilon'],[/\bQr\b/g,'Q R']];
+const sp0=spoken;spoken=t=>sp0(SPK.reduce((s,[a,b])=>s.replace(a,b),t));
+say=function(t,cb){
+ try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(spoken(t));u.lang='fr-FR';
+  const v=voices.find(x=>x.name===cfg.voice)||voices[0];if(v){u.voice=v;u.lang=v.lang}
+  u.rate=cfg.rate;talking=true;
+  const end=()=>{talking=false;if(cb)return cb();if(!cfg.auto)return;if(running)listen();else if(CUR.T())CUR.mic()};
+  u.onend=end;u.onerror=e=>{if(e.error==='interrupted'||e.error==='canceled')return;end()};
+  speechSynthesis.speak(u)}catch(e){talking=false}
+};
+
+// ---------- Sons : bonne réponse = ding montant, mauvaise = buzz grave ----------
+sfx=function(ok){
+ try{resumeAc()}catch(e){}
+ if(ok){tone(784,.14,'triangle',.4);tone(1175,.28,'triangle',.4,.11);tone(1568,.3,'sine',.15,.11)}
+ else{tone(233,.2,'square',.18);tone(147,.38,'square',.18,.17)}
+};
+})();
+</script>
 </body>
 </html>
