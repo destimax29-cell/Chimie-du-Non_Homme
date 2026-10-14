@@ -249,7 +249,11 @@ select.scope{max-width:68%}
 </nav>
 
 <script>
-const BASE=`atome :: Plus petite particule d'un élément chimique, constituée d'un noyau (protons et neutrons) entouré d'électrons.
+const SUBJ=(()=>{try{return localStorage.getItem('cnhsubj')||'chimie'}catch(e){return 'chimie'}})();
+const RAW=(()=>{try{const p=Storage.prototype;return{g:p.getItem,s:p.setItem,x:p.removeItem}}catch(e){return null}})();
+// chaque matière a ses propres données (termes, erreurs, records, cursus) ; la chimie garde les clés d'origine
+(function(){if(SUBJ==='chimie')return;try{const P=SUBJ+'_',G=['cnhsubj','cnhsubjs','cnhs','cnhc'],g=Storage.prototype.getItem,s=Storage.prototype.setItem,x=Storage.prototype.removeItem,f=k=>G.includes(k)?k:P+k;Storage.prototype.getItem=function(k){return g.call(this,f(k))};Storage.prototype.setItem=function(k,v){return s.call(this,f(k),v)};Storage.prototype.removeItem=function(k){return x.call(this,f(k))}}catch(e){}})();
+const BASES={chimie:`atome :: Plus petite particule d'un élément chimique, constituée d'un noyau (protons et neutrons) entouré d'électrons.
 molécule :: Assemblage électriquement neutre d'atomes liés par des liaisons covalentes.
 élément chimique :: Ensemble d'atomes (et d'ions) ayant le même nombre de protons dans leur noyau.
 corps pur :: Substance constituée d'une seule espèce chimique.
@@ -445,7 +449,325 @@ chimie verte :: Démarche qui vise à concevoir des produits et des procédés l
 loi de Boyle-Mariotte :: Loi qui indique que, pour une quantité de gaz donnée à température constante, le produit de la pression par le volume reste constant. Si on comprime le gaz, sa pression augmente proportionnellement, ce qui découle de la loi des gaz parfaits.
 loi de Dalton :: Loi selon laquelle la pression totale d'un mélange de gaz parfaits est égale à la somme des pressions partielles de chacun de ses constituants. Chaque pression partielle est proportionnelle à la fraction molaire du gaz.
 loi de Hess :: Loi qui affirme que l'enthalpie d'une réaction ne dépend que de l'état initial et de l'état final, et non du chemin suivi. On peut donc la calculer en combinant les enthalpies de plusieurs réactions dont la somme redonne la réaction étudiée.
-loi de Faraday :: Loi qui relie la quantité de matière transformée à une électrode à la charge électrique qui a traversé le circuit. Elle permet de calculer, lors d'une électrolyse ou du fonctionnement d'une pile, la masse d'un dépôt métallique ou le volume d'un gaz produit.`;
+loi de Faraday :: Loi qui relie la quantité de matière transformée à une électrode à la charge électrique qui a traversé le circuit. Elle permet de calculer, lors d'une électrolyse ou du fonctionnement d'une pile, la masse d'un dépôt métallique ou le volume d'un gaz produit.`,
+physique:`physique :: Science qui étudie la matière, l'énergie et leurs interactions pour établir les lois de la nature.
+grandeur physique :: Propriété mesurable d'un système, exprimée par un nombre et une unité.
+unité :: Étalon choisi pour exprimer la valeur d'une grandeur physique.
+Système international d'unités|SI :: Système d'unités adopté mondialement, fondé sur sept unités de base.
+mètre :: Unité SI de longueur, définie à partir de la vitesse de la lumière dans le vide.
+kilogramme :: Unité SI de masse, définie à partir de la constante de Planck.
+seconde :: Unité SI de temps, définie à partir d'une transition de l'atome de césium.
+ampère :: Unité SI d'intensité du courant électrique.
+kelvin :: Unité SI de température thermodynamique.
+candela :: Unité SI d'intensité lumineuse.
+analyse dimensionnelle :: Méthode qui vérifie la cohérence d'une formule en comparant les dimensions de ses termes.
+chiffre significatif :: Chiffre d'un résultat de mesure dont la valeur est connue avec certitude, sauf éventuellement le dernier.
+incertitude de mesure :: Estimation de l'intervalle dans lequel se trouve vraisemblablement la valeur vraie d'une grandeur mesurée.
+erreur systématique :: Écart de mesure reproductible, dû à un défaut de l'appareil ou de la méthode.
+précision :: Étroitesse de l'accord entre des mesures répétées dans les mêmes conditions.
+référentiel :: Ensemble de points fixes les uns par rapport aux autres, par rapport auquel on décrit un mouvement.
+référentiel galiléen :: Référentiel dans lequel un corps isolé est animé d'un mouvement rectiligne uniforme ou reste immobile.
+trajectoire :: Ensemble des positions successives occupées par un point en mouvement.
+vitesse :: Grandeur qui mesure la variation de la position d'un mobile par unité de temps.
+accélération :: Grandeur qui mesure la variation du vecteur vitesse par unité de temps.
+mouvement rectiligne uniforme :: Mouvement dont la trajectoire est une droite et dont la vitesse est constante.
+mouvement circulaire uniforme :: Mouvement sur un cercle à vitesse de valeur constante, avec une accélération dirigée vers le centre.
+chute libre :: Mouvement d'un corps soumis uniquement à son poids.
+vecteur :: Objet mathématique caractérisé par une direction, un sens et une norme.
+force :: Action mécanique exercée sur un corps, capable de modifier son mouvement ou de le déformer.
+newton :: Unité SI de force.
+poids :: Force d'attraction gravitationnelle exercée par un astre sur un corps situé à proximité.
+masse :: Grandeur qui mesure la quantité de matière d'un corps et son inertie.
+inertie :: Tendance d'un corps à conserver son état de repos ou de mouvement rectiligne uniforme.
+principe d'inertie|première loi de Newton :: Tout corps persévère dans son état de repos ou de mouvement rectiligne uniforme si les forces qui s'exercent sur lui se compensent.
+deuxième loi de Newton|relation fondamentale de la dynamique :: La somme des forces appliquées à un corps est égale au produit de sa masse par son accélération.
+principe des actions réciproques|troisième loi de Newton :: Si un corps exerce une force sur un autre, ce dernier exerce sur le premier une force opposée de même valeur.
+gravitation :: Attraction mutuelle entre toutes les masses.
+loi de la gravitation universelle :: Loi selon laquelle deux masses s'attirent avec une force proportionnelle à leur produit et inversement proportionnelle au carré de leur distance.
+champ de pesanteur :: Région de l'espace où un corps subit un poids, caractérisée par l'intensité g.
+réaction du support :: Force exercée par une surface sur un objet qui repose sur elle.
+force de frottement :: Force qui s'oppose au glissement ou au mouvement d'un corps dans un milieu.
+tension :: Force exercée par un fil ou un câble tendu sur un objet auquel il est attaché.
+poussée d'Archimède :: Force verticale dirigée vers le haut qu'exerce un fluide sur un corps immergé.
+force de rappel :: Force exercée par un ressort déformé, proportionnelle à son allongement.
+loi de Hooke :: Loi selon laquelle l'allongement d'un ressort est proportionnel à la force qui le déforme.
+quantité de mouvement :: Grandeur vectorielle égale au produit de la masse d'un corps par sa vitesse.
+conservation de la quantité de mouvement :: Principe selon lequel la quantité de mouvement totale d'un système isolé reste constante.
+choc élastique :: Collision au cours de laquelle l'énergie cinétique totale se conserve.
+choc mou|choc inélastique :: Collision au cours de laquelle une partie de l'énergie cinétique est transformée en autre forme d'énergie.
+travail d'une force :: Énergie transférée à un corps par une force lors d'un déplacement de son point d'application.
+joule :: Unité SI d'énergie et de travail.
+énergie cinétique :: Énergie que possède un corps du fait de sa vitesse.
+énergie potentielle :: Énergie que possède un système du fait de sa position ou de sa configuration.
+énergie potentielle de pesanteur :: Énergie qu'un corps possède du fait de son altitude dans un champ de pesanteur.
+énergie mécanique :: Somme de l'énergie cinétique et de l'énergie potentielle d'un système.
+conservation de l'énergie :: Principe selon lequel l'énergie totale d'un système isolé reste constante.
+force conservative :: Force dont le travail ne dépend pas du chemin suivi.
+puissance :: Énergie transférée ou convertie par unité de temps.
+watt :: Unité SI de puissance.
+rendement énergétique :: Rapport entre l'énergie utile fournie par un dispositif et l'énergie qu'il reçoit.
+moment d'une force :: Grandeur qui mesure l'effet de rotation d'une force par rapport à un axe.
+moment d'inertie :: Grandeur qui mesure la résistance d'un corps à un changement de sa rotation autour d'un axe.
+moment cinétique :: Grandeur qui caractérise la rotation d'un corps autour d'un point ou d'un axe.
+centre de gravité :: Point d'application du poids d'un corps.
+centre d'inertie :: Point d'un système dont le mouvement est celui qu'aurait une particule portant toute la masse sous l'action de la résultante des forces.
+équilibre statique :: État d'un corps immobile soumis à des forces et des moments qui se compensent.
+levier :: Barre rigide mobile autour d'un point d'appui, permettant d'amplifier une force.
+oscillateur :: Système qui effectue des mouvements périodiques autour d'une position d'équilibre.
+pendule simple :: Masse ponctuelle suspendue à un fil inextensible qui oscille sous l'effet de son poids.
+oscillateur harmonique :: Système dont l'élongation varie de façon sinusoïdale dans le temps.
+période :: Durée d'un cycle complet d'un phénomène périodique.
+fréquence :: Nombre de cycles d'un phénomène périodique par unité de temps.
+hertz :: Unité SI de fréquence, égale à un cycle par seconde.
+amplitude :: Valeur maximale de l'écart d'une grandeur oscillante par rapport à sa valeur moyenne.
+pulsation :: Grandeur égale à 2π fois la fréquence, exprimée en radians par seconde.
+phase :: Grandeur qui repère l'état d'avancement d'une oscillation à un instant donné.
+résonance :: Augmentation importante de l'amplitude d'un système excité à une fréquence voisine de sa fréquence propre.
+amortissement :: Diminution progressive de l'amplitude d'une oscillation due à des pertes d'énergie.
+loi de Kepler :: Une des trois lois décrivant le mouvement des planètes autour du Soleil.
+orbite :: Trajectoire d'un corps céleste ou d'un satellite autour d'un astre sous l'effet de la gravitation.
+satellite géostationnaire :: Satellite en orbite circulaire équatoriale dont la période est égale à la durée de rotation de la Terre sur elle-même.
+vitesse de libération :: Vitesse minimale à communiquer à un corps pour qu'il échappe à l'attraction d'un astre.
+pression :: Rapport de la valeur de la force pressante à l'aire de la surface sur laquelle elle s'exerce.
+pascal :: Unité SI de pression.
+pression atmosphérique :: Pression exercée par le poids de l'air de l'atmosphère.
+hydrostatique :: Branche de la mécanique des fluides qui étudie les fluides au repos.
+principe fondamental de l'hydrostatique :: Relation liant la différence de pression entre deux points d'un fluide au repos à leur différence d'altitude.
+principe de Pascal :: Principe selon lequel une variation de pression dans un fluide incompressible au repos se transmet intégralement à tout le fluide.
+théorème d'Archimède :: Tout corps plongé dans un fluide reçoit une poussée verticale égale au poids du fluide déplacé.
+débit :: Volume ou masse de fluide qui traverse une section par unité de temps.
+équation de Bernoulli :: Relation qui exprime la conservation de l'énergie le long de l'écoulement d'un fluide parfait.
+viscosité :: Grandeur qui caractérise la résistance d'un fluide à l'écoulement.
+écoulement laminaire :: Écoulement d'un fluide en couches parallèles sans mélange.
+écoulement turbulent :: Écoulement désordonné d'un fluide, avec des tourbillons.
+nombre de Reynolds :: Nombre sans dimension qui permet de prévoir si un écoulement est laminaire ou turbulent.
+tension superficielle :: Force par unité de longueur qui s'exerce à la surface d'un liquide et tend à minimiser son aire.
+capillarité :: Ensemble des phénomènes dus aux forces de tension superficielle, comme la montée d'un liquide dans un tube fin.
+température :: Grandeur qui mesure l'agitation thermique des particules d'un système.
+chaleur|transfert thermique :: Énergie transférée spontanément d'un corps chaud vers un corps froid.
+zéro absolu :: Température la plus basse possible, valant 0 K, soit -273,15 °C.
+dilatation thermique :: Augmentation de volume d'un corps lorsque sa température s'élève.
+capacité thermique massique :: Énergie nécessaire pour élever d'un kelvin la température d'un kilogramme d'une substance.
+conduction :: Transfert thermique de proche en proche dans la matière, sans déplacement de matière.
+convection :: Transfert thermique dû au déplacement de matière dans un fluide.
+rayonnement thermique :: Transfert thermique par ondes électromagnétiques, sans support matériel.
+corps noir :: Objet idéal qui absorbe tout rayonnement incident et émet un rayonnement qui ne dépend que de sa température.
+loi de Stefan-Boltzmann :: Loi selon laquelle la puissance rayonnée par un corps noir est proportionnelle à la puissance quatrième de sa température.
+loi de Wien :: Loi selon laquelle la longueur d'onde du maximum d'émission d'un corps noir est inversement proportionnelle à sa température.
+isolant thermique :: Matériau qui conduit mal la chaleur.
+principe zéro de la thermodynamique :: Si deux systèmes sont en équilibre thermique avec un troisième, ils le sont entre eux.
+cycle thermodynamique :: Suite de transformations qui ramène un système à son état initial.
+machine thermique :: Dispositif qui convertit de la chaleur en travail ou inversement.
+cycle de Carnot :: Cycle thermodynamique réversible idéal qui fournit le rendement maximal entre deux sources de chaleur.
+moteur thermique :: Machine qui transforme de la chaleur en travail mécanique.
+pompe à chaleur :: Machine qui prélève de la chaleur à une source froide pour la restituer à une source chaude.
+transformation adiabatique :: Transformation au cours de laquelle le système n'échange pas de chaleur avec l'extérieur.
+transformation isotherme :: Transformation qui se déroule à température constante.
+transformation isobare :: Transformation qui se déroule à pression constante.
+transformation isochore :: Transformation qui se déroule à volume constant.
+transformation réversible :: Transformation idéale qui peut être inversée sans création d'entropie.
+théorie cinétique des gaz :: Modèle qui explique les propriétés d'un gaz par le mouvement désordonné de ses molécules.
+mouvement brownien :: Mouvement désordonné de petites particules en suspension dans un fluide, dû aux chocs des molécules du fluide.
+onde :: Propagation d'une perturbation qui transporte de l'énergie sans transport de matière.
+onde mécanique :: Onde qui a besoin d'un milieu matériel pour se propager.
+onde transversale :: Onde dont la perturbation est perpendiculaire à la direction de propagation.
+onde longitudinale :: Onde dont la perturbation est parallèle à la direction de propagation.
+célérité :: Vitesse de propagation d'une onde.
+longueur d'onde :: Distance parcourue par une onde pendant une période.
+onde progressive :: Onde qui se propage en transportant de l'énergie d'un point à un autre.
+onde stationnaire :: Onde résultant de la superposition de deux ondes de même fréquence se propageant en sens opposés, avec des nœuds et des ventres fixes.
+nœud de vibration :: Point d'une onde stationnaire où l'amplitude est nulle.
+ventre de vibration :: Point d'une onde stationnaire où l'amplitude est maximale.
+interférence :: Phénomène résultant de la superposition de deux ondes cohérentes, avec des zones renforcées et des zones annulées.
+diffraction :: Étalement d'une onde lorsqu'elle rencontre une ouverture ou un obstacle de taille comparable à sa longueur d'onde.
+effet Doppler :: Variation apparente de la fréquence d'une onde due au mouvement relatif de la source et de l'observateur.
+son :: Onde mécanique longitudinale qui se propage dans un milieu matériel et que l'oreille peut percevoir.
+ultrason :: Onde sonore de fréquence supérieure à celle que l'oreille humaine peut entendre.
+infrason :: Onde sonore de fréquence inférieure à celle que l'oreille humaine peut entendre.
+niveau d'intensité sonore :: Grandeur exprimée en décibels qui mesure la force d'un son.
+décibel :: Unité logarithmique utilisée notamment pour exprimer un niveau sonore.
+timbre :: Caractéristique d'un son due à sa composition en harmoniques, qui permet de distinguer deux instruments jouant la même note.
+hauteur d'un son :: Caractéristique d'un son liée à sa fréquence fondamentale, qui le rend grave ou aigu.
+écho :: Réflexion d'un son sur un obstacle, perçue distinctement après le son initial.
+sonar :: Dispositif qui localise des objets sous l'eau grâce à la réflexion d'ondes sonores.
+onde électromagnétique :: Onde formée d'un champ électrique et d'un champ magnétique oscillants qui se propage même dans le vide.
+spectre électromagnétique :: Ensemble des ondes électromagnétiques classées par fréquence ou longueur d'onde.
+rayon gamma :: Rayonnement électromagnétique de très haute énergie issu des noyaux atomiques.
+rayon X :: Rayonnement électromagnétique de grande énergie utilisé notamment en imagerie médicale.
+ultraviolet :: Rayonnement électromagnétique de longueur d'onde inférieure à celle du violet visible.
+infrarouge :: Rayonnement électromagnétique de longueur d'onde supérieure à celle du rouge visible.
+micro-onde :: Onde électromagnétique de longueur d'onde de l'ordre du centimètre, utilisée en cuisson et en télécommunications.
+onde radio :: Onde électromagnétique de grande longueur d'onde utilisée pour les télécommunications.
+vitesse de la lumière :: Vitesse de propagation des ondes électromagnétiques dans le vide, d'environ 300 000 km/s.
+année-lumière :: Distance parcourue par la lumière dans le vide en une année.
+optique géométrique :: Branche de l'optique qui décrit la propagation de la lumière par des rayons rectilignes.
+rayon lumineux :: Modèle représentant la trajectoire de la lumière par une ligne droite.
+réflexion :: Retour d'une onde dans son milieu de départ lorsqu'elle rencontre une surface.
+réfraction :: Changement de direction d'une onde lorsqu'elle passe d'un milieu à un autre.
+loi de Snell-Descartes :: Loi qui relie les angles d'incidence et de réfraction aux indices des deux milieux.
+indice de réfraction :: Rapport entre la vitesse de la lumière dans le vide et sa vitesse dans un milieu.
+réflexion totale :: Phénomène où toute la lumière est réfléchie à l'interface de deux milieux, quand l'angle d'incidence dépasse l'angle limite.
+fibre optique :: Fil de verre ou de plastique qui guide la lumière par réflexions totales successives.
+dispersion de la lumière :: Séparation de la lumière blanche en ses différentes couleurs par un milieu réfringent.
+prisme :: Bloc transparent à faces planes non parallèles qui dévie et disperse la lumière.
+arc-en-ciel :: Phénomène optique dû à la réfraction, la réflexion et la dispersion de la lumière du Soleil dans des gouttes d'eau.
+lentille convergente :: Lentille à bords minces qui fait converger les rayons parallèles en un point.
+lentille divergente :: Lentille à bords épais qui fait diverger les rayons parallèles.
+foyer :: Point où convergent, ou semblent diverger, les rayons parallèles à l'axe optique après traversée d'une lentille.
+distance focale :: Distance entre le centre optique d'une lentille et son foyer.
+vergence :: Inverse de la distance focale d'une lentille, exprimée en dioptries.
+dioptrie :: Unité de vergence, égale à l'inverse du mètre.
+image réelle :: Image que l'on peut recueillir sur un écran.
+image virtuelle :: Image que l'on ne peut pas recueillir sur un écran et qui semble située derrière le dispositif optique.
+grandissement :: Rapport entre la taille de l'image et celle de l'objet.
+loupe :: Lentille convergente utilisée pour observer un petit objet sous un angle plus grand.
+microscope :: Instrument d'optique qui permet d'observer de très petits objets.
+lunette astronomique :: Instrument d'optique à deux lentilles ou plus qui permet d'observer des astres lointains.
+œil :: Organe de la vision, équivalent à une lentille convergente qui forme une image sur la rétine.
+myopie :: Défaut de vision où l'image d'un objet lointain se forme devant la rétine.
+laser :: Source de lumière monochromatique et cohérente fondée sur l'émission stimulée.
+polarisation :: Propriété d'une onde transversale dont la perturbation oscille dans une direction privilégiée.
+spectre d'émission :: Ensemble des radiations émises par une source de lumière.
+spectre de raies :: Spectre constitué de raies colorées fines, caractéristique des atomes d'un gaz.
+charge électrique :: Propriété de la matière responsable des interactions électromagnétiques, positive ou négative.
+coulomb :: Unité SI de charge électrique.
+loi de Coulomb :: Loi selon laquelle la force entre deux charges ponctuelles est proportionnelle à leur produit et inversement proportionnelle au carré de leur distance.
+champ électrique :: Région de l'espace où une charge subit une force électrique.
+potentiel électrique :: Énergie potentielle électrique par unité de charge en un point.
+tension électrique :: Différence de potentiel entre deux points d'un circuit.
+volt :: Unité SI de tension électrique.
+courant électrique :: Déplacement ordonné de porteurs de charge dans un conducteur.
+intensité du courant :: Quantité de charge traversant une section d'un conducteur par unité de temps.
+résistance :: Grandeur qui mesure l'opposition d'un conducteur au passage du courant.
+ohm :: Unité SI de résistance électrique.
+loi d'Ohm :: Loi selon laquelle la tension aux bornes d'un conducteur ohmique est proportionnelle à l'intensité qui le traverse.
+effet Joule :: Dégagement de chaleur dans un conducteur parcouru par un courant.
+loi des nœuds :: Loi selon laquelle la somme des intensités qui arrivent à un nœud est égale à la somme de celles qui en repartent.
+loi des mailles :: Loi selon laquelle la somme algébrique des tensions le long d'une maille d'un circuit est nulle.
+conducteur :: Matériau qui laisse circuler facilement les charges électriques.
+isolant :: Matériau qui ne laisse pratiquement pas passer le courant électrique.
+semi-conducteur :: Matériau dont la conductivité est intermédiaire entre celle des conducteurs et des isolants.
+diode :: Composant qui ne laisse passer le courant que dans un sens.
+transistor :: Composant semi-conducteur qui amplifie un signal ou joue le rôle d'interrupteur commandé.
+condensateur :: Composant formé de deux armatures séparées par un isolant, qui stocke une charge électrique.
+farad :: Unité SI de capacité électrique.
+capacité électrique :: Rapport entre la charge d'un condensateur et la tension à ses bornes.
+bobine :: Composant formé d'un fil enroulé, qui crée un champ magnétique quand il est parcouru par un courant.
+inductance :: Grandeur qui caractérise l'aptitude d'une bobine à s'opposer aux variations du courant.
+henry :: Unité SI d'inductance.
+circuit RC :: Circuit formé d'une résistance et d'un condensateur en série.
+courant alternatif :: Courant dont le sens et l'intensité varient périodiquement.
+valeur efficace :: Valeur d'une grandeur alternative qui produit le même effet thermique qu'un courant continu de même valeur.
+transformateur :: Appareil qui modifie la tension d'un courant alternatif par induction électromagnétique.
+impédance :: Grandeur qui généralise la résistance aux courants alternatifs.
+supraconductivité :: Phénomène par lequel certains matériaux perdent toute résistance électrique en dessous d'une température critique.
+champ magnétique :: Région de l'espace où un aimant ou un courant exerce une force magnétique.
+tesla :: Unité SI de champ magnétique.
+aimant :: Corps qui crée un champ magnétique permanent.
+électroaimant :: Bobine à noyau de fer qui se comporte comme un aimant quand elle est parcourue par un courant.
+force de Lorentz :: Force exercée par un champ électromagnétique sur une particule chargée.
+force de Laplace :: Force exercée par un champ magnétique sur un conducteur parcouru par un courant.
+induction électromagnétique :: Production d'une tension dans un circuit par la variation du flux magnétique qui le traverse.
+loi de Faraday :: Loi selon laquelle la tension induite est égale à l'opposé de la variation du flux magnétique par unité de temps.
+loi de Lenz :: Loi selon laquelle le courant induit s'oppose par ses effets à la cause qui lui donne naissance.
+flux magnétique :: Grandeur qui mesure le champ magnétique traversant une surface.
+weber :: Unité SI de flux magnétique.
+équations de Maxwell :: Ensemble de quatre équations qui décrivent l'électromagnétisme.
+moteur électrique :: Machine qui convertit l'énergie électrique en énergie mécanique.
+alternateur :: Machine qui convertit l'énergie mécanique en courant alternatif.
+spectromètre de masse :: Appareil qui sépare des ions selon leur rapport masse sur charge à l'aide de champs électriques et magnétiques.
+effet photoélectrique :: Émission d'électrons par un matériau éclairé par une lumière de fréquence suffisante.
+photon :: Quantum d'énergie de la lumière.
+quantum :: Plus petite quantité d'énergie indivisible échangeable dans un processus donné.
+constante de Planck :: Constante qui relie l'énergie d'un photon à sa fréquence.
+dualité onde-corpuscule :: Propriété selon laquelle la lumière et la matière présentent à la fois des aspects ondulatoire et corpusculaire.
+longueur d'onde de de Broglie :: Longueur d'onde associée à une particule matérielle en mouvement.
+principe d'incertitude de Heisenberg :: Principe selon lequel on ne peut connaître simultanément avec une précision arbitraire la position et la quantité de mouvement d'une particule.
+fonction d'onde :: Fonction mathématique qui décrit l'état quantique d'une particule.
+équation de Schrödinger :: Équation fondamentale qui décrit l'évolution temporelle de la fonction d'onde d'un système quantique.
+superposition quantique :: Propriété d'un système quantique de se trouver dans plusieurs états à la fois jusqu'à la mesure.
+intrication quantique :: Corrélation entre deux systèmes quantiques telle que l'état de l'un ne peut être décrit indépendamment de l'autre.
+effet tunnel :: Passage d'une particule à travers une barrière d'énergie potentielle qu'elle ne pourrait pas franchir classiquement.
+niveau d'énergie :: Valeur d'énergie quantifiée que peut prendre un atome ou une molécule.
+transition électronique :: Passage d'un électron d'un niveau d'énergie à un autre, avec absorption ou émission d'un photon.
+émission stimulée :: Émission d'un photon provoquée par un autre photon, qui est à l'origine du laser.
+atome de Bohr :: Modèle de l'atome où les électrons occupent des orbites quantifiées autour du noyau.
+spin :: Moment cinétique intrinsèque d'une particule, de nature quantique.
+principe d'exclusion de Pauli :: Deux fermions identiques ne peuvent occuper le même état quantique.
+fermion :: Particule de spin demi-entier, qui obéit au principe d'exclusion de Pauli.
+boson :: Particule de spin entier, qui peut occuper en nombre illimité un même état quantique.
+particule élémentaire :: Particule qui n'est pas constituée d'autres particules.
+quark :: Particule élémentaire qui constitue les protons, les neutrons et d'autres hadrons.
+lepton :: Particule élémentaire qui ne subit pas l'interaction forte, comme l'électron et le neutrino.
+neutrino :: Particule élémentaire neutre de masse très faible qui interagit très peu avec la matière.
+hadron :: Particule composée de quarks, comme le proton et le neutron.
+gluon :: Boson qui transmet l'interaction forte entre les quarks.
+boson de Higgs :: Particule associée au champ qui confère leur masse aux autres particules élémentaires.
+antimatière :: Matière constituée d'antiparticules, de même masse mais de charge opposée à celles des particules.
+positon :: Antiparticule de l'électron, de charge positive.
+modèle standard :: Théorie qui décrit les particules élémentaires et trois des quatre interactions fondamentales.
+interaction forte :: Interaction fondamentale qui lie les quarks entre eux et assure la cohésion des noyaux.
+interaction faible :: Interaction fondamentale responsable notamment de la radioactivité bêta.
+interaction électromagnétique :: Interaction fondamentale qui s'exerce entre particules chargées.
+accélérateur de particules :: Machine qui porte des particules chargées à de très grandes énergies à l'aide de champs électromagnétiques.
+détecteur de particules :: Instrument qui permet d'observer et de mesurer les particules issues de collisions.
+noyau atomique :: Partie centrale de l'atome, qui concentre presque toute sa masse.
+radioactivité :: Désintégration spontanée de noyaux instables avec émission de rayonnements.
+activité radioactive :: Nombre de désintégrations par seconde d'un échantillon radioactif.
+becquerel :: Unité SI d'activité d'une source radioactive.
+loi de décroissance radioactive :: Loi selon laquelle le nombre de noyaux radioactifs diminue de façon exponentielle avec le temps.
+demi-vie :: Durée au bout de laquelle la moitié des noyaux radioactifs d'un échantillon s'est désintégrée.
+fission nucléaire :: Cassure d'un noyau lourd en deux noyaux plus légers avec libération d'énergie.
+fusion nucléaire :: Union de deux noyaux légers en un noyau plus lourd avec libération d'énergie.
+réacteur nucléaire :: Installation dans laquelle on entretient et contrôle une réaction de fission en chaîne.
+réaction en chaîne :: Réaction où les produits de chaque fission provoquent de nouvelles fissions.
+énergie de liaison nucléaire :: Énergie qu'il faut fournir pour séparer un noyau en ses nucléons.
+équivalence masse-énergie :: Relation E = mc² qui lie l'énergie et la masse d'un système.
+sievert :: Unité SI de dose équivalente de rayonnement ionisant.
+rayonnement ionisant :: Rayonnement assez énergétique pour arracher des électrons aux atomes de la matière.
+relativité restreinte :: Théorie d'Einstein qui décrit l'espace et le temps pour des observateurs en mouvement relatif uniforme.
+relativité générale :: Théorie d'Einstein qui décrit la gravitation comme une courbure de l'espace-temps.
+dilatation du temps :: Phénomène relativiste selon lequel une horloge en mouvement par rapport à un observateur semble battre plus lentement.
+contraction des longueurs :: Phénomène relativiste selon lequel un objet en mouvement semble raccourci dans sa direction de déplacement.
+espace-temps :: Cadre à quatre dimensions qui unifie les trois dimensions d'espace et le temps.
+trou noir :: Région de l'espace où la gravité est si forte que même la lumière ne peut s'en échapper.
+onde gravitationnelle :: Ondulation de l'espace-temps qui se propage à la vitesse de la lumière.
+horizon des événements :: Frontière d'un trou noir au-delà de laquelle rien ne peut revenir.
+Big Bang :: Modèle cosmologique selon lequel l'Univers est issu d'un état extrêmement dense et chaud il y a environ 13,8 milliards d'années.
+décalage vers le rouge :: Augmentation de la longueur d'onde de la lumière d'un astre qui s'éloigne ou d'un Univers en expansion.
+expansion de l'Univers :: Augmentation progressive des distances entre les galaxies lointaines.
+matière noire :: Forme de matière invisible détectée par ses effets gravitationnels.
+énergie noire :: Forme d'énergie hypothétique qui serait responsable de l'accélération de l'expansion de l'Univers.
+fond diffus cosmologique :: Rayonnement micro-onde issu de l'Univers primordial, qui l'emplit uniformément.
+étoile :: Astre massif qui produit de la lumière grâce aux réactions de fusion nucléaire en son cœur.
+galaxie :: Vaste ensemble d'étoiles, de gaz et de poussières lié par la gravitation.
+supernova :: Explosion d'une étoile massive à la fin de sa vie ou d'une naine blanche.
+étoile à neutrons :: Résidu extrêmement dense d'une étoile massive, constitué presque uniquement de neutrons.
+pulsar :: Étoile à neutrons en rotation rapide qui émet un faisceau périodique de rayonnement.
+unité astronomique :: Distance moyenne entre la Terre et le Soleil, d'environ 150 millions de kilomètres.
+parsec :: Unité de distance astronomique valant environ 3,26 années-lumière.
+physique statistique :: Branche de la physique qui déduit les propriétés des systèmes macroscopiques du comportement statistique de leurs constituants.
+entropie :: Grandeur qui mesure le désordre d'un système.
+second principe de la thermodynamique :: Principe selon lequel l'entropie d'un système isolé ne peut qu'augmenter.
+constante de Boltzmann :: Constante qui relie l'énergie moyenne d'une particule à la température.
+plasma :: Gaz ionisé constitué de particules chargées, considéré comme le quatrième état de la matière.
+cristal :: Solide dont les atomes sont disposés selon un arrangement ordonné et périodique.
+condensat de Bose-Einstein :: État de la matière formé de bosons refroidis près du zéro absolu qui occupent un même état quantique.
+superfluide :: Fluide qui s'écoule sans aucune viscosité à très basse température.
+Galilée :: Physicien et astronome italien du XVIIe siècle, pionnier de la méthode expérimentale et du principe de relativité.
+Isaac Newton :: Physicien et mathématicien anglais auteur des lois du mouvement et de la gravitation universelle.
+Albert Einstein :: Physicien théoricien auteur des théories de la relativité et de l'explication de l'effet photoélectrique.
+Max Planck :: Physicien allemand qui introduisit la notion de quantum d'énergie.
+Michael Faraday :: Physicien et chimiste britannique pionnier de l'induction électromagnétique.
+James Clerk Maxwell :: Physicien écossais qui unifia électricité, magnétisme et optique.
+Blaise Pascal :: Mathématicien, physicien et philosophe français célèbre pour ses travaux sur la pression des fluides.
+Archimède :: Savant grec de l'Antiquité qui énonça le principe de la poussée sur un corps immergé.
+Johannes Kepler :: Astronome allemand qui énonça les lois du mouvement des planètes.
+Erwin Schrödinger :: Physicien autrichien auteur de l'équation fondamentale de la mécanique ondulatoire.
+Werner Heisenberg :: Physicien allemand à l'origine de la mécanique matricielle et du principe d'incertitude.
+Enrico Fermi :: Physicien italien qui réalisa la première pile atomique et contribua à la physique des particules.
+Stephen Hawking :: Physicien britannique connu pour ses travaux sur les trous noirs et la cosmologie.`};
+const BASE=SUBJ in BASES?BASES[SUBJ]:'';
 
 const $=id=>document.getElementById(id);
 const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||d)}catch(e){return JSON.parse(d)}};
@@ -801,9 +1123,9 @@ function build(){
   ALLK=new Set(items.flatMap(x=>x.e.t.split('|').map(norm)));
   let plan=rd(PL,'null');
   if(!Array.isArray(plan)||!plan.length){
-    const pool=items.slice().sort(by),N=pool.length,L=Math.min(L0,N),w=[...Array(L)].map((_,i)=>1+i*3/Math.max(1,L-1)),W=w.reduce((a,b)=>a+b);
-    const sz=w.map(x=>Math.max(1,Math.round(N*x/W)));let df=N-sz.reduce((a,b)=>a+b),i=L-1,g=0;
-    while(df!==0&&g++<5000){if(df>0){sz[i]++;df--}else if(sz[i]>1){sz[i]--;df++}i=i>0?i-1:L-1}
+    const pool=items.slice().sort(by),N=pool.length,L=Math.min(L0,Math.floor(N/2)),w=[...Array(L)].map((_,i)=>1+i*3/Math.max(1,L-1)),W=w.reduce((a,b)=>a+b,0);
+    const sz=w.map(x=>Math.max(2,Math.round(N*x/W)));let df=N-sz.reduce((a,b)=>a+b,0),i=Math.max(0,L-1),g=0;
+    while(df!==0&&g++<5000){if(df>0){sz[i]++;df--}else if(sz[i]>2){sz[i]--;df++}i=i>0?i-1:L-1}
     let p=0;plan=sz.map(s=>{const r=pool.slice(p,p+s).map(x=>x.k);p+=s;return r});
   }else{
     const known=new Set(plan.flat());plan=plan.map(l=>l.filter(k=>M.has(k)));
@@ -817,7 +1139,7 @@ function card(){
   return `<span class="bd">${RK[r][1]}</span><div style="flex:1"><div class="ti">${RK[r][0]}</div><small>Niveau ${d}/${LV.length} · ⭐ ${st}/${LV.length*3}</small><div class="bar"><i style="width:${d*100/Math.max(1,LV.length)}%"></i></div>${r<19?`<small>Prochain titre : ${RK[r+1][1]} ${RK[r+1][0]} au niveau ${nx}</small>`:'<small>Titre maximal atteint !</small>'}</div>`;
 }
 function map(){
-  build();const d=done();
+  build();const d=done();if(!LV.length)return box('<div class="c"><b>Cursus</b><br><small>Il faut au moins 2 termes dans cette matière pour créer des niveaux. Ajoute-en dans l\'onglet ➕ Ajouter.</small></div>');
   box(`<div class="c rankc" style="cursor:default">${card()}</div><div class="cmap">`+LV.map(l=>{const p=P[l.n],c=p?'ok':l.n===d+1?'on':'lk';return `<button class="lv ${c}" onclick="CUR.open(${l.n})">${l.n<=d+1?l.n:'🔒'}<small>${p?'⭐'.repeat(p.s):l.n===d+1?l.terms.length+' termes':''}</small></button>`}).join('')+`</div><details class="c"><summary><b>Les titres</b></summary>${RK.map((x,i)=>`<div class="tl">${x[1]} <b>${x[0]}</b> <small>dès le niveau ${Math.ceil(i*LV.length/20)||1}</small></div>`).join('')}</details><div class="c"><small>Les niveaux sont mémorisés : les termes que tu ajoutes plus tard rejoignent les niveaux pas encore réussis, tes étoiles restent valables.</small><br><button class="b g" onclick="CUR.reset()">↺ Réinitialiser le cursus</button></div>`);
 }
 function open(n){
@@ -873,196 +1195,39 @@ const h0=home;home=function(){h0();build();let e=$('rankc');if(!e){e=document.cr
 // sauvegarde complète : le cursus est inclus dans l'export / la restauration
 exportData=function(){const bl=new Blob([JSON.stringify({custom,best,err,cfg,cur:P,plan:rd(PL,'null')})],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='chimie-sauvegarde.json';a.click();};
 const i0=importData;importData=async function(inp){let d=null;try{d=JSON.parse(await inp.files[0].text())}catch(e){}if(d&&d.cur){P=d.cur;sv()}if(d&&d.plan)wr(PL,d.plan);await i0(inp);home();};
+// --- matières (créables dans l'app)
+const BUILTIN={chimie:['⚗️','Chimie'],physique:['⚛️','Physique']},userS=()=>{const u=rd('cnhsubjs','[]');return Array.isArray(u)?u:[]};
+const SL={};Object.keys(BUILTIN).forEach(k=>SL[k]=BUILTIN[k]);userS().forEach(x=>SL[x.id]=[x.icon,x.name]);
+const RS=(k,v)=>{try{RAW.s.call(localStorage,k,v)}catch(e){}};
+if(!(SUBJ in SL)){RS('cnhsubj','chimie');location.reload()}
+const sl=SL[SUBJ]||SL.chimie,ttl=SUBJ in BUILTIN?sl[1]+' du Non_Homme':sl[1]+' · Non_Homme';document.title=ttl;
+{const em=document.querySelector('header em'),lg=document.querySelector('header .lg');if(em)em.textContent=ttl;if(lg)lg.textContent=sl[0]}
+const h1=home;home=function(){h1();$('cnt').textContent=all().length+' termes · '+sl[1];
+ if(!$('subjsel')){const r=document.createElement('div');r.className='row';r.innerHTML='<span>Matière :</span><select id="subjsel" class="scope"></select>';
+  const f=document.querySelector('#home .hello .row');f.parentNode.insertBefore(r,f);
+  $('subjsel').onchange=function(){SUBJM.go(this.value)}}
+ $('subjsel').innerHTML=Object.keys(SL).map(k=>`<option value="${k}">${esc(SL[k][0])} ${esc(SL[k][1])}</option>`).join('');$('subjsel').value=SUBJ};
+const subjUI=()=>{$('subjbox').innerHTML=`<small>Matière active : ${esc(sl[0])} <b>${esc(sl[1])}</b>. Les termes que tu ajoutes plus bas vont dans cette matière.</small>`+Object.keys(SL).map(k=>{const bi=k in BUILTIN;return `<div class="row"><span>${esc(SL[k][0])} <b>${esc(SL[k][1])}</b></span><span>${k!==SUBJ?`<button class="b g" style="margin:0" onclick="SUBJM.go('${k}')">Ouvrir</button>`:'<small>active</small>'}${bi?'':`<button class="b g" style="margin:0 0 0 4px" onclick="SUBJM.edit('${k}')">✏️</button><button class="b g" style="margin:0 0 0 4px" onclick="SUBJM.del('${k}')">🗑</button>`}</span></div>`}).join('')+`<hr style="border:0;border-top:1px solid var(--bd)"><b>➕ Nouvelle matière</b><input id="ns_n" placeholder="Nom (ex : Biologie)"><input id="ns_i" placeholder="Icône : un emoji (ex : 🧬)" maxlength="4"><textarea id="ns_t" rows="4" placeholder="Termes (facultatif), une ligne par terme : terme :: définition"></textarea><button class="b" onclick="SUBJM.add()">Créer la matière</button>`};
+window.SUBJM={
+ go(id){RS('cnhsubj',id);location.reload()},
+ add(){const n=$('ns_n').value.trim();if(!n)return alert('Donne un nom à la matière.');
+  let id='x'+(norm(n)||Date.now().toString(36)),b=id,i=2;while(SL[id])id=b+(i++);
+  const ic=$('ns_i').value.trim()||'📘',t=$('ns_t').value.split('\n').map(parse).filter(e=>e&&e.t&&e.d),u=userS();u.push({id,icon:ic,name:n});wr('cnhsubjs',u);
+  if(t.length)RS(id+'_cnh',JSON.stringify(t));alert('Matière « '+n+' » créée'+(t.length?' avec '+t.length+' terme(s)':'. Ajoute maintenant tes termes dans cet onglet')+'.');SUBJM.go(id)},
+ edit(id){const u=userS(),x=u.find(y=>y.id===id);if(!x)return;const n=prompt('Nom de la matière',x.name);if(n===null)return;const ic=prompt('Icône (emoji)',x.icon);x.name=n.trim()||x.name;if(ic&&ic.trim())x.icon=ic.trim();wr('cnhsubjs',u);location.reload()},
+ del(id){const x=SL[id];if(!x||!confirm('Supprimer « '+x[1]+' » et TOUTES ses données (termes, erreurs, cursus) ? Cette action est définitive.'))return;
+  const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(id+'_'))ks.push(k)}ks.forEach(k=>{try{RAW.x.call(localStorage,k)}catch(e){}});
+  wr('cnhsubjs',userS().filter(y=>y.id!==id));if(SUBJ===id){RS('cnhsubj','chimie');location.reload()}else{delete SL[id];subjUI();home()}}};
+{const mc=document.createElement('div');mc.className='c';mc.innerHTML='<b>📚 Mes matières</b><div id="subjbox"></div>';const ad=$('ad');ad.insertBefore(mc,ad.firstChild);subjUI()}
+const g2=go;go=function(id){g2(id);if(id==='ad')subjUI()};
+// matière vide : on évite les erreurs
+const p0=play;play=function(m){if(!all().length){alert("Cette matière est vide : ajoute d'abord des termes.");go('ad');return}p0(m)};
+const tv0=testVoice;testVoice=function(){if(all().length)tv0()};
+// palettes supplémentaires
+const PAL=[['⚫ Noir pur','#35d0a0','#000000','#111111','#f2f2f2'],['🌑 Noir & or','#f5c542','#0a0a0a','#161616','#f5efe0'],['🔴 Rouge','#ff5a5f','#160b0c','#241415','#ffecec'],['🟠 Orange','#ff9a3c','#171008','#251a0f','#fff1e3'],['🟡 Jaune','#ffd60a','#14130a','#211f0f','#fffbe6'],['🌲 Forêt','#4ade80','#0b1710','#13261a','#e9fbef'],['🩵 Cyan','#22d3ee','#071417','#0f2429','#e6fbff'],['🌌 Bleu nuit','#60a5fa','#050a1a','#0d1630','#e8f0ff'],['🌫 Ardoise','#94a3b8','#1e293b','#273449','#f1f5f9'],['🍷 Bordeaux','#fb7185','#14070b','#24101a','#ffe9ee'],['🍫 Chocolat','#e0a370','#150e0a','#241912','#f7ebe0'],['⬜ Blanc pur','#0a9d74','#ffffff','#f3f5f7','#0b1620'],['📜 Papier','#d97706','#f6efe0','#fffaf0','#3b2a14'],['🩶 Gris clair','#2563eb','#e5e7eb','#ffffff','#111827']];
+{const pre=document.querySelector('#set .pre');if(pre)PAL.forEach(x=>{const bt=document.createElement('button');bt.className='b g';bt.textContent=x[0];bt.onclick=()=>theme(x[1],x[2],x[3],x[4]);pre.appendChild(bt)})}
+// affichage si aucun niveau
 home();
-})();
-</script>
-  <style>.cmic.on{background:linear-gradient(135deg,#ff6b6b,#ff3d81);color:#fff;animation:mr 1.2s infinite}</style>
-<script>
-(function(){
-// ---------- Synonymes (terme>variante|variante) ----------
-const SYN=new Map();
-`élément chimique>élément
-alcalino-terreux>métal alcalino-terreux|alcalino terreux
-métal alcalin>alcalin|métaux alcalins
-réactif limitant>limitant
-indicateur coloré>indicateur|indicateur de pH
-pile>pile électrochimique|pile galvanique|cellule galvanique
-alcane>hydrocarbure saturé
-alcène>hydrocarbure insaturé
-énantiomère>antipode optique
-molécule polaire>dipôle
-mélange racémique>racémique
-concentration molaire>molarité
-concentration massique>titre massique
-solution tampon>tampon
-produit de solubilité>ks
-constante d'acidité>ka
-corps pur>espèce chimique pure
-liaison hydrogène>pont hydrogène
-interaction de Van der Waals>forces de van der waals|van der waals
-économie d'atomes>économie atomique
-chimie verte>chimie durable
-spectroscopie RMN>rmn|résonance magnétique nucléaire
-spectroscopie infrarouge>infrarouge|spectroscopie ir
-spectrométrie de masse>spectrométrie
-force électromotrice>fem|tension à vide
-équation de Nernst>nernst
-loi de Beer-Lambert>beer lambert|loi de beer
-enthalpie libre>énergie de gibbs|énergie libre
-nombre d'oxydation>degré d'oxydation
-cinétique chimique>cinétique
-équilibre chimique>équilibre
-nombre d'Avogadro>constante d'avogadro
-numéro atomique>nombre de protons
-nombre de masse>nombre de nucléons
-extraction liquide-liquide>extraction
-diastéréoisomère>diastéréomère
-isomérie Z/E>isomérie z e|stéréoisomérie z e
-capacité thermique>capacité calorifique
-carbone asymétrique>carbone stéréogène|centre stéréogène
-liaison polarisée>liaison polaire
-produit ionique de l'eau>ke
-oxydoréduction>redox
-polymère>macromolécule
-pH>pé ache|pé-ache
-pKa>pé ka
-électron de valence>électrons de valence
-formule topologique>formule en bâtons`.split('\n').forEach(l=>{const[a,b]=l.split('>');SYN.set(norm(a),b.split('|'))});
-
-// ---------- Clé phonétique : "chiral" = "kiral", homophones, pluriels, e muet… ----------
-const pk=s=>{let x=norm(s);if(!x)return'';
- x=x.replace(/tion/g,'sion').replace(/sch|ch/g,'k').replace(/ph/g,'f').replace(/th/g,'t').replace(/qu|q/g,'k')
-  .replace(/c(?=[eiy])/g,'s').replace(/c/g,'k').replace(/g(?=[eiy])/g,'j').replace(/gu(?=[eiy])/g,'g')
-  .replace(/x/g,'ks').replace(/w/g,'v').replace(/y/g,'i').replace(/z/g,'s').replace(/h/g,'')
-  .replace(/(?:ain|ein|aim|in|im)(?![aeiou])/g,'E').replace(/(?:an|am|en|em)(?![aeiou])/g,'A')
-  .replace(/(?:on|om)(?![aeiou])/g,'O').replace(/(?:un|um)(?![aeiou])/g,'U')
-  .replace(/eau|au/g,'o').replace(/ou/g,'u').replace(/oi/g,'ua').replace(/oeu|oe|eu/g,'e').replace(/ai|ei/g,'e')
-  .replace(/(.)\1+/g,'$1');
- for(let i=0;i<4&&x.length>2&&/[sdte]$/.test(x);i++)x=x.slice(0,-1);
- return x;};
-const lv=(a,b)=>{const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]};
-// distance : 0 exact, 1 proche (radical, mot contenu, 1-2 fautes), 99 non
-const match=(k,e)=>{
- if(k===e)return 0;
- if(e.length>=5&&k.includes(e)&&k.length<=e.length+14)return 1;
- const s=k.length<e.length?k:e,l=k.length<e.length?e:k;
- if(s.length>=5&&l.startsWith(s)&&l.length-s.length<=3)return 1;
- if(e.length>=6&&k.length>=6){const d=lv(k,e);if(d<=(Math.max(k.length,e.length)>=12?2:1))return d}
- return 99};
-// enlève « c'est un… », « je pense que… »
-const strip=s=>String(s).toLowerCase().replace(/[’`]/g,"'")
- .replace(/^(?:\s*(?:euh+|alors|bon|donc|ben|je dirais|je pense que|je pense|je crois que|je crois|peut-être)\s+)+/,'')
- .replace(/^(?:c'est|c est|ce sont|ça s'appelle|ca s'appelle|cela s'appelle|on appelle ça|il s'agit de|il s'agit d'|la réponse est|la réponse c'est)\b\s*(?:(?:un|une|le|la|les|du|de la|des)\s+|l'|d')?/,'').trim();
-const vars=t=>{const p=t.split('|');return[...new Set(p.concat(SYN.get(norm(p[0]))||[]).map(pk).filter(Boolean))]};
-const words=t=>new Set(t.split('|')[0].split(/[\s'’\-\/]+/).map(pk).filter(x=>x.length>=6));
-let IX=null,IK='';
-const idx=()=>{const A=all(),k=A.length+'|'+(A.length?A[A.length-1].t:'');if(IX&&IK===k)return IX;
- const W=new Map();IX={arr:A.map(e=>{const w=words(e.t);w.forEach(x=>W.set(x,(W.get(x)||0)+1));return{t:e.t,vs:vars(e.t)}}),W};IK=k;return IX};
-// Juge : accepte exact, homophone, proche, ou mot-clé unique — sauf si un AUTRE terme colle mieux
-function JG(h,t){
- const alts=[...new Set((Array.isArray(h)?h:[h]).map(strip).filter(Boolean))],{arr,W}=idx(),me=vars(t),mw=words(t);
- for(const a of alts){
-  const k=pk(a);if(!k)continue;
-  let d=99;me.forEach(e=>{d=Math.min(d,match(k,e))});
-  let how=d===0?'exact':d<99?'proche':'';
-  if(!how&&mw.has(k)&&W.get(k)===1){d=1;how='partiel'}
-  if(!how)continue;
-  let worse=false;
-  for(const o of arr){if(o.t===t)continue;if(o.vs.some(v=>match(k,v)<d)){worse=true;break}}
-  if(!worse)return{ok:true,how};
- }
- return{ok:false,how:''};
-}
-window.VOXJG=JG;
-const ex=(a,t)=>{const r=JG(a,t);return r.ok&&r.how==='exact'&&pk(strip(a[0]||'')).length>=3};
-
-// ---------- Moteur de reconnaissance partagé ----------
-const VOX={r:null,got:false,blocked:false};
-if(SR){try{const st=SR.prototype.start;SR.prototype.start=function(){if(this._v)return st.apply(this,arguments)}}catch(e){}} // neutralise l'ancien micro du cursus
-function voxStop(){const r=VOX.r;if(r){r.onstart=r.onend=r.onresult=r.onerror=null;try{r.abort()}catch(e){}}VOX.r=null}
-function vox(o){
- voxStop();if(!SR)return;VOX.got=false;
- const r=new SR();r._v=1;VOX.r=r;r.lang='fr-FR';r.maxAlternatives=8;r.interimResults=true;r.continuous=false;
- r.onstart=()=>{resumeAc();o.state(true)};
- r.onresult=e=>{
-  const res=e.results[e.results.length-1],a=[...res].map(x=>x.transcript);
-  o.interim(a[0]);
-  if(!VOX.got&&(res.isFinal||o.early(a))){VOX.got=true;voxStop();o.state(false);resumeAc();o.final(a)}};
- r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){VOX.blocked=true;o.err('Micro refusé : autorise-le dans les réglages du navigateur.')}};
- r.onend=()=>{if(VOX.r!==r)return;VOX.r=null;o.state(false);if(!VOX.got&&!VOX.blocked&&o.again())setTimeout(o.restart,300)};
- try{r.start()}catch(e){}
-}
-
-// ---------- Challenge ----------
-stopListen=function(){voxStop();setMic(false)};
-listen=function(){
- if(!running)return;
- if(!SR){$('fb').innerHTML='<span class="ko">Micro indisponible sur ce navigateur.</span>';return}
- vox({early:a=>ex(a,cur.t),final:a=>heard(a),interim:t=>{$('heard').textContent='« '+t+' »'},state:setMic,
-  again:()=>running&&cfg.auto,restart:listen,err:m=>{$('fb').innerHTML='<span class="ko">'+m+'</span>'}});
-};
-heard=function(a){
- if(!running)return;
- if(a.some(x=>/^(passer|suivant|je passe|next)$/.test(strip(x))))return skip();
- const m=a.find(x=>JG(x,cur.t).ok);
- submit(m||a[0]);$('heard').textContent='🗣 « '+a[0]+' »';
-};
-const sub0=submit;
-submit=function(val){
- if(!running)return;
- const s=typeof val==='string'?val:$('a').value,r=JG(s,cur.t),t=cur.t.split('|')[0];
- sub0(r.ok?t:s);
- if(r.ok&&r.how!=='exact')$('fb').innerHTML+=' <small>(accepté · terme : '+t+')</small>';
-};
-
-// ---------- Cursus ----------
-const ans0=CUR.ans,q0=CUR.quit;
-CUR.ans=function(v){
- const T=CUR.T();if(!T||!T.cur)return;
- const a=(Array.isArray(v)?v:[v]).map(String);
- if(a.some(x=>/^(passer|suivant|je passe)$/.test(strip(x))))return ans0('§');
- const r=JG(a,T.cur.t),t=T.cur.t.split('|')[0];
- ans0(r.ok?t:(a[0]||''));
- const f=$('cfb');
- if(r.ok&&r.how!=='exact'&&f&&!/accepté/.test(f.innerHTML))f.innerHTML+=' <small>(accepté · terme : '+t.replace(/[<>&]/g,'')+')</small>';
-};
-CUR.quit=function(){voxStop();q0()};
-CUR.mic=function(){
- const T=CUR.T();if(!T||!SR)return;const i=T.i;
- vox({early:a=>ex(a,T.cur.t),final:a=>CUR.ans(a),
-  interim:t=>{const h=$('cheard');if(h)h.textContent='« '+t+' »'},
-  state:on=>{const m=$('cmic');if(m){m.textContent=on?'🎙️':'🎤';m.classList.toggle('on',on)}},
-  again:()=>cfg.auto&&CUR.T()===T&&T.i===i,restart:CUR.mic,
-  err:m=>{const f=$('cfb');if(f)f.innerHTML='<span class="ko">'+m+'</span>'}});
-};
-let lk='';const cb=$('curbox');
-if(cb)new MutationObserver(()=>{
- const T=CUR.T(),b=cb.querySelector('button[onclick="CUR.mic()"]');
- if(b&&!b.id){b.id='cmic';b.classList.add('cmic')}
- const f=$('cfb');if(f&&!$('cheard'))f.insertAdjacentHTML('afterend','<div id="cheard" style="text-align:center;color:var(--mu);font-style:italic;min-height:22px"></div>');
- if(!T){lk='';return}
- const k=T.n+':'+T.i;if(k===lk)return;lk=k;
- if(cfg.auto&&!cfg.tts)setTimeout(()=>CUR.mic(),350);
-}).observe(cb,{childList:true,subtree:true});
-
-// ---------- Prononciation de la synthèse vocale ----------
-const SPK=[[/chiral/gi,'kiral'],[/chlor/gi,'klor'],[/chrom/gi,'krom'],[/\bpKa\b/g,'pé ka'],[/\bpH\b/g,'pé ache'],[/\bKs\b/g,'ka esse'],[/\bKa\b/g,'ka'],[/\bRMN\b/g,'R M N'],[/Z\/E/g,'Z E'],[/E°/g,'E zéro'],[/σ/g,'sigma'],[/ρ/g,'rho'],[/ε/g,'epsilon'],[/\bQr\b/g,'Q R']];
-const sp0=spoken;spoken=t=>sp0(SPK.reduce((s,[a,b])=>s.replace(a,b),t));
-say=function(t,cb){
- try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(spoken(t));u.lang='fr-FR';
-  const v=voices.find(x=>x.name===cfg.voice)||voices[0];if(v){u.voice=v;u.lang=v.lang}
-  u.rate=cfg.rate;talking=true;
-  const end=()=>{talking=false;if(cb)return cb();if(!cfg.auto)return;if(running)listen();else if(CUR.T())CUR.mic()};
-  u.onend=end;u.onerror=e=>{if(e.error==='interrupted'||e.error==='canceled')return;end()};
-  speechSynthesis.speak(u)}catch(e){talking=false}
-};
-
-// ---------- Sons : bonne réponse = ding montant, mauvaise = buzz grave ----------
-sfx=function(ok){
- try{resumeAc()}catch(e){}
- if(ok){tone(784,.14,'triangle',.4);tone(1175,.28,'triangle',.4,.11);tone(1568,.3,'sine',.15,.11)}
- else{tone(233,.2,'square',.18);tone(147,.38,'square',.18,.17)}
-};
 })();
 </script>
 </body>
