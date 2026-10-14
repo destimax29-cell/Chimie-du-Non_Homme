@@ -768,5 +768,94 @@ document.addEventListener('touchstart',unlock,{once:true});
 document.addEventListener('click',unlock,{once:true});
 applyCfg();render();home();
 </script>
+<!-- CURSUS -->
+<style>
+.rankc{display:flex;align-items:center;gap:14px;cursor:pointer;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 22%,var(--card)),var(--card))}
+.rankc .bd{font-size:46px;line-height:1;flex:none}
+.rankc .ti{font-size:20px;font-weight:800;color:var(--ac)}
+.bar{height:8px;border-radius:6px;background:var(--g);margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.cmap{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+.lv{padding:10px 2px;border-radius:14px;border:1px solid var(--bd);background:var(--g);color:var(--tx);font-weight:800;font-size:16px;font-family:inherit}
+.lv small{display:block;font-size:10px;min-height:13px}
+.lv.on{background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#4a90ff));color:#04251c}
+.lv.on small,.lv.on{box-shadow:0 0 0 2px var(--ac)}.lv.ok{border-color:var(--ac)}
+.lv.lk{opacity:.4}
+.bigs{font-size:40px;text-align:center;margin:6px 0}
+.tl{margin:8px 0;padding:10px 0;border-bottom:1px solid var(--bd)}.tl b{color:var(--ac)}
+</style>
+<script>
+(function(){
+const LS='cnhcur',esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RK=[['Novice','🧪'],['Apprenti','⚗️'],['Initié','🔬'],['Laborantin','🥼'],['Technicien','🔧'],['Analyste','📊'],['Chimiste','🧬'],['Expert','🎓'],['Maître','⚛️'],['Chevalier','⚔️'],['Baron','🛡️'],['Vicomte','🏰'],['Comte','🥉'],['Marquis','🥈'],['Duc','🥇'],['Prince','💎'],['Seigneur','🔱'],['Roi','👑'],['Empereur','🌟'],['Légende','🏆']];
+let P=rd(LS,'{}'),LV=[],T=null,tm=null,lock=false;
+const sv=()=>wr(LS,P),box=h=>$('curbox').innerHTML=h,stars=s=>'⭐'.repeat(s)+'☆'.repeat(3-s);
+const done=()=>{let d=0;while(P[d+1])d++;return d};
+const rk=d=>Math.min(19,Math.floor(d*20/LV.length));
+const par=n=>n*8+6;
+function build(){
+  const pool=[...new Map(all().map(e=>[norm(e.t.split('|')[0]),e])).values()].sort((a,b)=>(a.d.length+3*a.t.length)-(b.d.length+3*b.t.length)||a.t.localeCompare(b.t,'fr'));
+  const N=pool.length,L=Math.min(100,N),w=[...Array(L)].map((_,i)=>1+i*3/Math.max(1,L-1)),W=w.reduce((a,b)=>a+b);
+  const sz=w.map(x=>Math.max(1,Math.round(N*x/W)));let df=N-sz.reduce((a,b)=>a+b),i=L-1,g=0;
+  while(df!==0&&g++<5000){if(df>0){sz[i]++;df--}else if(sz[i]>1){sz[i]--;df++}i=i>0?i-1:L-1}
+  let p=0;LV=sz.map((s,k)=>{const t=pool.slice(p,p+s);p+=s;return{n:k+1,terms:t}});
+}
+function card(){
+  const d=done(),r=rk(d),st=Object.values(P).reduce((a,b)=>a+b.s,0),nx=r<19?Math.ceil((r+1)*LV.length/20):0;
+  return `<span class="bd">${RK[r][1]}</span><div style="flex:1"><div class="ti">${RK[r][0]}</div><small>Niveau ${d}/${LV.length} · ⭐ ${st}/${LV.length*3}</small><div class="bar"><i style="width:${d*100/LV.length}%"></i></div>${r<19?`<small>Prochain titre : ${RK[r+1][1]} ${RK[r+1][0]} au niveau ${nx}</small>`:'<small>Titre maximal atteint !</small>'}</div>`;
+}
+function map(){
+  build();const d=done();
+  box(`<div class="c rankc" style="cursor:default">${card()}</div><div class="cmap">`+LV.map(l=>{const p=P[l.n],c=p?'ok':l.n===d+1?'on':'lk';return `<button class="lv ${c}" onclick="CUR.open(${l.n})">${l.n<=d+1?l.n:'🔒'}<small>${p?'⭐'.repeat(p.s):l.n===d+1?l.terms.length+' termes':''}</small></button>`}).join('')+`</div><details class="c"><summary><b>Les titres</b></summary>${RK.map((x,i)=>`<div class="tl">${x[1]} <b>${x[0]}</b> <small>dès le niveau ${Math.ceil(i*LV.length/20)||1}</small></div>`).join('')}</details>`);
+}
+function open(n){
+  build();if(n>done()+1)return;const l=LV[n-1],p=P[n],k=l.terms.length,q=Math.max(k,Math.min(5,5));
+  box(`<button class="b g" onclick="CUR.map()">← Carte</button><div class="c"><b>Niveau ${n}</b> · ${k} terme${k>1?'s':''} à connaître<br><small>Réussis au moins 80 % des questions. ⭐⭐⭐ en moins de ${par(Math.max(k,5))} s, ⭐⭐ en moins de ${Math.round(par(Math.max(k,5))*1.7)} s.${p?'<br>Ton meilleur : '+stars(p.s)+' en '+p.t+' s':''}</small></div>`+l.terms.map(e=>`<div class="c term"><b>${esc(e.t.split('|')[0])}</b><p>${esc(e.d)}</p></div>`).join('')+`<button class="b wide" onclick="CUR.start(${n})">▶ Passer l'évaluation</button>`);
+  window.scrollTo(0,0);
+}
+function start(n){
+  unlock();document.body.classList.add('play');const prior=LV.slice(0,n-1).flatMap(l=>l.terms);
+  let q=LV[n-1].terms.slice();for(let i=Math.max(0,5-q.length);i>0&&prior.length;i--)q.push(prior[Math.floor(Math.random()*prior.length)]);
+  q=[...new Map(q.map(e=>[e.t,e])).values()].sort(()=>Math.random()-.5);
+  T={n,q,i:0,ok:0,miss:[],t0:Date.now()};clearInterval(tm);tm=setInterval(()=>{const e=$('ct');if(e&&T)e.textContent=Math.round((Date.now()-T.t0)/1000)+' s'},250);ask();
+}
+function ask(){
+  const e=T.q[T.i];T.cur=e;lock=false;let inp;
+  if(cfg.qcm){const g=e.t.split('|')[0],all2=LV.flatMap(l=>l.terms.map(x=>x.t.split('|')[0])).filter(x=>x!==g).sort(()=>Math.random()-.5).slice(0,3);T.o=all2.concat(g).sort(()=>Math.random()-.5);inp=T.o.map((o,i)=>`<button class="b g opt" onclick="CUR.ans(CUR.T().o[${i}])">${esc(o)}</button>`).join('');}
+  else inp=`<input id="ca" placeholder="Ton réponse…" autocomplete="off" autocapitalize="off" autocorrect="off" onkeydown="if(event.key==='Enter')CUR.ans(this.value)"><div class="row2"><button class="b" onclick="CUR.ans($('ca').value)">Valider</button><button class="b g" onclick="CUR.mic()">🎤</button></div>`;
+  box(`<div class="hud"><button class="x" onclick="CUR.quit()">✕</button><b>Niveau ${T.n} · ${T.i+1}/${T.q.length}</b><b id="ct" class="ok">${Math.round((Date.now()-T.t0)/1000)} s</b></div><div class="c q"><small class="lab">DÉFINITION</small><div id="q">${esc(e.d)}</div></div><div id="cfb" class="hl"></div>${inp}`);
+  if(!cfg.qcm)$('ca').focus();
+}
+function ans(v){
+  if(lock||!T||!String(v).trim())return;lock=true;
+  const ok=T.cur.t.split('|').some(x=>norm(x)===norm(v));
+  ok?T.ok++:T.miss.push(T.cur);
+  $('cfb').innerHTML=ok?'<b class="ok">✓ Correct</b>':'<b class="ko">✗ C\'était : '+esc(T.cur.t.split('|')[0])+'</b>';
+  try{sfx(ok);buzz(ok?30:[80,40,80])}catch(e){}
+  setTimeout(()=>{T&&(++T.i<T.q.length?ask():fin())},ok?350:1400);
+}
+function mic(){
+  if(!SR||!T)return;const r=new SR();r.lang='fr-FR';r.maxAlternatives=5;
+  r.onresult=e=>{const a=[...e.results[0]].map(x=>x.transcript),h=T.cur.t.split('|').map(norm);ans(a.find(x=>h.some(y=>norm(x)===y||norm(x)==='cest'+y))||a[0])};
+  try{r.start()}catch(e){}
+}
+function end(){clearInterval(tm);T=null;document.body.classList.remove('play')}
+function fin(){
+  clearInterval(tm);const t=(Date.now()-T.t0)/1000,n=T.q.length,need=Math.ceil(n*.8),pass=T.ok>=need,p0=par(n);
+  let s=t<=p0?3:t<=p0*1.7?2:1;if(T.ok<n)s=Math.min(s,2);
+  const r0=rk(done()),lv=T.n,miss=T.miss,ok=T.ok;
+  if(pass){const o=P[lv];if(!o||s>o.s||(s===o.s&&t<o.t)){P[lv]={s,t:Math.round(t*10)/10};sv()}}
+  const r1=rk(done());end();
+  try{pass?(tone(523,.15,'sine',.3),tone(659,.15,'sine',.3,.15),tone(784,.3,'sine',.3,.3)):sfx(false)}catch(e){}
+  box(`<div class="c"><div class="bigs">${pass?stars(s):'💪'}</div><p class="t" style="text-align:center">${ok} / ${n}</p><p style="text-align:center"><b class="${pass?'ok':'ko'}">${pass?'Niveau '+lv+' réussi !':'Il faut au moins '+need+' bonnes réponses'}</b><br><small>Temps : ${Math.round(t)} s (⭐⭐⭐ sous ${p0} s)</small></p>${r1>r0?`<p class="ok" style="text-align:center;font-size:20px">🎉 Nouveau titre : ${RK[r1][1]} <b>${RK[r1][0]}</b> !</p>`:''}${miss.length?'<b>À revoir :</b>'+miss.map(m=>`<p><b>${esc(m.t.split('|')[0])}</b><br><small>${esc(m.d)}</small></p>`).join(''):''}</div><button class="b" onclick="CUR.${pass&&lv<LV.length?'open('+(lv+1)+')':'start('+lv+')'}">${pass&&lv<LV.length?'Niveau suivant →':'↻ Réessayer'}</button><button class="b g" onclick="CUR.open(${lv})">📋 Revoir la liste</button><button class="b g" onclick="CUR.map()">🗺 Carte</button>`);
+}
+window.CUR={map,open,start,ans,mic,quit(){end();map()},T:()=>T};
+// intégration à l'app
+const s=document.createElement('section');s.id='cur';s.className='sec';s.innerHTML='<div id="curbox"></div>';document.querySelector('main').appendChild(s);
+const b=document.createElement('button');b.dataset.t='cur';b.onclick=()=>go('cur');b.innerHTML='<span class="i">🏆</span>Cursus';document.querySelector('nav').insertBefore(b,document.querySelector('nav button[data-t="ad"]'));
+const g0=go;go=function(id){if(T&&id!=='cur')end();g0(id);if(id==='cur')map()};
+const h0=home;home=function(){h0();build();let e=$('rankc');if(!e){e=document.createElement('div');e.id='rankc';e.className='c rankc';e.onclick=()=>go('cur');document.querySelector('#home .hello').after(e)}e.innerHTML=card()};
+home();
+})();
+</script>
 </body>
 </html>
