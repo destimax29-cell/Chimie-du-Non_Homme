@@ -1230,5 +1230,114 @@ const PAL=[['⚫ Noir pur','#35d0a0','#000000','#111111','#f2f2f2'],['🌑 Noir 
 home();
 })();
 </script>
+  <script>
+/* ===== AJOUTS v3 ===== */
+(function(){
+const E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ink=h=>{const m=/^#?(\w\w)(\w\w)(\w\w)$/.exec(h||'');if(!m)return'#fff';const [r,g,b]=m.slice(1).map(x=>parseInt(x,16));return(.299*r+.587*g+.114*b)>150?'#111':'#fff'};
+const TI=()=>document.querySelector('header em').textContent;
+const L=e=>(norm(e.t.split('|')[0])[0]||'#').toUpperCase();
+
+/* ---------- EXPORT DU LEXIQUE ---------- */
+function lst(sc){const s=new Set();return all().filter(e=>sc!=='mine'||custom.includes(e)).sort((a,b)=>a.t.localeCompare(b.t,'fr')).filter(e=>{const k=norm(e.t.split('|')[0])+'#'+norm(e.d);return s.has(k)?0:(s.add(k),1)})}
+function html(list,word){
+  const ti=TI(),ic=document.querySelector('header .lg').textContent,ac=cfg.ac||'#35d0a0';
+  const dt=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  const cov=(!word&&cfg.cover),fg=cov?'#fff':ink(ac),fg2=ink(ac);
+  const bg=cov?`background:linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url(${cfg.cover}) center/cover;`:'';
+  const logo=cfg.avatar?`<img src="${cfg.avatar}" width="64" height="64" style="border-radius:50%">`:`<span style="font-size:42px">${E(ic)}</span>`;
+  const letters=[...new Set(list.map(L))];let lc='',body='';
+  list.forEach(e=>{const l=L(e),p=e.t.split('|');if(l!==lc){lc=l;body+=`<h2 id="l${l}">${l}</h2>`}
+    body+=`<div class="t"><b>${E(p[0])}</b>${p.length>1?` <i>(aussi : ${E(p.slice(1).join(', '))})</i>`:''}<p>${E(e.d)}</p></div>`});
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${E(ti)}</title><style>
+@page{margin:15mm}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:Georgia,'Times New Roman',serif;color:#1a1a1a;margin:0;line-height:1.5;font-size:11.5pt}
+h2{font-family:Arial,sans-serif;background:${ac};color:${fg2};display:inline-block;padding:2px 14px;border-radius:6px;margin:24px 0 8px;font-size:15pt;page-break-after:avoid}
+.t{margin:0 0 9px;page-break-inside:avoid}.t b{font-size:12pt}.t p{margin:2px 0 0;color:#333}.t i{color:#666;font-size:10pt}
+.idx{font-family:Arial,sans-serif;margin:14px 0;font-size:12pt}.idx a{color:#111;text-decoration:none;font-weight:bold;border-bottom:2px solid ${ac};margin:0 5px}
+.ft{margin-top:28px;border-top:2px solid ${ac};padding-top:6px;font:9pt Arial;color:#777;text-align:center}
+</style></head><body>
+<table width="100%" cellpadding="0" cellspacing="0"><tr><td bgcolor="${ac}" style="background:${ac};${bg}padding:20px;color:${fg}">
+<table cellpadding="0" cellspacing="0"><tr><td>${logo}</td><td style="padding-left:16px;color:${fg}">
+<div style="font:bold 26px Arial">${E(ti)}</div>
+<div style="font:14px Arial">Lexique · ${list.length} termes · ${dt}${cfg.name?' · '+E(cfg.name):''}</div></td></tr></table></td></tr></table>
+<div class="idx">${letters.map(l=>`<a href="#l${l}">${l}</a>`).join(' ')}</div>${body}
+<div class="ft">${E(ti)} — ${list.length} termes — ${dt}</div></body></html>`;
+}
+function dl(name,type,txt){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+window.LEXX={go(){
+  const f=$('xf').value,l=lst($('xs').value);if(!l.length){alert('Aucun terme à exporter.');return}
+  const dt=new Date().toISOString().slice(0,10),base='Lexique-'+(norm(TI())||'termes')+'-'+dt;
+  if(f==='pdf'){const w=window.open('','_blank');if(!w){alert('Autorise les pop-ups pour ce site, ou choisis « Page web ».');return}
+    w.document.write(html(l,0).replace('</body>','<script>setTimeout(function(){print()},600)<\/script></body>'));w.document.close();}
+  else if(f==='doc')dl(base+'.doc','application/msword',html(l,1));
+  else if(f==='html')dl(base+'.html','text/html',html(l,0));
+  else if(f==='md'){let t='# '+TI()+'\n\n*'+l.length+' termes · '+dt+'*\n',c='';
+    l.forEach(e=>{const p=e.t.split('|'),x=L(e);if(x!==c){c=x;t+='\n## '+x+'\n\n'}t+='**'+p[0]+'**'+(p.length>1?' (aussi : '+p.slice(1).join(', ')+')':'')+' — '+e.d+'\n\n'});
+    dl(base+'.md','text/markdown',t)}
+  else dl(base+'.csv','text/csv;charset=utf-8','\ufefftermes;definition;variantes\n'+l.map(e=>{const p=e.t.split('|');return[p[0],e.d,p.slice(1).join(', ')].map(x=>'"'+x.replace(/"/g,'""')+'"').join(';')}).join('\n'));
+  $('xn').textContent=' '+l.length+' termes exportés';
+}};
+{const d=document.createElement('details');d.className='c';
+d.innerHTML=`<summary><b>⬇ Télécharger ce lexique</b></summary>
+<div class="row"><span>Format</span><select id="xf"><option value="pdf">📕 PDF (via impression)</option><option value="doc">📘 Word (.doc)</option><option value="html">🌐 Page web (.html)</option><option value="md">📝 Markdown (.md)</option><option value="csv">📊 Excel / CSV</option></select></div>
+<div class="row"><span>Contenu</span><select id="xs"><option value="all">Tous les termes</option><option value="mine">Mes termes ajoutés</option></select></div>
+<button class="b wide" onclick="LEXX.go()">⬇ Télécharger</button><small id="xn"></small>
+<small>Logo, couleurs, couverture et nom viennent de tes réglages (⚙️).</small>`;
+$('lex').insertBefore(d,$('lex').firstChild)}
+
+/* ---------- VOIX PLUS FIABLE ---------- */
+const lv=(a,b)=>{const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]};
+// clé phonétique : « anode » ≈ « a node », « cathode » ≈ « catode »
+const pk=s=>norm(s).replace(/ph/g,'f').replace(/eau|au/g,'o').replace(/ai|ei/g,'e').replace(/qu|ck|q/g,'k').replace(/c(?=[aouklrt])/g,'k').replace(/c/g,'s').replace(/y/g,'i').replace(/w/g,'v').replace(/h/g,'').replace(/z/g,'s').replace(/(.)\1+/g,'$1').replace(/^(.{3,}?)[sxtdp]+$/,'$1').replace(/^(.{3,})e$/,'$1').replace(/^(.{3,}?)[sxtdp]+$/,'$1');
+const strip=a=>a.replace(/^\s*(c['’]?est|je dis|la réponse est|réponse)\s+/i,'');
+function vmatch(alts,term){
+  const V=term.split('|'),vn=V.map(norm),vp=V.map(pk),O=all().flatMap(e=>e.t.split('|').filter(x=>!V.includes(x))),on=new Set(O.map(norm)),op=O.map(pk);
+  for(const a of alts){const s=strip(a),n=norm(s);if(!n)continue;
+    if(vn.includes(n))return 1;                       // exact
+    if(on.has(n))continue;                            // c'est exactement un AUTRE terme → refusé
+    if(vn.some(v=>v.length>=5&&n.includes(v)))return 1; // « le terme est anode »
+    const p=pk(s),d=Math.min(...vp.map(v=>lv(p,v))),th=p.length>=9?2:p.length>=4?1:0;
+    if(d<=th&&d<=Math.min(...op.map(o=>lv(p,o))))return 1;} // proche phonétiquement ET plus proche de la réponse que de tout autre terme
+  return 0}
+let vt=0;const n0=next;next=function(){vt=0;n0()};
+heard=function(a){
+  if(a.map(norm).some(x=>x==='passer'||x==='suivant'))return skip();
+  if(!norm(a[0]||''))return setTimeout(listen,350);
+  if(vmatch(a,cur.t)){vt=0;$('heard').textContent='🗣 « '+a[0]+' »';return submit(cur.t.split('|')[0])}
+  if(++vt<2&&running){$('heard').textContent='« '+a[0]+' » — redis-le';$('fb').innerHTML='<span class="ko">Pas compris, réessaie 🎤</span>';return setTimeout(listen,350)}
+  vt=0;submit(a[0]);
+};
+listen=function(){
+  if(!running)return;
+  if(!SR){$('fb').innerHTML='<span class="ko">Micro indisponible sur ce navigateur.</span>';return}
+  try{speechSynthesis.cancel()}catch(e){}   // la lecture de la question ne doit pas être captée
+  stopListen();got=false;const tg=cur;
+  reco=new SR();reco.lang='fr-FR';reco.maxAlternatives=10;reco.interimResults=true;
+  reco.onstart=()=>{resumeAc();talking=true};   // baisse la musique pendant l'écoute
+  reco.onresult=e=>{const r=e.results[e.results.length-1];$('heard').textContent='« '+r[0].transcript+' »';
+    if(r.isFinal&&cur===tg&&!got){got=true;const a=[...r].map(x=>x.transcript);try{reco.stop()}catch(x){}heard(a)}};
+  reco.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){blocked=true;$('fb').innerHTML='<span class="ko">Micro refusé : autorise-le dans les réglages.</span>'}
+    else if(e.error==='network')$('fb').innerHTML='<span class="ko">La reconnaissance vocale nécessite internet.</span>'};
+  reco.onend=()=>{talking=false;resumeAc();setMic(false);if(!got&&running&&cfg.auto&&!blocked)setTimeout(listen,300)};
+  try{reco.start();setMic(true)}catch(e){}
+};
+const sl0=stopListen;stopListen=function(){sl0();talking=false};
+// même logique dans le Cursus
+CUR.mic=function(){
+  const T=CUR.T();if(!SR||!T)return;const tg=T.cur;try{speechSynthesis.cancel()}catch(e){}
+  const r=new SR();r.lang='fr-FR';r.maxAlternatives=10;
+  r.onresult=e=>{const a=[...e.results[0]].map(x=>x.transcript),T2=CUR.T();if(!T2||T2.cur!==tg)return;
+    if(vmatch(a,tg.t))return CUR.ans(tg.t.split('|')[0]);
+    if(T2.vt!==tg){T2.vt=tg;$('cfb').innerHTML='<b class="ko">« '+E(a[0])+' » — redis-le</b>';return setTimeout(CUR.mic,350)}
+    CUR.ans(a[0])};
+  try{r.start()}catch(e){}
+};
+
+/* ---------- HORS-LIGNE ---------- */
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+
 </body>
 </html>
