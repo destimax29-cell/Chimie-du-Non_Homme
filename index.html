@@ -1341,6 +1341,124 @@ CUR.mic=function(){
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script>
+  <!-- ===== AJOUTS v4 : Évaluation par lettres + célébrations =====
+     À COLLER dans index.html, juste AVANT la dernière ligne </body> ===== -->
+<style>
+.evl{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:12px 0}
+.evl .lv{padding:8px 0}
+.cel{position:fixed;inset:0;z-index:98;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);animation:fi .25s;transition:opacity .5s}
+.cel.out{opacity:0}
+.cb{background:var(--card);border:2px solid var(--ac);border-radius:28px;padding:26px 30px;text-align:center;max-width:84%;box-shadow:0 0 50px color-mix(in srgb,var(--ac) 55%,transparent);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.cb .ce{font-size:72px;line-height:1}.cb b{display:block;font-size:24px;color:var(--ac);margin:8px 0 4px}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+.evh{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid var(--bd)}
+</style>
+<script>
+(function(){
+const E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KEY='cnhev',box=h=>$('evbox').innerHTML=h;
+const lev=(a,b)=>{const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]};
+const first=e=>(norm(e.t.split('|')[0])[0]||'#').toUpperCase();
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let sel=new Set(),N=20,M='type',S=null,lock=false,SRC='let',TL=0;
+
+/* ---------- Célébrations ---------- */
+function confetti(n){const c=document.createElement('canvas');c.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:99';c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);
+ const g=c.getContext('2d'),cl=['#35d0a0','#4a90ff','#8a5cff','#ff6fa8','#ffd60a','#ff9a3c'],P=[...Array(n)].map(()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,vx:(Math.random()-.5)*4,vy:2+Math.random()*4,s:5+Math.random()*7,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cl[Math.random()*6|0]}));let t=0;
+ (function f(){g.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.r+=p.vr;g.save();g.translate(p.x,p.y);g.rotate(p.r);g.fillStyle=p.c;g.fillRect(-p.s/2,-p.s/3,p.s,p.s*.6);g.restore()});if(++t<190)requestAnimationFrame(f);else c.remove()})()}
+function fanfare(big){const n=big?[523,659,784,1047,784,1047,1319,1568]:[523,659,784,1047];
+ n.forEach((f,i)=>{tone(f,.28,'triangle',.35,i*.12);tone(f/2,.28,'sine',.15,i*.12)});
+ const e=n.length*.12;[523,659,784,1047].forEach(f=>tone(f,big?1.1:.7,'triangle',.18,e));
+ for(let i=0;i<6;i++)tone(2000+i*300,.12,'sine',.08,e+i*.08)}
+function celeb(title,sub,big){
+ try{unlock();fanfare(big);buzz(big?[60,40,60,40,250]:[60,40,140])}catch(e){}
+ confetti(big?200:110);
+ const d=document.createElement('div');d.className='cel';d.innerHTML=`<div class="cb"><div class="ce">${big?'🏆':'🎉'}</div><b>${E(title)}</b><div>${E(sub||'')}</div></div>`;
+ d.onclick=()=>d.remove();document.body.appendChild(d);
+ setTimeout(()=>d.classList.add('out'),big?3300:2400);setTimeout(()=>d.remove(),big?3800:2900);
+ try{if(cfg.tts)say(title)}catch(e){}}
+window.CELEB=celeb;
+// Cursus : détecte un niveau réussi / un nouveau titre
+const seen=new WeakSet();
+new MutationObserver(()=>{const b=$('curbox'),g=b.querySelector('.bigs');if(!g||seen.has(g))return;seen.add(g);
+ const m=/Niveau (\d+) réussi/.exec(b.textContent);if(!m)return;
+ const st=(g.textContent.match(/⭐/g)||[]).length,t=[...b.querySelectorAll('p.ok')].find(p=>/Nouveau titre/.test(p.textContent));
+ if(t)celeb('Nouveau titre !',t.textContent.replace(/🎉|Nouveau titre :/g,'').trim(),true);
+ else celeb(['Bien joué !','Félicitations !','Magnifique !'][st-1]||'Bravo !','Niveau '+m[1]+' réussi '+'⭐'.repeat(st),st===3);
+}).observe($('curbox'),{childList:true,subtree:true});
+// Challenge : nouveau record
+new MutationObserver(()=>{const e=$('end'),c=e.firstElementChild;if(!c||seen.has(c))return;seen.add(c);if(/Nouveau record/.test(e.textContent))celeb('Nouveau record !','Tu as battu ton meilleur score','1')},
+).observe($('end'),{childList:true});
+
+/* ---------- Évaluation ---------- */
+const counts=()=>{const c={};all().forEach(e=>{const l=first(e);c[l]=(c[l]||0)+1});return c};
+function pool(){const s=new Set();return all().filter(e=>{if(SRC==='err'?!err[e.t]:!sel.has(first(e)))return 0;const k=norm(e.t.split('|')[0])+'#'+norm(e.d);if(s.has(k))return 0;s.add(k);return 1})}
+const match=(v,t)=>{v=v.replace(/^\s*(c['’]?est|la réponse est)\s+(un |une |le |la |l')?/i,'');const b=norm(v);if(!b)return 0;const V=t.split('|').map(norm);if(V.includes(b))return 1;
+ const o=new Set(all().flatMap(e=>e.t.split('|').map(norm)));return !o.has(b)&&V.some(a=>a.length>=7&&b.length>=7&&lev(a,b)<=1)?1:0};
+function upd(){const n=pool().length,e=$('evc');if(e)e.innerHTML=n?`<b class="ok">${n}</b> terme(s) sélectionné(s)`:'<small>Aucune lettre choisie</small>'}
+function setup(){
+ S=null;document.body.classList.remove('play');const c=counts(),ls=Object.keys(c).sort(),h=rd(KEY,'[]');
+ sel=new Set([...sel].filter(l=>c[l]));
+ box(`<div class="c"><b>🎯 Évaluation</b><br><small>Choisis une ou plusieurs lettres. Tous les termes qui commencent par ces lettres sont posés, dans un ordre aléatoire.</small>
+ <div class="evl">${ls.map(l=>`<button class="lv${sel.has(l)?' on':''}" data-l="${l}" onclick="EVAL.tg('${l}')">${l}<small>${c[l]}</small></button>`).join('')}</div>
+ <button class="b g" onclick="EVAL.sel(1)">Toutes</button><button class="b g" onclick="EVAL.sel(0)">Aucune</button>
+ <p id="evc"></p>
+ <div class="row"><span>Nombre de questions</span><select onchange="EVAL.n(this.value)">${[10,20,30,50,0].map(x=>`<option value="${x}"${x===N?' selected':''}>${x||'Tous'}</option>`).join('')}</select></div>
+ <div class="row"><span>Mode</span><select onchange="EVAL.m(this.value)"><option value="type"${M==='type'?' selected':''}>✍️ Définition → je donne le terme</option><option value="flash"${M==='flash'?' selected':''}>🃏 Carte : je me juge moi-même</option></select></div>
+ <div class="row"><span>Source</span><select onchange="EVAL.src(this.value)"><option value="let"${SRC==='let'?' selected':''}>🔤 Lettres choisies</option><option value="err"${SRC==='err'?' selected':''}>📝 Mes erreurs seulement</option></select></div>
+ <div class="row"><span>Temps par question</span><select onchange="EVAL.tl(this.value)">${[0,10,20,30].map(x=>`<option value="${x}"${x===TL?' selected':''}>${x?x+' s':'Illimité'}</option>`).join('')}</select></div>
+ <small>Réponse écrite, vocale 🎤 ou QCM (réglé dans ⚙️).</small><br><button class="b wide" onclick="EVAL.start()">▶ Commencer l'évaluation</button></div>
+ ${h.length?'<div class="c"><b>Mes dernières évaluations</b>'+h.slice(0,6).map(x=>`<div class="evh"><span>${E(x.d)} · ${E(x.l)}</span><b class="${x.p>=80?'ok':x.p<50?'ko':''}">${x.ok}/${x.n} · ${x.p}%</b></div>`).join('')+'</div>':''}`);
+ upd()}
+function start(){
+ const p=pool();if(!p.length){alert(SRC==='err'?'Aucune erreur à réviser 🎉':'Choisis au moins une lettre.');return}
+ unlock();document.body.classList.add('play');let q=p.map(e=>[Math.random()/(err[e.t]?3:1),e]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);if(N>0)q=q.slice(0,N);
+ S={q,i:0,ok:0,miss:[],by:{},ls:SRC==='err'?'erreurs':[...sel].sort().join('')};ask()}
+function ask(){
+ const e=S.q[S.i];S.cur=e;lock=false;S.h=0;
+ const hd=`<div class="hud"><button class="x" onclick="EVAL.quit()">✕</button><b>${S.i+1} / ${S.q.length}</b><b class="ok">✓ ${+S.ok.toFixed(1)}</b><b id="evt"></b></div><div class="bar"><i style="width:${S.i*100/S.q.length}%"></i></div>`;
+ if(M==='flash'){box(hd+`<div class="c q"><small class="lab">TERME</small><div id="q">${E(e.t.split('|')[0])}</div><div id="evr" style="margin-top:12px"></div></div><button class="b wide" id="evs" onclick="EVAL.show()">👁 Voir la définition</button><div id="evj" class="row2" style="display:none"><button class="b g" onclick="EVAL.ans(0)">✗ Pas su</button><button class="b" onclick="EVAL.ans(1)">✓ Je savais</button></div>`);return}
+ let inp;
+ if(cfg.qcm){const g=e.t.split('|')[0],o=shuffle([...new Set(all().map(x=>x.t.split('|')[0]))].filter(x=>x!==g)).slice(0,3);S.o=shuffle(o.concat(g));
+  inp=S.o.map((x,i)=>`<button class="b g opt" onclick="EVAL.ans(EVAL.o()[${i}])">${E(x)}</button>`).join('')}
+ else inp=`<input id="eva" placeholder="Ta réponse…" autocomplete="off" autocapitalize="off" autocorrect="off" onkeydown="if(event.key==='Enter')EVAL.ans(this.value)"><div class="row2"><button class="b" onclick="EVAL.ans($('eva').value)">Valider</button><button class="b g" onclick="EVAL.mic()">🎤</button><button class="b g" onclick="EVAL.hint()">💡</button><button class="b g" onclick="EVAL.ans('?')">⏭</button></div>`;
+ box(hd+`<div class="c q"><small class="lab">DÉFINITION</small><div id="q">${E(e.d)}</div></div><div id="evfb" class="hl"></div>${inp}`);
+ clearInterval(S.tm);if(TL){let t=TL;const el=$('evt');el.textContent=t+' s';S.tm=setInterval(()=>{t--;el.textContent=t+' s';if(t<=3)el.className='ko';if(t<=0){clearInterval(S.tm);ans('?')}},1000)}
+ if(!cfg.qcm)$('eva').focus();if(cfg.tts)say(e.d)}
+function ans(v){
+ if(lock||!S)return;if(M==='type'&&!String(v).trim())return;lock=true;clearInterval(S.tm);
+ const e=S.cur,g=M==='flash'?!!v:match(String(v),e.t),l=first(e);(S.by[l]=S.by[l]||[0,0])[1]++;
+ if(g){S.ok+=S.h?.5:1;if(SRC==='err'&&!S.h){delete err[e.t];wr('cnhe',err)}S.by[l][0]++}else{S.miss.push(e);err[e.t]=1;wr('cnhe',err)}
+ if(M==='type'){$('evfb').innerHTML=g?'<b class="ok">✓ Correct</b>':'<b class="ko">✗ C\'était : '+E(e.t.split('|')[0])+'</b>'}
+ try{sfx(g);buzz(g?30:[80,40,80])}catch(x){}
+ setTimeout(()=>{S&&(++S.i<S.q.length?ask():fin())},M==='flash'?250:g?350:1500)}
+function mic(){if(!SR||!S||lock)return;try{speechSynthesis.cancel()}catch(e){}
+ const r=new SR();r.lang='fr-FR';r.maxAlternatives=8;r.onresult=e=>{const a=[...e.results[0]].map(x=>x.transcript);ans(a.find(x=>match(x,S.cur.t))||a[0])};try{r.start()}catch(e){}}
+function fin(){
+ clearInterval(S.tm);const n=S.q.length,p=Math.round(S.ok*100/n),h=rd(KEY,'[]');
+ h.unshift({d:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'}),p,n,ok:+S.ok.toFixed(1),l:S.ls.length>8?S.ls.slice(0,8)+'…':S.ls});wr(KEY,h.slice(0,20));
+ const m=S,em=p===100?'🏆':p>=80?'🌟':p>=50?'👍':'💪',msg=p===100?'Parfait !':p>=80?'Excellent !':p>=50?'Pas mal, continue !':'Relis le lexique et réessaie';
+ document.body.classList.remove('play');S=null;
+ box(`<div class="c"><div class="bigs">${em}</div><p class="t" style="text-align:center">${+m.ok.toFixed(1)} / ${n}</p><p style="text-align:center"><b class="${p>=50?'ok':'ko'}">${p} % — ${msg}</b></p>
+ <b>Par lettre :</b><div class="evl">${Object.keys(m.by).sort().map(l=>`<button class="lv ${m.by[l][0]===m.by[l][1]?'ok':''}" style="pointer-events:none">${l}<small>${m.by[l][0]}/${m.by[l][1]}</small></button>`).join('')}</div>
+ ${m.miss.length?'<b>À revoir (ajoutés à « Mes erreurs ») :</b>'+m.miss.map(x=>`<p><b>${E(x.t.split('|')[0])}</b><br><small>${E(x.d)}</small></p>`).join(''):'<p class="ok">Aucune erreur 🎉</p>'}</div>
+ <button class="b" onclick="EVAL.start()">↻ Rejouer</button><button class="b g" onclick="EVAL.setup()">🔤 Changer les lettres</button><button class="b g" onclick="go('home')">🏠 Accueil</button>`);
+ if(p>=80)celeb(p===100?'Parfait !':'Excellent !',+m.ok.toFixed(1)+' / '+n+' bonnes réponses',p===100);else if(p<50)try{sfx(false)}catch(e){}}
+window.EVAL={setup,start,ans,mic,
+ tg(l){sel.has(l)?sel.delete(l):sel.add(l);document.querySelector(`.evl [data-l="${l}"]`).classList.toggle('on');upd()},
+ sel(a){sel=a?new Set(Object.keys(counts())):new Set();document.querySelectorAll('.evl .lv').forEach(b=>b.classList.toggle('on',!!a));upd()},
+ n(v){N=+v},src(v){SRC=v;upd()},tl(v){TL=+v},hint(){if(!S||lock||cfg.qcm)return;S.h=1;const t=S.cur.t.split('|')[0];$('evfb').innerHTML='<b>💡 '+E(t[0])+'… · '+t.length+' lettres (demi-point)</b>'},m(v){M=v},o:()=>S.o,
+ show(){$('evr').innerHTML='<small class="lab">DÉFINITION</small>'+E(S.cur.d);$('evs').style.display='none';$('evj').style.display='flex'},
+ quit(){clearInterval(S&&S.tm);S=null;document.body.classList.remove('play');setup()}};
+
+/* ---------- Intégration ---------- */
+const s=document.createElement('section');s.id='ev';s.className='sec';s.innerHTML='<div id="evbox"></div>';document.querySelector('main').appendChild(s);
+const nav=document.querySelector('nav'),b=document.createElement('button');b.dataset.t='ev';b.onclick=()=>go('ev');b.innerHTML='<span class="i">🎯</span>Évaluer';nav.insertBefore(b,nav.querySelector('[data-t="ad"]'));
+const w=document.querySelector('#home .wide'),hb=document.createElement('button');hb.className='b wide';hb.textContent='🎯 Évaluation par lettres';hb.onclick=()=>go('ev');w.parentNode.insertBefore(hb,w);
+const g0=go;go=function(id){if(S&&id!=='ev'){clearInterval(S.tm);S=null;document.body.classList.remove('play')}g0(id);if(id==='ev')setup()};
+})();
+</script>
+
 
 </body>
 </html>
