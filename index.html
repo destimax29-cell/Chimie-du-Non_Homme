@@ -1574,6 +1574,47 @@ nav{padding:4px;border-radius:22px;box-shadow:0 8px 24px rgba(0,0,0,.28)}nav but
 #tod{padding:12px 14px}#tod p{font-size:14px}
 .sh .shb{border-radius:28px 28px 0 0}
 </style>
+<style>
+/* v8 : accueil, bulle musique, style du lexique, paysage */
+#home>.cover,#home>.prof{display:none}
+#hero{order:1;position:relative;border-radius:28px;overflow:hidden;margin:8px 0 4px;padding:18px;min-height:148px;display:flex;align-items:flex-end;border:1px solid var(--bd);background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 50%,var(--card)),color-mix(in srgb,#8a5cff 40%,var(--card)));background-size:cover;background-position:center}
+#hero .hin{display:flex;align-items:center;gap:14px;width:100%}
+#hero .hav{width:62px;height:62px;border-radius:22px;background:rgba(0,0,0,.25) center/cover;display:flex;align-items:center;justify-content:center;font-size:30px;flex:none;border:2px solid rgba(255,255,255,.4)}
+#hero .ht{flex:1;min-width:0}#hero small{display:block;color:rgba(255,255,255,.85);font-size:13px}
+#hero b{display:block;font-size:23px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hero .hc{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}#hero .hc span{background:rgba(0,0,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.t1{grid-column:1/-1;display:grid!important;grid-template-columns:auto 1fr;grid-template-areas:"e b" "e s";column-gap:14px;align-items:center;min-height:92px!important;background:linear-gradient(135deg,var(--ac),#2b8cff)!important;border:0!important}
+.t1 .e{grid-area:e;margin:0!important;background:rgba(255,255,255,.25)!important}.t1 b{grid-area:b;align-self:end;color:#04251c!important}.t1 small{grid-area:s;align-self:start;color:rgba(4,37,28,.75)!important}
+.tile{min-height:88px}
+/* bulle musique */
+#mp{left:auto;right:auto;bottom:auto;top:0;max-width:none;margin:0;padding:0;border:0;background:none;box-shadow:none;width:52px;height:52px;touch-action:none}
+body.hasmp #mp{display:block}body.play #mp{display:none!important}
+#mbb{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(135deg,var(--ac),#8a5cff);box-shadow:0 8px 22px rgba(0,0,0,.4);touch-action:none;user-select:none;-webkit-user-select:none}
+#mp.on #mbb{animation:spin 6s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+#mpn{display:none;position:absolute;top:50%;transform:translateY(-50%);left:60px;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:var(--card);border:1px solid var(--bd);box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap}
+#mp.lf #mpn{left:auto;right:60px}#mp.open #mpn{display:flex}#mpn .mt{flex:none;max-width:130px}
+body.hasmp,body.play.hasmp{padding-bottom:104px}body.hasmp .fab{bottom:calc(84px + env(safe-area-inset-bottom))}body.hasmp #selbar{bottom:calc(84px + env(safe-area-inset-bottom))}
+/* style du lexique personnalisable */
+.term{font-family:var(--lff,inherit);padding:var(--lpad,12px 14px)}
+.term .th b{color:var(--lt,var(--tx));font-size:calc(var(--lfs,15px) + 2px)}
+.term p{color:var(--ld,color-mix(in srgb,var(--tx) 82%,var(--bg)));font-size:var(--lfs,15px)}
+.sy span{color:var(--ls,var(--ac));background:color-mix(in srgb,var(--ls,var(--ac)) 18%,transparent)}
+body.cs-solid .term{background:var(--card);border-color:transparent}
+body.cs-outline .term{background:transparent;border:1px solid color-mix(in srgb,var(--tx) 24%,transparent)}
+body.cs-flat .term{background:transparent;border:0;border-bottom:1px solid var(--bd);border-radius:0}
+/* paysage : compact, 2 colonnes, barre minimale */
+@media (orientation:landscape) and (max-height:520px){
+header{position:static;padding:6px 14px}header button{width:32px;height:32px}
+main{max-width:980px}
+.lsb,.seg{top:0;padding:6px 14px 4px}#lxr{display:none!important}.lsb input{padding:10px 40px 10px 14px}#lxc{top:12px}
+#list{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;align-items:start}#list .lt{grid-column:1/-1}
+.lt,.term,#list{scroll-margin-top:90px}
+nav{max-width:520px;padding:2px}nav button{font-size:0;padding:4px 0}nav .i{font-size:19px}
+body,body.hasmp{padding-bottom:70px}
+.fab,body.hasmp .fab{width:44px;height:44px;font-size:22px;bottom:64px}#toast,#selbar,body.hasmp #selbar{bottom:64px}
+#hero{min-height:110px}#home .grid{grid-template-columns:repeat(4,1fr)}.t1{grid-column:auto}
+.shb{max-height:92vh;overflow:auto}}
+</style>
 <script>
 /* ===== AJOUTS v5 ===== */
 (function(){
@@ -1706,8 +1747,17 @@ tabs($('ad'),[['➕ Termes',[cd('nt'),cd('bulk'),cd('mine')]],['📄 Document',[
 const sc=[...document.querySelectorAll('#set>.c')],pc=document.createElement('div');pc.className='c';
 pc.innerHTML='<b>🎵 Ma playlist</b><small>Tes morceaux restent sur ton téléphone (utilisables hors-ligne) et se lisent pendant que tu étudies le lexique.</small><br><label class="f">📎 Ajouter des chansons<input id="pl_f" type="file" accept="audio/*" multiple hidden></label><div id="pl_l"></div><div class="row"><span>Lecture aléatoire</span><input type="checkbox" id="pl_shuf"></div><div class="row"><span>Répéter</span><select id="pl_rep"><option value="all">Toute la liste</option><option value="one">Un morceau</option><option value="off">Non</option></select></div><div class="row"><span>Volume</span><input type="range" id="pl_vol" min="0" max="1" step=".05" style="width:50%"></div><div class="row"><span>Mettre en pause pendant les challenges</span><input type="checkbox" id="pl_pz"></div>';
 $('set').appendChild(pc);
-const exp=lex.querySelector('details');
-tabs($('set'),[['👤 Profil',[sc[0]]],['🎨 Thème',[sc[1]]],['🎵 Audio',[sc[2],pc]],['🎮 Jeu',[sc[3],sc[4]]],['🗑 Données',[sc[5],exp]]]);
+const exp=lex.querySelector('details'),lxc=document.createElement('div');lxc.className='c';
+lxc.innerHTML=`<b>📖 Style du lexique</b><div class="c term" style="margin:10px 0"><div class="tb"><div class="th"><b>Abscisse</b><span class="stb">☆</span></div><div class="sy"><span>coordonnée x</span></div><p>Première coordonnée d'un point dans un repère.</p></div></div>
+<div class="row"><span>Couleur des termes</span><input type="color" id="lx_t" oninput="LXC.s('t',this.value)"></div>
+<div class="row"><span>Couleur des définitions</span><input type="color" id="lx_d" oninput="LXC.s('d',this.value)"></div>
+<div class="row"><span>Couleur des synonymes</span><input type="color" id="lx_s" oninput="LXC.s('s',this.value)"></div>
+<div class="row"><span>Taille du texte</span><input type="range" id="lx_f" min="13" max="22" style="width:50%" oninput="LXC.s('f',this.value)"></div>
+<div class="row"><span>Police</span><select id="lx_ff" onchange="LXC.s('ff',this.value)"><option value="">Système</option><option value="Georgia,serif">Élégante</option><option value="ui-rounded,system-ui">Arrondie</option><option value="ui-monospace,Menlo,monospace">Machine</option><option value="Bradley Hand,cursive">Manuscrite</option></select></div>
+<div class="row"><span>Style des cartes</span><select id="lx_cs" onchange="LXC.s('cs',this.value)"><option value="glass">Verre</option><option value="solid">Plein</option><option value="outline">Contour</option><option value="flat">Épuré (sans carte)</option></select></div>
+<div class="row"><span>Espacement</span><select id="lx_dn" onchange="LXC.s('dn',this.value)"><option value="c">Serré</option><option value="n">Normal</option><option value="a">Aéré</option></select></div>
+<button class="b g" onclick="LXC.rs()">↺ Réinitialiser le style</button>`;$('set').appendChild(lxc);
+tabs($('set'),[['👤 Profil',[sc[0]]],['🎨 Thème',[sc[1]]],['🎵 Audio',[sc[2],pc]],['🎮 Jeu',[sc[3],sc[4]]],['📖 Lexique',[lxc]],['🗑 Données',[sc[5],exp]]]);
 {const rs=document.createElement('button');rs.className='b g';rs.textContent='↺ Restaurer les termes de base modifiés ou supprimés';rs.onclick=()=>{if(confirm('Rétablir tous les termes de base d\'origine ?')){wr('cnhov',{});wr('cnhdel',[]);render();home()}};sc[5].appendChild(rs)}
 
 /* ---------- PLAYLIST ---------- */
@@ -1718,11 +1768,11 @@ const DB={o(){return new Promise((ok,ko)=>{const r=indexedDB.open('cnh_music',1)
 let TR=[],ci=-1,au=new Audio(),url='',rs=false,PS=Object.assign({shuf:false,rep:'all',vol:.7,pz:true},JSON.parse(gs('cnh_pl')||'{}'));
 const psv=()=>ss('cnh_pl',JSON.stringify(PS));au.volume=PS.vol;
 const mp=document.createElement('div');mp.id='mp';
-mp.innerHTML='<span style="font-size:18px">🎵</span><span class="mt" id="mpt"></span><button onclick="PL5.nx(-1)">⏮</button><button id="mpp" onclick="PL5.tg()">▶</button><button onclick="PL5.nx(1)">⏭</button><button onclick="PL5.stop()">✕</button>';
+mp.innerHTML='<div id="mbb">🎵</div><div id="mpn"><span class="mt" id="mpt"></span><button onclick="PL5.nx(-1)">⏮</button><button id="mpp" onclick="PL5.tg()">▶</button><button onclick="PL5.nx(1)">⏭</button><button onclick="PL5.stop()">✕</button></div>';
 document.body.appendChild(mp);
 const hb=document.createElement('button');hb.textContent='🎵';hb.onclick=()=>PL5.hb();$('snd2').parentNode.insertBefore(hb,$('snd2'));
 function ui(){
-  $('mpt').textContent=TR[ci]?TR[ci].name:'';$('mpp').textContent=au.paused?'▶':'⏸';
+  $('mpt').textContent=TR[ci]?TR[ci].name:'';$('mpp').textContent=au.paused?'▶':'⏸';mp.classList.toggle('on',!au.paused);
   document.body.classList.toggle('hasmp',ci>=0&&!!TR[ci]);
   if('mediaSession' in navigator&&TR[ci])try{navigator.mediaSession.metadata=new MediaMetadata({title:TR[ci].name,artist:'Non_Homme'})}catch(e){}
 }
@@ -1798,8 +1848,29 @@ const ok0=LEXV.ok;LEXV.ok=function(){if(ED&&!ED.e){const t=norm($('sh_t').value.
 const f0=fillScope;fillScope=function(){const sv=cfg.scope;f0();if(sv==='fav')cfg.scope='fav';document.querySelectorAll('select.scope').forEach(el=>{if(el.id==='subjsel')return;if(!el.querySelector('[value=fav]'))el.insertAdjacentHTML('beforeend','<option value="fav">⭐ Mes favoris</option>');el.value=cfg.scope})};
 const pl0=pool;pool=function(){if(cfg.scope==='fav'){const f=FV(),r=all().filter(e=>f.has(fkey(e)));if(r.length)return r}return pl0()};
 
+/* ---------- v8 : bulle musique, accueil, style du lexique ---------- */
+{const m=$('mp'),b=$('mbb');let P=JSON.parse(gs('cnh_mb')||'null')||{x:innerWidth-64,y:innerHeight*.55},st=null,mv=0;
+ const put=()=>{P.x=Math.max(6,Math.min(innerWidth-58,P.x));P.y=Math.max(50,Math.min(innerHeight-130,P.y));m.style.left=P.x+'px';m.style.top=P.y+'px';m.classList.toggle('lf',P.x>innerWidth/2)};
+ put();addEventListener('resize',put);
+ b.addEventListener('pointerdown',e=>{st={x:e.clientX-P.x,y:e.clientY-P.y,sx:e.clientX,sy:e.clientY};mv=0;b.setPointerCapture(e.pointerId)});
+ b.addEventListener('pointermove',e=>{if(!st)return;if(Math.hypot(e.clientX-st.sx,e.clientY-st.sy)>6)mv=1;if(mv){P.x=e.clientX-st.x;P.y=e.clientY-st.y;put()}});
+ b.addEventListener('pointerup',()=>{if(!st)return;st=null;if(mv){P.x=P.x>innerWidth/2?innerWidth-64:8;put();ss('cnh_mb',JSON.stringify(P))}else m.classList.toggle('open')})}
+function markDay(){const t=new Date().toDateString(),y=new Date(Date.now()-864e5).toDateString(),d=rd('cnhday','{}');if(d.l===t)return;d.n=d.l===y?(d.n||0)+1:1;d.l=t;wr('cnhday',d)}
+{const H=document.createElement('div');H.id='hero';H.innerHTML='<div class="hin"><div class="hav" id="hav"></div><div class="ht"><small id="hg"></small><b id="hn"></b><div class="hc" id="hc"></div></div></div>';$('home').insertBefore(H,$('home').firstChild)}
+const h7=home;home=function(){h7();const H=$('hero'),n=new Date().getHours(),d=rd('cnhday','{}'),ic=document.querySelector('header .lg').textContent;
+  H.style.backgroundImage=cfg.cover?`linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.72)),url("${cfg.cover}")`:'';
+  const av=$('hav');av.style.backgroundImage=cfg.avatar?`url("${cfg.avatar}")`:'';av.textContent=cfg.avatar?'':ic;
+  $('hg').textContent=(n<5||n>=18?'Bonsoir':'Bonjour')+' 👋';$('hn').textContent=cfg.name||'Non_Homme';
+  $('hc').innerHTML=`<span>${E(ic)} ${E(document.querySelector('header em').textContent.split('·')[0].trim())}</span>${d.n?`<span>🔥 ${d.n} jour${pl(d.n)}</span>`:''}<span>⭐ ${FV().size}</span>`};
+window.LXC={s(k,v){const o=Object.assign({},cfg.lx||{});if(v===''||v==null)delete o[k];else o[k]=v;set('lx',o)},rs(){set('lx',{});fillLx()}};
+function applyLx(){const o=cfg.lx||{},r=document.documentElement.style,B=document.body.classList,sp=(k,v)=>v?r.setProperty(k,v):r.removeProperty(k);
+  sp('--lt',o.t);sp('--ld',o.d);sp('--ls',o.s);sp('--lfs',o.f&&o.f+'px');sp('--lff',o.ff);sp('--lpad',{c:'8px 12px',n:'',a:'18px 18px'}[o.dn]);
+  ['glass','solid','outline','flat'].forEach(c=>B.toggle('cs-'+c,o.cs===c))}
+function fillLx(){const o=cfg.lx||{};if(!$('lx_t'))return;$('lx_t').value=o.t||cfg.tx;$('lx_d').value=o.d||cfg.tx;$('lx_s').value=o.s||cfg.ac;$('lx_f').value=o.f||15;$('lx_ff').value=o.ff||'';$('lx_cs').value=o.cs||'glass';$('lx_dn').value=o.dn||'n'}
+const ac0=applyCfg;applyCfg=function(){ac0();applyLx()};const fs0=fillSet;fillSet=function(){fs0();fillLx()};applyLx();
+
 /* ---------- navigation ---------- */
-const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(id!=='lex'&&SM)LEXV.sm(0)};document.body.dataset.sec='home';
+const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(['lex','ch','cur','ev'].includes(id))markDay();if(id!=='lex'&&SM)LEXV.sm(0)};document.body.dataset.sec='home';
 render();home();
 })();
 </script>
