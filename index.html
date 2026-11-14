@@ -1458,6 +1458,7 @@ const w=document.querySelector('#home .wide'),hb=document.createElement('button'
 const g0=go;go=function(id){if(S&&id!=='ev'){clearInterval(S.tm);S=null;document.body.classList.remove('play')}g0(id);if(id==='ev')setup()};
 })();
 </script>
+
 <style>
 /* accueil */
 .cover{height:96px;font-size:40px;border-radius:0 0 26px 26px}
@@ -1506,6 +1507,50 @@ body.hasmp #mp{display:flex}body.play #mp{display:none}body.hasmp{padding-bottom
 .tn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sm{padding:6px 12px!important;margin:0 0 0 4px!important;box-shadow:none!important}
 </style>
+<style>
+/* v6 : en-tête */
+header{padding:10px 14px;gap:8px}
+header>span:first-child{flex:1;min-width:0;font-size:17px}
+header em{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+header .lg{flex:none}header>span:last-child{flex:none;gap:6px}
+header button{width:36px;height:36px;font-size:17px}
+/* barres collantes */
+.lsb,.seg{top:56px;margin:0 -14px;padding:8px 14px 6px;background:color-mix(in srgb,var(--bg) 96%,transparent);border-bottom:1px solid var(--bd);border-radius:0 0 20px 20px}
+.seg button{padding:8px 13px;font-size:13px}
+.lt,.term,#list{scroll-margin-top:170px}
+.lxt{display:flex;align-items:center;gap:8px;margin:2px 0 4px}.lxt small{flex:1;margin:0}
+.lxt select{max-width:none;padding:7px 10px;font-size:13px;border-radius:999px}
+.lxt button{flex:none;border:1px solid var(--bd);background:var(--g);color:var(--tx);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700}
+/* cartes du lexique allégées */
+.term{display:flex;gap:10px;padding:12px 14px;margin:8px 0;cursor:pointer}
+.term .tb{flex:1;min-width:0}.term b{font-size:17px}.term p{margin:4px 0 0;font-size:15px}
+.ck5{display:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--mu);flex:none;margin-top:2px;color:#04251c;font-weight:900;font-size:14px;align-items:center;justify-content:center}
+body.selm .ck5{display:flex}.term.sel{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,var(--card))}
+.term.sel .ck5{background:var(--ac);border-color:var(--ac)}.term.sel .ck5::after{content:'✓'}
+.act{display:none;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}.term.open .act{display:flex}body.selm .act{display:none!important}
+.act button{flex:1;padding:9px 2px;border-radius:12px;border:1px solid var(--bd);background:var(--g);color:var(--tx);font-size:13px;font-weight:700}.act .dg{color:var(--er)}
+#selbar{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));max-width:676px;margin:auto;z-index:8;display:none;align-items:center;gap:8px;padding:10px 12px;border-radius:20px;background:var(--card);border:1px solid var(--ac);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+body.selm #selbar{display:flex}body.selm .fab{display:none!important}body.hasmp #selbar{bottom:calc(146px + env(safe-area-inset-bottom))}
+#selbar span{flex:1;font-weight:700;font-size:14px}#selbar button{border:1px solid var(--bd);background:var(--g);color:var(--tx);border-radius:12px;padding:9px 12px;font-weight:700;font-size:13px}#selbar .dg{background:var(--er);border-color:var(--er);color:#fff}
+/* accueil réorganisé */
+#home.on{display:flex;flex-direction:column}
+#home>div:not([class]){display:contents}
+#home>.cover{order:0;height:120px}#home>.prof{order:1}.hs{order:2}.hello{order:3}.grid{order:4}#rankc{order:5}#tod{order:6}
+#home>.wide{display:none}
+.prof h1{font-size:21px}
+.hello{display:flex;flex-wrap:wrap;gap:10px;padding:14px}
+.hello>b,.hello>br,.hello>small{display:none}
+.hello .stats{width:100%;margin:0}.stats b{font-size:24px}.stats div{padding:10px 4px}
+.hello .row{flex:1 1 42%;margin:0;min-width:0;flex-direction:column;align-items:stretch;gap:4px}
+.hello .row>span{font-size:12px;color:var(--mu)}.hello select,.hello select.scope{max-width:100%;width:100%}
+/* matières et listes */
+#subjbox>.row{background:var(--g);border:1px solid var(--bd);border-radius:14px;padding:10px 12px;margin:8px 0}
+#subjbox .row>span:first-child{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+#subjbox .row>span:last-child{display:flex;gap:6px;flex:none;align-items:center}
+#subjbox .b{padding:7px 12px;font-size:13px;margin:0!important;box-shadow:none}
+#mine .c{padding:10px 12px;margin:8px 0}#mine .b{padding:7px 12px;font-size:13px;margin-top:6px}
+</style>
+
 <script>
 /* ===== AJOUTS v5 ===== */
 (function(){
@@ -1520,25 +1565,28 @@ const lex=$('lex'),wrap=document.createElement('div');wrap.className='lsb';
 wrap.innerHTML='<div id="lxr" class="rail"></div><div id="lxb"></div>';
 wrap.insertBefore($('n'),wrap.firstChild);wrap.insertBefore($('s'),wrap.firstChild);
 lex.insertBefore(wrap,lex.firstChild);
-$('s').placeholder='🔍 Chercher un terme ou un mot de la définition…';
+$('s').placeholder='🔍 Chercher un terme ou un mot…';
+const lxt=document.createElement('div');lxt.className='lxt';lxt.innerHTML='<select id="lxf"><option value="all">Tous</option><option value="mine">Mes ajouts</option><option value="err">Mes erreurs</option></select><button id="lxs" onclick="LEXV.tgs()">☑ Choisir</button>';lxt.insertBefore($('n'),lxt.firstChild);wrap.insertBefore(lxt,$('lxr'));
 function hl(t,q){
   if(!q)return E(t);const f=fold(t),k=fold(q);if(f.length!==t.length||!k)return E(t);
   let o='',p=0,i;while((i=f.indexOf(k,p))>=0){o+=E(t.slice(p,i))+'<mark>'+E(t.slice(i,i+k.length))+'</mark>';p=i+k.length}
   return o+E(t.slice(p));
 }
+let SEL=new Set(),SM=0,FL='all',LP=0;
+const sid=e=>(e.b||e.t)+'§'+e.d;
 function cardH(e,i,q){
-  const p=e.t.split('|');
-  return `<div class="c term" id="lx${i}"><div class="th"><b>${hl(p[0],q)}</b><span class="ta"><button onclick="LEXV.edit(${i})" aria-label="Modifier">✏️</button><button onclick="LEXV.syn(${i})" aria-label="Synonyme">🏷</button><button onclick="LEXV.del(${i})" aria-label="Supprimer">🗑</button></span></div>${p.length>1?'<div class="sy">'+p.slice(1).map(s=>'<span>'+hl(s,q)+'</span>').join('')+'</div>':''}<p>${hl(e.d,q)}</p>${q?`<button class="b g loc" onclick="LEXV.loc(${i})">📍 Situer dans le lexique</button>`:''}</div>`;
+  const p=e.t.split('|').map(x=>x.trim()).filter(Boolean),on=SEL.has(sid(e)),st=ev=>'event.stopPropagation();LEXV.'+ev+'('+i+')';
+  return `<div class="c term${on?' sel':''}" id="lx${i}" onclick="LEXV.tap(${i})"><div class="ck5"></div><div class="tb"><b>${hl(p[0]||'',q)}</b>${p.length>1?'<div class="sy">'+p.slice(1).map(x=>'<span>'+hl(x,q)+'</span>').join('')+'</div>':''}<p>${hl(e.d,q)}</p>${q?`<button class="b g loc" onclick="${st('loc')}">📍 Situer dans le lexique</button>`:''}<div class="act"><button onclick="${st('edit')}">✏️ Modifier</button><button onclick="${st('syn')}">🏷 Synonyme</button><button class="dg" onclick="${st('del')}">🗑 Supprimer</button></div></div></div>`;
 }
 function draw(){
-  const q=$('s').value.trim(),qn=norm(q),A=all().sort((x,y)=>x.t.localeCompare(y.t,'fr'));let L=A;
-  if(qn){
-    L=A.map(e=>{const v=e.t.split('|').map(norm);
-      const s=v.some(x=>x===qn)?0:v.some(x=>x.startsWith(qn))?1:v.some(x=>x.includes(qn))?2:norm(e.d).includes(qn)?3:9;return[s,e]})
-      .filter(x=>x[0]<9).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
-  }
+  const q=$('s').value.trim(),qn=norm(q);let A=all().sort((x,y)=>x.t.localeCompare(y.t,'fr'));const T=A.length;
+  if(FL==='mine')A=A.filter(e=>custom.includes(e));else if(FL==='err')A=A.filter(e=>err[e.t]);
+  let L=A;
+  if(qn)L=A.map(e=>{const v=e.t.split('|').map(norm).filter(Boolean);
+    const s=v.some(x=>x===qn)?0:v.some(x=>x.startsWith(qn))?1:v.some(x=>x.includes(qn))?2:norm(e.d).includes(qn)?3:9;return[s,e]})
+    .filter(x=>x[0]<9).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
   LS=L;
-  $('n').textContent=qn?L.length+' résultat(s) · termes d\'abord, puis définitions':A.length+' termes';
+  $('n').textContent=qn?L.length+' résultat(s)':(FL==='all'?T:L.length+' / '+T)+' termes';
   $('lxb').innerHTML=(!qn&&ret)?`<div class="ret"><span>📍 Tu parcours le lexique</span><button onclick="LEXV.back()">↩ Retour à « ${E(ret)} »</button></div>`:'';
   let h='',c='';const ls=[];
   L.forEach((e,i)=>{
@@ -1686,8 +1734,26 @@ new MutationObserver(()=>{const pl=document.body.classList.contains('play');
 }).observe(document.body,{attributes:true,attributeFilter:['class']});
 reload();
 
+/* ---------- v6 : sélection multiple, filtre, accueil ---------- */
+const selc=()=>{$('selc').textContent=SEL.size+' sélectionné'+(SEL.size>1?'s':'')};
+const sb=document.createElement('div');sb.id='selbar';sb.innerHTML='<span id="selc"></span><button onclick="LEXV.all()">Tout</button><button class="dg" onclick="LEXV.bulk()">🗑 Supprimer</button><button onclick="LEXV.sm(0)">✕</button>';document.body.appendChild(sb);
+Object.assign(LEXV,{
+  tap(i){if(LP){LP=0;return}const e=LS[i],el=$('lx'+i);if(!e)return;
+    if(SM){const d=sid(e);SEL.has(d)?SEL.delete(d):SEL.add(d);el.classList.toggle('sel');selc()}
+    else{document.querySelectorAll('.term.open').forEach(x=>x!==el&&x.classList.remove('open'));el.classList.toggle('open')}},
+  sm(on){SM=on?1:0;SEL.clear();document.body.classList.toggle('selm',!!SM);document.querySelectorAll('.term.sel,.term.open').forEach(x=>x.classList.remove('sel','open'));$('lxs').textContent=SM?'✕ Annuler':'☑ Choisir';selc()},
+  tgs(){LEXV.sm(!SM)},
+  all(){const a=SEL.size<LS.length;SEL.clear();LS.forEach((e,i)=>{if(a)SEL.add(sid(e));const el=$('lx'+i);if(el)el.classList.toggle('sel',a)});selc()},
+  bulk(){const L=LS.filter(e=>SEL.has(sid(e)));if(!L.length)return;if(!confirm('Supprimer '+L.length+' terme'+(L.length>1?'s':'')+' ?'))return;L.forEach(removeEntry);LEXV.sm(0);render();home()},
+  search(q){FL='all';$('lxf').value='all';go('lex');$('s').value=q;ret='';draw();window.scrollTo(0,0)}
+});
+$('lxf').onchange=function(){FL=this.value;ret='';draw()};
+lex.addEventListener('touchstart',e=>{const c=e.target.closest('.term');LP=0;if(!c||SM)return;lp=setTimeout(()=>{LEXV.sm(1);const t=LS[+c.id.slice(2)];if(t){SEL.add(sid(t));c.classList.add('sel');selc()}LP=1;try{buzz(30)}catch(x){}},500)},{passive:true});
+let lp;['touchend','touchmove','touchcancel'].forEach(v=>lex.addEventListener(v,()=>clearTimeout(lp),{passive:true}));
+const h6=home;home=function(){h6();const h=document.querySelector('#home .prof h1'),n=new Date().getHours();if(h&&h.firstChild&&h.firstChild.nodeType===3)h.firstChild.textContent=(n<5||n>=18?'Bonsoir ':'Bonjour ')};
+
 /* ---------- navigation ---------- */
-const g5=go;go=function(id){g5(id);document.body.dataset.sec=id};document.body.dataset.sec='home';
+const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(id!=='lex'&&SM)LEXV.sm(0)};document.body.dataset.sec='home';
 render();home();
 })();
 </script>
