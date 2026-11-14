@@ -1551,6 +1551,29 @@ body.selm #selbar{display:flex}body.selm .fab{display:none!important}body.hasmp 
 #mine .c{padding:10px 12px;margin:8px 0}#mine .b{padding:7px 12px;font-size:13px;margin-top:6px}
 </style>
 
+<style>
+/* v7 : finitions, plus léger et plus doux */
+body{background:radial-gradient(700px 380px at 0% -8%,color-mix(in srgb,var(--ac) 14%,transparent),transparent),radial-gradient(520px 380px at 100% 0,rgba(138,92,255,.1),transparent),var(--bg);background-attachment:fixed}
+header{background:color-mix(in srgb,var(--bg) 80%,transparent);border-bottom:0}
+header button{background:transparent;border:0;font-size:19px}
+.c{background:color-mix(in srgb,var(--card) 90%,transparent);box-shadow:none;border-radius:20px}
+button.b{box-shadow:none;border-radius:14px;padding:12px 18px}
+nav{padding:4px;border-radius:22px;box-shadow:0 8px 24px rgba(0,0,0,.28)}nav button{font-size:10px;padding:7px 0}nav .i{font-size:20px}
+.lt{font-size:13px;letter-spacing:.16em;color:var(--mu);display:flex;align-items:center;gap:10px;padding:18px 4px 4px}.lt::after{content:'';flex:1;height:1px;background:var(--bd)}
+.term>.tb b,.term .th b{color:var(--tx)}.term .th b{flex:1}
+.stb{background:none;border:0;color:var(--mu);font-size:21px;padding:0 2px;line-height:1}.stb.on{color:#ffc933}
+.act button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;padding:8px 0}.act i{font-style:normal;font-size:18px}
+.lsb input{padding-right:44px}
+#lxc{display:none;position:absolute;right:24px;top:18px;width:30px;height:30px;border-radius:50%;border:0;background:var(--g);color:var(--tx);font-size:13px}
+#toast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));z-index:120;align-items:center;gap:14px;padding:12px 16px;border-radius:16px;background:var(--tx);color:var(--bg);font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap;max-width:92%}
+#toast.on{display:flex;animation:fi .25s}#toast span{overflow:hidden;text-overflow:ellipsis}#toast button{background:none;border:0;font-weight:800;font-size:14px;color:color-mix(in srgb,var(--ac) 75%,var(--bg))}
+#home>.cover{height:104px;border-radius:0 0 28px 28px}
+.hello{background:transparent;border:0;padding:0;margin:6px 0}
+.stats div{background:var(--card);border:1px solid var(--bd);border-radius:16px}.stats b{font-size:22px}.stats small{font-size:11px}
+.tile{min-height:92px;border-radius:20px}.tile .e{width:38px;height:38px;font-size:20px}.tile b{font-size:16px}.tile small{font-size:12px}
+#tod{padding:12px 14px}#tod p{font-size:14px}
+.sh .shb{border-radius:28px 28px 0 0}
+</style>
 <script>
 /* ===== AJOUTS v5 ===== */
 (function(){
@@ -1566,7 +1589,7 @@ wrap.innerHTML='<div id="lxr" class="rail"></div><div id="lxb"></div>';
 wrap.insertBefore($('n'),wrap.firstChild);wrap.insertBefore($('s'),wrap.firstChild);
 lex.insertBefore(wrap,lex.firstChild);
 $('s').placeholder='🔍 Chercher un terme ou un mot…';
-const lxt=document.createElement('div');lxt.className='lxt';lxt.innerHTML='<select id="lxf"><option value="all">Tous</option><option value="mine">Mes ajouts</option><option value="err">Mes erreurs</option></select><button id="lxs" onclick="LEXV.tgs()">☑ Choisir</button>';lxt.insertBefore($('n'),lxt.firstChild);wrap.insertBefore(lxt,$('lxr'));
+const lxt=document.createElement('div');lxt.className='lxt';lxt.innerHTML='<select id="lxf"><option value="all">Tous</option><option value="mine">Mes ajouts</option><option value="fav">⭐ Favoris</option><option value="err">Mes erreurs</option></select><button id="lxs" onclick="LEXV.tgs()">☑ Choisir</button>';lxt.insertBefore($('n'),lxt.firstChild);wrap.insertBefore(lxt,$('lxr'));const cx=document.createElement('button');cx.id='lxc';cx.textContent='✕';cx.onclick=()=>{$('s').value='';ret='';draw();cx.style.display='none';$('s').focus()};wrap.appendChild(cx);$('s').addEventListener('input',()=>{cx.style.display=$('s').value?'block':'none'});
 function hl(t,q){
   if(!q)return E(t);const f=fold(t),k=fold(q);if(f.length!==t.length||!k)return E(t);
   let o='',p=0,i;while((i=f.indexOf(k,p))>=0){o+=E(t.slice(p,i))+'<mark>'+E(t.slice(i,i+k.length))+'</mark>';p=i+k.length}
@@ -1574,13 +1597,15 @@ function hl(t,q){
 }
 let SEL=new Set(),SM=0,FL='all',LP=0;
 const sid=e=>(e.b||e.t)+'§'+e.d;
+let FS=new Set();const FV=()=>new Set(rd('cnhfav','[]')),fkey=e=>norm((e.b||e.t).split('|')[0]);
 function cardH(e,i,q){
-  const p=e.t.split('|').map(x=>x.trim()).filter(Boolean),on=SEL.has(sid(e)),st=ev=>'event.stopPropagation();LEXV.'+ev+'('+i+')';
-  return `<div class="c term${on?' sel':''}" id="lx${i}" onclick="LEXV.tap(${i})"><div class="ck5"></div><div class="tb"><b>${hl(p[0]||'',q)}</b>${p.length>1?'<div class="sy">'+p.slice(1).map(x=>'<span>'+hl(x,q)+'</span>').join('')+'</div>':''}<p>${hl(e.d,q)}</p>${q?`<button class="b g loc" onclick="${st('loc')}">📍 Situer dans le lexique</button>`:''}<div class="act"><button onclick="${st('edit')}">✏️ Modifier</button><button onclick="${st('syn')}">🏷 Synonyme</button><button class="dg" onclick="${st('del')}">🗑 Supprimer</button></div></div></div>`;
+  const p=e.t.split('|').map(x=>x.trim()).filter(Boolean),on=SEL.has(sid(e)),f=FS.has(fkey(e)),st=v=>'event.stopPropagation();LEXV.'+v+'('+i+')';
+  const bt=[['edit','✏️','Modifier'],['syn','🏷','Synonyme'],['say','🔊','Écouter'],['cp','📋','Copier'],['del','🗑','Supprimer']].map(a=>`<button${a[0]==='del'?' class="dg"':''} onclick="${st(a[0])}"><i>${a[1]}</i>${a[2]}</button>`).join('');
+  return `<div class="c term${on?' sel':''}" id="lx${i}" onclick="LEXV.tap(${i})"><div class="ck5"></div><div class="tb"><div class="th"><b>${hl(p[0]||'',q)}</b><button class="stb${f?' on':''}" onclick="${st('fav')}">${f?'★':'☆'}</button></div>${p.length>1?'<div class="sy">'+p.slice(1).map(x=>'<span>'+hl(x,q)+'</span>').join('')+'</div>':''}<p>${hl(e.d,q)}</p>${q?`<button class="b g loc" onclick="${st('loc')}">📍 Situer dans le lexique</button>`:''}<div class="act">${bt}</div></div></div>`;
 }
 function draw(){
-  const q=$('s').value.trim(),qn=norm(q);let A=all().sort((x,y)=>x.t.localeCompare(y.t,'fr'));const T=A.length;
-  if(FL==='mine')A=A.filter(e=>custom.includes(e));else if(FL==='err')A=A.filter(e=>err[e.t]);
+  const q=$('s').value.trim(),qn=norm(q);let A=all().sort((x,y)=>x.t.localeCompare(y.t,'fr'));const T=A.length;FS=FV();
+  if(FL==='fav')A=A.filter(e=>FS.has(fkey(e)));else if(FL==='mine')A=A.filter(e=>custom.includes(e));else if(FL==='err')A=A.filter(e=>err[e.t]);
   let L=A;
   if(qn)L=A.map(e=>{const v=e.t.split('|').map(norm).filter(Boolean);
     const s=v.some(x=>x===qn)?0:v.some(x=>x.startsWith(qn))?1:v.some(x=>x.includes(qn))?2:norm(e.d).includes(qn)?3:9;return[s,e]})
@@ -1593,7 +1618,7 @@ function draw(){
     if(!qn){const l=(norm(e.t.split('|')[0])[0]||'#').toUpperCase();if(l!==c){c=l;ls.push(l);h+=`<div class="lt" id="lxL_${l}" data-l="${l}">${l}</div>`}}
     h+=cardH(e,i,qn?q:'');
   });
-  $('list').innerHTML=h||'<div class="c"><small>Aucun résultat. Essaie un autre mot, ou ajoute ce terme avec le bouton ＋.</small></div>';
+  $('list').innerHTML=h||(qn?`<div class="c" style="text-align:center"><p>Aucun résultat pour « ${E(q)} »</p><button class="b" onclick="LEXV.addq()">➕ Créer ce terme</button></div>`:'<div class="c" style="text-align:center"><small>Rien à afficher ici pour l\'instant.</small></div>');
   $('lxr').innerHTML=qn?'':ls.map(l=>`<button data-l="${l}" onclick="LEXV.jl('${l}')">${l}</button>`).join('');
   $('lxr').style.display=qn?'none':'flex';
 }
@@ -1736,7 +1761,7 @@ reload();
 
 /* ---------- v6 : sélection multiple, filtre, accueil ---------- */
 const selc=()=>{$('selc').textContent=SEL.size+' sélectionné'+(SEL.size>1?'s':'')};
-const sb=document.createElement('div');sb.id='selbar';sb.innerHTML='<span id="selc"></span><button onclick="LEXV.all()">Tout</button><button class="dg" onclick="LEXV.bulk()">🗑 Supprimer</button><button onclick="LEXV.sm(0)">✕</button>';document.body.appendChild(sb);
+const sb=document.createElement('div');sb.id='selbar';sb.innerHTML='<span id="selc"></span><button onclick="LEXV.all()">Tout</button><button onclick="LEXV.bfav()">⭐</button><button class="dg" onclick="LEXV.bulk()">🗑</button><button onclick="LEXV.sm(0)">✕</button>';document.body.appendChild(sb);
 Object.assign(LEXV,{
   tap(i){if(LP){LP=0;return}const e=LS[i],el=$('lx'+i);if(!e)return;
     if(SM){const d=sid(e);SEL.has(d)?SEL.delete(d):SEL.add(d);el.classList.toggle('sel');selc()}
@@ -1751,6 +1776,27 @@ $('lxf').onchange=function(){FL=this.value;ret='';draw()};
 lex.addEventListener('touchstart',e=>{const c=e.target.closest('.term');LP=0;if(!c||SM)return;lp=setTimeout(()=>{LEXV.sm(1);const t=LS[+c.id.slice(2)];if(t){SEL.add(sid(t));c.classList.add('sel');selc()}LP=1;try{buzz(30)}catch(x){}},500)},{passive:true});
 let lp;['touchend','touchmove','touchcancel'].forEach(v=>lex.addEventListener(v,()=>clearTimeout(lp),{passive:true}));
 const h6=home;home=function(){h6();const h=document.querySelector('#home .prof h1'),n=new Date().getHours();if(h&&h.firstChild&&h.firstChild.nodeType===3)h.firstChild.textContent=(n<5||n>=18?'Bonsoir ':'Bonjour ')};
+
+/* ---------- v7 : annuler, favoris, écoute, copie ---------- */
+let tt;function toast(m,u){let t=$('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t)}
+  t.innerHTML='<span>'+E(m)+'</span>'+(u?'<button>Annuler</button>':'');t.classList.add('on');if(u)t.querySelector('button').onclick=()=>{u();t.classList.remove('on')};clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),u?6000:2200)}
+const snap=()=>({c:JSON.stringify(custom),o:JSON.stringify(rd('cnhov','{}')),d:JSON.stringify(rd('cnhdel','[]'))});
+const undoer=n=>()=>{custom=JSON.parse(n.c);save();wr('cnhov',JSON.parse(n.o));wr('cnhdel',JSON.parse(n.d));render();home()};
+const nm=e=>e.t.split('|')[0],pl=n=>n>1?'s':'';
+Object.assign(LEXV,{
+  del(i){const e=LS[i],n=snap();removeEntry(e);render();home();toast('« '+nm(e)+' » supprimé',undoer(n))},
+  rm(){const e=ED&&ED.e;if(!e)return;const n=snap();removeEntry(e);LEXV.no();render();home();toast('« '+nm(e)+' » supprimé',undoer(n))},
+  bulk(){const L=LS.filter(e=>SEL.has(sid(e)));if(!L.length)return;const n=snap();L.forEach(removeEntry);LEXV.sm(0);render();home();toast(L.length+' terme'+pl(L.length)+' supprimé'+pl(L.length),undoer(n))},
+  fav(i){const e=LS[i],f=FV(),k=fkey(e);f.has(k)?f.delete(k):f.add(k);wr('cnhfav',[...f]);FS=f;
+    if(FL==='fav')draw();else{const b=document.querySelector('#lx'+i+' .stb'),on=f.has(k);if(b){b.textContent=on?'★':'☆';b.classList.toggle('on',on)}}},
+  bfav(){const L=LS.filter(e=>SEL.has(sid(e))),f=FV();L.forEach(e=>f.add(fkey(e)));wr('cnhfav',[...f]);LEXV.sm(0);draw();toast(L.length+' ajouté'+pl(L.length)+' aux favoris ⭐')},
+  say(i){try{say(nm(LS[i])+'. '+LS[i].d)}catch(x){}},
+  cp(i){const e=LS[i];try{navigator.clipboard.writeText(nm(e)+' : '+e.d);toast('Copié 📋')}catch(x){toast('Copie impossible')}},
+  addq(){const q=$('s').value.trim();openEd(null);$('sh_t').value=q;setTimeout(()=>$('sh_d').focus(),120)}
+});
+const ok0=LEXV.ok;LEXV.ok=function(){if(ED&&!ED.e){const t=norm($('sh_t').value.trim());if(t&&all().some(x=>norm(x.t.split('|')[0])===t)&&!confirm('Ce terme existe déjà. L\'ajouter quand même ?'))return}ok0()};
+const f0=fillScope;fillScope=function(){const sv=cfg.scope;f0();if(sv==='fav')cfg.scope='fav';document.querySelectorAll('select.scope').forEach(el=>{if(el.id==='subjsel')return;if(!el.querySelector('[value=fav]'))el.insertAdjacentHTML('beforeend','<option value="fav">⭐ Mes favoris</option>');el.value=cfg.scope})};
+const pl0=pool;pool=function(){if(cfg.scope==='fav'){const f=FV(),r=all().filter(e=>f.has(fkey(e)));if(r.length)return r}return pl0()};
 
 /* ---------- navigation ---------- */
 const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(id!=='lex'&&SM)LEXV.sm(0)};document.body.dataset.sec='home';
