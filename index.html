@@ -1791,7 +1791,9 @@ const sy=document.createElement('input');sy.id='nt2';sy.placeholder='Synonymes (
 $('nt').placeholder='Terme';
 const a0=addOne;addOne=function(){const s=$('nt2').value.split(/[,;]/).map(x=>x.trim()).filter(Boolean),t=$('nt').value.trim();
   if(s.length&&t)$('nt').value=t+'|'+s.join('|');$('nt2').value='';a0()};
-tabs($('ad'),[['➕ Termes',[cd('nt'),cd('bulk'),cd('mine')]],['📄 Document',[cd('paste')]],['📚 Matières',[cd('subjbox')]],['💾 Sauvegarde',[adc[adc.length-1]]]]);
+const xf=document.createElement('div');xf.className='c';
+xf.innerHTML=`<b>📲 Transférer mes données</b><small>La version de l'écran d'accueil et celle de Safari ont chacune leur mémoire. <b>Dans Safari</b> : « Copier tout » (ou « Fichier »). <b>Dans l'écran d'accueil</b> : « Coller » (ou « Restaurer un fichier »).</small><div class="row2" style="margin-top:10px"><button class="b" onclick="XF.copy()">📋 Copier tout</button><button class="b g" onclick="XF.save()">⬇ Fichier</button></div><div class="row2"><button class="b" onclick="XF.paste()">📥 Coller</button><label class="f" style="flex:1;margin:4px 0;text-align:center">⬆ Restaurer un fichier<input type="file" accept=".json" hidden onchange="XF.file(this)"></label></div><small>Inclus : termes, matières, progression, favoris, réglages et photos. Les chansons de la playlist ne sont pas transférées : à ajouter de nouveau.</small>`;$('ad').appendChild(xf);
+tabs($('ad'),[['➕ Termes',[cd('nt'),cd('bulk'),cd('mine')]],['📄 Document',[cd('paste')]],['📚 Matières',[cd('subjbox')]],['💾 Sauvegarde',[xf,adc[adc.length-1]]]]);
 
 /* playlist : carte dans Réglages */
 const sc=[...document.querySelectorAll('#set>.c')],pc=document.createElement('div');pc.className='c';
@@ -1942,6 +1944,25 @@ LEXV.filt=v=>{FL=v;$('lxf').value=v;ret='';$('s').value='';go('lex');draw()};
 const r10=render;render=function(){r10();const d=[...new Set(custom.map(e=>e.s).filter(Boolean))],n=custom.length;
   $('mine').innerHTML=n?`<p><b style="color:var(--tx)">${n} terme${pl(n)} ajouté${pl(n)}</b><br><small>Modifie-les, trie-les ou supprime-les directement dans le lexique.</small></p><button class="b" onclick="LEXV.filt('mine')">Gérer dans le lexique</button>`+(d.length?'<p><small>Supprimer un document entier :</small></p>'+d.map(x=>`<button class="b g" onclick="delDoc('${E(x)}')">🗑 ${E(x)} (${custom.filter(e=>e.s===x).length})</button>`).join(''):''):'<small>Aucun terme ajouté pour l\'instant.</small>'};
 const h10=home;home=function(){h10();document.querySelectorAll('.dur').forEach(e=>e.textContent=cfg.dur)};
+
+/* ---------- v12 : transfert complet Safari <-> écran d'accueil ---------- */
+const XF={
+ dump(){const d={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);d[k]=gs(k)}return JSON.stringify({app:'qg',v:1,date:new Date().toISOString(),data:d})},
+ load(txt){let o;try{o=JSON.parse(txt)}catch(e){return alert('Code ou fichier invalide')}
+  const d=o&&o.data;if(!d||o.app!=='qg')return alert('Ce n\'est pas une sauvegarde du QG');
+  if(!confirm('Remplacer les données de cet appareil par la sauvegarde ('+Object.keys(d).length+' éléments) ?'))return;
+  Object.keys(d).forEach(k=>ss(k,d[k]));alert('Données restaurées ✓');location.reload()},
+ save(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([XF.dump()],{type:'application/json'}));a.download='QG-sauvegarde-complete.json';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000)},
+ async copy(){try{await navigator.clipboard.writeText(XF.dump());toast('Code copié 📋 : colle-le dans l\'autre version')}catch(e){alert('Copie impossible : utilise « Fichier »')}},
+ async paste(){let t='';try{t=await navigator.clipboard.readText()}catch(e){}if(!t)t=prompt('Colle ici le code de sauvegarde')||'';if(t)XF.load(t)},
+ file(inp){const f=inp.files[0];if(!f)return;f.text().then(XF.load);inp.value=''},
+ later(b){ss('cnh_tip','1');b.parentNode.remove()}
+};window.XF=XF;
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+const h12=home;home=function(){h12();let t=$('tip');
+  const need=(navigator.standalone||matchMedia('(display-mode: standalone)').matches)&&!custom.length&&!Object.keys(rd('cnhcur','{}')).length&&!gs('cnh_tip');
+  if(!need){if(t)t.remove();return}
+  if(!t){t=document.createElement('div');t.id='tip';t.className='c';t.innerHTML='<b>📲 Tes données sont dans Safari ?</b><p style="margin:6px 0 10px;color:var(--mu);font-size:14px">Cette version a sa propre mémoire. Dans Safari : Ajouter › Sauvegarde › « Copier tout ». Reviens ici et colle.</p><button class="b" onclick="XF.paste()">📥 Coller ma sauvegarde</button><button class="b g" onclick="XF.later(this)">Plus tard</button>';$('home').insertBefore(t,$('hero'))}};
 
 /* ---------- navigation ---------- */
 const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(['lex','ch','cur','ev'].includes(id))markDay();if(id!=='lex'&&SM)LEXV.sm(0)};document.body.dataset.sec='home';
