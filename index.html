@@ -1458,6 +1458,7 @@ const w=document.querySelector('#home .wide'),hb=document.createElement('button'
 const g0=go;go=function(id){if(S&&id!=='ev'){clearInterval(S.tm);S=null;document.body.classList.remove('play')}g0(id);if(id==='ev')setup()};
 })();
 </script>
+
 <style>
 /* accueil */
 .cover{height:96px;font-size:40px;border-radius:0 0 26px 26px}
@@ -1926,7 +1927,7 @@ const ac0=applyCfg;applyCfg=function(){ac0();applyLx()};const fs0=fillSet;fillSe
 /* ---------- v10 : raccourcis, visionneuse photo, nettoyage ---------- */
 custom.forEach(e=>{e.t=e.t.split('|').map(x=>x.trim()).filter(Boolean).join('|')});save();
 LEXV.filt=v=>{FL=v;$('lxf').value=v;ret='';$('s').value='';go('lex');draw()};
-{const S=document.createElement('div');S.id='sc5';
+{const S=document.createElement('div');S.id='sc5';S.className='scr';
  const it=[['⏱','<span class="dur">60</span> s',"go('ch');play('time')"],['♾️','Illimité',"go('ch');play('inf')"],['📝','Erreurs',"go('ch');play('err')"],['🎯','Évaluer',"go('ev')"],['🏆','Cursus',"go('cur')"],['⭐','Favoris',"LEXV.filt('fav')"],['📖','Lexique',"go('lex')"],['➕','Ajouter',"go('ad')"]];
  S.innerHTML=it.map(x=>`<button onclick="${x[2]}"><i><b>${x[0]}</b></i><span>${x[1]}</span></button>`).join('');
  $('home').insertBefore(S,$('hero').nextSibling)}
@@ -1947,8 +1948,6 @@ const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(['lex','ch','
 render();home();
 })();
 </script>
-
-
   
 </body>
 </html>
