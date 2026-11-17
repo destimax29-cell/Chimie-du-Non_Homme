@@ -1459,7 +1459,7 @@ const g0=go;go=function(id){if(S&&id!=='ev'){clearInterval(S.tm);S=null;document
 })();
 </script>
 
-<!-- ===== AJOUTS v17 (remplace v5 à v16) : à COLLER juste AVANT la dernière ligne </body> ===== -->
+<!-- ===== AJOUTS v16 (remplace v5 à v15) : à COLLER juste AVANT la dernière ligne </body> ===== -->
 <style>
 /* accueil */
 .cover{height:96px;font-size:40px;border-radius:0 0 26px 26px}
@@ -1682,11 +1682,6 @@ nav button.on::before{content:'';position:absolute;top:-6px;left:25%;right:25%;h
 #sc5 i{background:var(--ac);padding:2px}#sc5 i b{background:var(--card);border:0}
 .qgh{display:flex;align-items:center;gap:14px}.qgl{width:64px;height:64px;flex:none}.qgl img,.qgl svg{width:64px;height:64px;object-fit:contain}.qgh small{display:block;color:var(--mu);font-style:italic;font-size:13px;margin-top:2px}.qgh b{font-size:20px;color:var(--tx)}
 .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.dgrid button{background:var(--g);border:0;border-radius:16px;padding:14px 8px;color:var(--tx);font-weight:700;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:6px}.dgrid i{font-style:normal;font-size:28px}
-</style>
-<style>
-/* v17 */
-.qgt{flex-wrap:wrap;overflow:visible}.qgt button{flex:1 1 auto;text-align:center}
-#qgbox details summary{cursor:pointer;list-style:none}#qgbox details summary::-webkit-details-marker{display:none}
 </style>
 <script>
 /* ===== AJOUTS v5 ===== */
@@ -2239,16 +2234,15 @@ const NT=()=>{const me=ME&&ME.id;return(PK.notices||[]).filter(n=>!n.to||n.to===
 const seenN=()=>new Set(JSON.parse(gs('cnh_seen')||'[]'));
 const SUBL=()=>{const B=[{id:'chimie',icon:'⚗️',name:'Chimie'},{id:'physique',icon:'⚛️',name:'Physique'}],U=rd('cnhsubjs','[]');return B.concat(Array.isArray(U)?U:[]).map(x=>{const k=x.id==='chimie'?'cnh':x.id+'_cnh';let t=[];try{t=x.id===SUBJ?custom:JSON.parse(gs(k)||'[]')}catch(e){}return Object.assign({},x,{t,n:t.length})})};
 {const q=document.createElement('section');q.id='qg';q.className='sec';q.innerHTML='<div id="qgbox"></div>';document.querySelector('main').appendChild(q)}
-const GUIDE=`<details class="c"><summary><b>❓ Comment ça marche ?</b></summary><p style="margin:10px 0 0;color:var(--mu);font-size:14px;line-height:1.6"><b style="color:var(--tx)">Le pack</b> est un seul fichier qui contient les communiqués, la liste des membres et les termes officiels de l'équipe.<br><br><b style="color:var(--tx)">Capitaine / admin :</b> onglet 🛡 Admin → prépare tes communiqués, tes membres, coche les matières officielles → <i>Envoyer le pack</i> dans le groupe WhatsApp.<br><br><b style="color:var(--tx)">Chaque membre :</b> reçoit le fichier, puis dans cet écran touche <i>📥 Fichier</i> (ou <i>📋 Coller</i>). Tout apparaît chez lui.<br><br><b style="color:var(--tx)">Option automatique :</b> déposer le fichier sur GitHub, et tout le monde le reçoit seul à chaque lancement.</p></details><div class="c"><b>📥 Recevoir le pack</b><div class="row2" style="margin-top:8px"><label class="f" style="flex:1;margin:4px 0;text-align:center">📥 Fichier<input type="file" accept=".json" hidden onchange="HUB.imp(this)"></label><button class="b g" onclick="HUB.paste()">📋 Coller</button></div></div>`;
 window.HUB={tab:'n',
  t(k){HUB.tab=k;HUB.r()},
  async sync(){await syncPack(1);HUB.r()},
  r(){const T=cfg.team||'LUFTWAFFE',al=(PK.members||[]).concat(ADR().members);let id;
-  if(ME)id=`<div class="c"><b>👤 ${E(ME.name)}</b>${ME.rank?' · '+E(ME.rank):''}${ADM()?' · 🛡 Admin':''}<br><small>Pack ${PK.upd?'du '+new Date(PK.upd).toLocaleDateString('fr-FR'):'aucun reçu pour l'instant'}</small><div class="row2" style="margin-top:8px"><button class="b g" onclick="HUB.sync()">↻ Synchroniser</button><button class="b g" onclick="HUB.out()">Déconnexion</button></div></div>`;
+  if(ME)id=`<div class="c"><b>👤 ${E(ME.name)}</b>${ME.rank?' · '+E(ME.rank):''}${ADM()?' · 🛡 Admin':''}<br><small>Pack ${PK.upd?'du '+new Date(PK.upd).toLocaleDateString('fr-FR'):'non synchronisé'}</small><div class="row2" style="margin-top:8px"><button class="b g" onclick="HUB.sync()">↻ Synchroniser</button><button class="b g" onclick="HUB.out()">Déconnexion</button></div></div>`;
   else if(al.length)id=`<div class="c"><b>🔐 Connexion</b><select id="lg_m" style="width:100%;margin:8px 0">${al.map(x=>`<option value="${E(x.id)}">${E(x.name)}${x.rank?' · '+E(x.rank):''}</option>`).join('')}</select><input id="lg_p" type="password" inputmode="numeric" placeholder="Code PIN"><div class="row2"><button class="b" onclick="HUB.in()">Se connecter</button><button class="b g" onclick="HUB.sync()">↻</button></div></div>`;
   else id=`<div class="c"><b>🛡 Premier démarrage</b><small style="display:block;margin:4px 0 8px">Aucun compte n'existe encore. Crée le compte du capitaine (administrateur).</small><input id="bt_n" placeholder="Nom"><input id="bt_r" placeholder="Grade" value="Capitaine"><input id="bt_p" type="password" inputmode="numeric" placeholder="Code PIN (4 caractères min.)"><button class="b wide" onclick="HUB.boot()">Créer le compte administrateur</button><button class="b g wide" onclick="HUB.sync()" style="margin-top:6px">↻ J'ai déjà un pack publié</button></div>`;
   const tb=[['n','📣 Communiqués'],['d','📄 Documents'],['e','👥 Équipe']].concat(ADM()?[['a','🛡 Admin']]:[]);
-  $('qgbox').innerHTML=`<div class="c qgh"><div class="qgl">${cfg.logo?`<img src="${cfg.logo}">`:phx('hb',64)}</div><div><b>${E(T)}</b><small>${E(cfg.motto||MOTTO)}</small></div></div>${id}${GUIDE}<div class="seg qgt" style="position:static;padding:0;margin:8px 0;border:0;background:none">${tb.map(x=>`<button class="${HUB.tab===x[0]?'on':''}" onclick="HUB.t('${x[0]}')">${x[1]}</button>`).join('')}</div><div id="qgc"></div>`;HUB.c()},
+  $('qgbox').innerHTML=`<div class="c qgh"><div class="qgl">${cfg.logo?`<img src="${cfg.logo}">`:phx('hb',64)}</div><div><b>${E(T)}</b><small>${E(cfg.motto||MOTTO)}</small></div></div>${id}<div class="seg" style="position:static;padding:0;margin:8px 0;border:0;background:none">${tb.map(x=>`<button class="${HUB.tab===x[0]?'on':''}" onclick="HUB.t('${x[0]}')">${x[1]}</button>`).join('')}</div><div id="qgc"></div>`;HUB.c()},
  c(){const k=HUB.tab,b=$('qgc');
   if(k==='n'){const L=NT();b.innerHTML=L.length?L.map(n=>`<div class="c"><small>${E(n.d||'')}</small><br><b style="color:var(--tx)">${E(n.t)}</b><p style="margin:6px 0 0;color:var(--mu);white-space:pre-wrap">${E(n.b||'')}</p></div>`).join(''):'<div class="c" style="text-align:center"><small>Aucun communiqué pour le moment.</small></div>';ss('cnh_seen',JSON.stringify(L.map(n=>n.id)));home()}
   else if(k==='d')b.innerHTML='<div class="c"><b>Fiches &amp; documents</b><small style="display:block">Choisis un modèle : le corps, le design et la signature sont prêts.</small><div class="dgrid">'+Object.keys(TPL).map(x=>`<button onclick="DOC.open('${x}')"><i>${TPL[x].n.split(' ')[0]}</i>${E(TPL[x].n.replace(/^\S+\s/,''))}</button>`).join('')+'</div></div>';
@@ -2259,7 +2253,7 @@ window.HUB={tab:'n',
 <div class="c"><b>👥 Membres</b><input id="am_n" placeholder="Nom"><input id="am_r" placeholder="Grade"><select id="am_o" style="width:100%"><option value="member">Membre</option><option value="admin">Administrateur</option></select><input id="am_p" type="password" inputmode="numeric" placeholder="Code PIN"><button class="b" onclick="HUB.am()">Ajouter</button>${a.members.map((m,i)=>`<div class="row"><span>${E(m.name)} <small>${E(m.rank||'')}${m.role==='admin'?' · 🛡':''}</small></span><button class="b g sm" onclick="HUB.dm(${i})">🗑</button></div>`).join('')}</div>
 <div class="c"><b>💬 Canal d'équipe</b><input id="ac_l" placeholder="Lien WhatsApp / Telegram" value="${E(a.channel||'')}" onchange="HUB.ch(this.value)"></div>
 <div class="c"><b>📚 Termes officiels</b><small style="display:block">Coche les matières dont tes ajouts deviennent officiels pour tous.</small>${SUBL().map(x=>`<label class="c ck"><input type="checkbox" ${(a.subs||[]).includes(x.id)?'checked':''} onchange="HUB.sb('${x.id}',this.checked)"><span>${E(x.icon)} ${E(x.name)} <small>${x.n} terme(s)</small></span></label>`).join('')}</div>
-<div class="c"><b>📦 Publier</b><small style="display:block;margin:4px 0 8px">Génère le pack, puis dépose le fichier <b>qg-pack.json</b> à la racine du dépôt GitHub (en remplaçant l'ancien). Tous les membres le reçoivent au prochain lancement.</small><button class="b wide" onclick="HUB.share()">📤 Envoyer le pack (WhatsApp…)</button><button class="b g wide" onclick="HUB.pub()" style="margin-top:6px">⬇ Télécharger qg-pack.json (pour GitHub)</button></div>`},
+<div class="c"><b>📦 Publier</b><small style="display:block;margin:4px 0 8px">Génère le pack, puis dépose le fichier <b>qg-pack.json</b> à la racine du dépôt GitHub (en remplaçant l'ancien). Tous les membres le reçoivent au prochain lancement.</small><button class="b wide" onclick="HUB.pub()">⬇ Générer qg-pack.json</button></div>`},
  an(){const t=$('an_t').value.trim();if(!t)return;const a=ADR(),to=$('an_to').value.trim()||'*';a.notices.unshift({id:'n'+Date.now().toString(36),t,b:$('an_b').value,d:new Date().toISOString().slice(0,10),to:to==='*'?'*':to.split(',').map(x=>norm(x.trim()))});adw(a);HUB.r()},
  dn(i){const a=ADR();a.notices.splice(i,1);adw(a);HUB.r()},
  async am(){const n=$('am_n').value.trim(),p=$('am_p').value;if(!n||!p)return alert('Nom et PIN requis');const id=norm(n),a=ADR();a.members=a.members.filter(x=>x.id!==id);a.members.push({id,name:n,rank:$('am_r').value.trim(),role:$('am_o').value,pin:await sha(id+':'+p)});adw(a);HUB.r()},
@@ -2271,11 +2265,6 @@ window.HUB={tab:'n',
  async in(){const id=$('lg_m').value,m=(PK.members||[]).concat(ADR().members).find(x=>x.id===id);if(!m)return;if(m.pin&&await sha(id+':'+$('lg_p').value)!==m.pin)return toast('Code incorrect');ME={id:m.id,name:m.name,rank:m.rank||'',role:m.role};ss('cnh_me',JSON.stringify(ME));set('name',m.name);set('rank',ME.rank);HUB.r()},
  out(){ME=null;ss('cnh_me','null');HUB.r()},
  async boot(){const n=$('bt_n').value.trim(),p=$('bt_p').value;if(!n||p.length<4)return alert('Nom et PIN (4 caractères min.) requis');const id=norm(n),a=ADR();a.members=[{id,name:n,rank:$('bt_r').value.trim(),role:'admin',pin:await sha(id+':'+p)}];adw(a);ME={id,name:n,rank:a.members[0].rank,role:'admin'};ss('cnh_me',JSON.stringify(ME));set('name',n);set('rank',ME.rank);HUB.r()}};
-async function loadPack(t){try{const p=JSON.parse(t);if(!p||!p.v)throw 0;PK=p;ss('cnh_pack',JSON.stringify(PK));applyPack();toast('Pack reçu ✓');HUB.r()}catch(e){alert('Fichier ou code de pack invalide')}}
-const packObj=()=>{const a=ADR(),S={};SUBL().filter(x=>(a.subs||[]).includes(x.id)).forEach(x=>{S[x.id]={name:x.name,icon:x.icon,terms:x.t.map(e=>({t:e.t,d:e.d}))}});return{v:1,upd:new Date().toISOString(),team:{name:cfg.team||'LUFTWAFFE',motto:cfg.motto||MOTTO},channel:a.channel||'',members:a.members,notices:a.notices,subjects:S}};
-Object.assign(HUB,{imp(inp){const f=inp.files[0];if(f)f.text().then(loadPack);inp.value=''},
- async paste(){let t='';try{t=await navigator.clipboard.readText()}catch(e){}if(!t)t=prompt('Colle ici le pack')||'';if(t)loadPack(t)},
- share(){const f=new File([JSON.stringify(packObj())],'qg-pack.json',{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Pack du QG'}).catch(()=>{});else HUB.pub()}});
 const h16=home;home=function(){h16();let t=$('nb');const n=NT().find(x=>!seenN().has(x.id));if(!n){if(t)t.remove();return}
   if(!t){t=document.createElement('div');t.id='nb';t.className='c';t.style.order='3';t.onclick=()=>{HUB.tab='n';go('qg')};$('home').insertBefore(t,$('hero').nextSibling)}
   t.innerHTML='<small>📣 NOUVEAU COMMUNIQUÉ</small><br><b>'+E(n.t)+'</b>'};
@@ -2286,6 +2275,7 @@ const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(['lex','ch','
 render();home();
 })();
 </script>
+
 
 </body>
 </html>
