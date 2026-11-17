@@ -1665,6 +1665,10 @@ nav button.on::before{content:'';position:absolute;top:-6px;left:25%;right:25%;h
 .lbe{font-size:90px;text-align:center;color:#fff}.lbe small{display:block;font-size:14px;color:#aaa;margin-top:8px}
 .lba{display:flex;gap:10px}.lba button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;padding:12px 18px;font-weight:700;font-size:15px}
 </style>
+<style>
+/* v13 */
+#hero .hrow{align-items:flex-start}#hero .ht{padding:50px 0 0}
+</style>
 <script>
 /* ===== AJOUTS v5 ===== */
 (function(){
@@ -1680,7 +1684,7 @@ wrap.innerHTML='<div id="lxr" class="rail"></div><div id="lxb"></div>';
 wrap.insertBefore($('n'),wrap.firstChild);wrap.insertBefore($('s'),wrap.firstChild);
 lex.insertBefore(wrap,lex.firstChild);
 $('s').placeholder='🔍 Chercher un terme ou un mot…';
-const lxt=document.createElement('div');lxt.className='lxt';lxt.innerHTML='<select id="lxf"><option value="all">Tous</option><option value="mine">Mes ajouts</option><option value="fav">⭐ Favoris</option><option value="err">Mes erreurs</option></select><button id="lxs" onclick="LEXV.tgs()">☑ Choisir</button>';lxt.insertBefore($('n'),lxt.firstChild);wrap.insertBefore(lxt,$('lxr'));const cx=document.createElement('button');cx.id='lxc';cx.textContent='✕';cx.onclick=()=>{$('s').value='';ret='';draw();cx.style.display='none';$('s').focus()};wrap.appendChild(cx);$('s').addEventListener('input',()=>{cx.style.display=$('s').value?'block':'none'});
+const lxt=document.createElement('div');lxt.className='lxt';lxt.innerHTML='<select id="lxf"><option value="all">Tous</option><option value="mine">Mes ajouts</option><option value="fav">⭐ Favoris</option><option value="err">Mes erreurs</option><option value="trash">🗑 Corbeille</option></select><button id="lxs" onclick="LEXV.tgs()">☑ Choisir</button>';lxt.insertBefore($('n'),lxt.firstChild);wrap.insertBefore(lxt,$('lxr'));const cx=document.createElement('button');cx.id='lxc';cx.textContent='✕';cx.onclick=()=>{$('s').value='';ret='';draw();cx.style.display='none';$('s').focus()};wrap.appendChild(cx);$('s').addEventListener('input',()=>{cx.style.display=$('s').value?'block':'none'});
 function hl(t,q){
   if(!q)return E(t);const f=fold(t),k=fold(q);if(f.length!==t.length||!k)return E(t);
   let o='',p=0,i;while((i=f.indexOf(k,p))>=0){o+=E(t.slice(p,i))+'<mark>'+E(t.slice(i,i+k.length))+'</mark>';p=i+k.length}
@@ -1694,7 +1698,7 @@ function cardH(e,i,q){
   const bt=[['edit','✏️','Modifier'],['syn','🏷','Synonyme'],['say','🔊','Écouter'],['cp','📤','Partager'],['del','🗑','Supprimer']].map(a=>`<button${a[0]==='del'?' class="dg"':''} onclick="${st(a[0])}"><i>${a[1]}</i>${a[2]}</button>`).join('');
   return `<div class="c term${on?' sel':''}" id="lx${i}" onclick="LEXV.tap(${i})"><div class="ck5"></div><div class="tb"><div class="th"><b>${hl(p[0]||'',q)}</b><button class="stb${f?' on':''}" onclick="${st('fav')}">${f?'★':'☆'}</button></div>${p.length>1?'<div class="sy">'+p.slice(1).map(x=>'<span>'+hl(x,q)+'</span>').join('')+'</div>':''}<p>${hl(e.d,q)}</p>${q?`<button class="b g loc" onclick="${st('loc')}">📍 Situer dans le lexique</button>`:''}<div class="act">${bt}</div></div></div>`;
 }
-function draw(){
+function draw(){if(FL==='trash')return drawTrash();
   const q=$('s').value.trim(),qn=norm(q);let A=all().sort((x,y)=>x.t.localeCompare(y.t,'fr'));const T=A.length;FS=FV();
   if(FL==='fav')A=A.filter(e=>FS.has(fkey(e)));else if(FL==='mine')A=A.filter(e=>custom.includes(e));else if(FL==='err')A=A.filter(e=>err[e.t]);
   const seenK=new Set();A=A.filter(e=>{const k=norm(e.t.split('|')[0])+'#'+norm(e.d);return seenK.has(k)?0:(seenK.add(k),1)});let L=A;
@@ -1882,8 +1886,8 @@ const h6=home;home=function(){h6();const h=document.querySelector('#home .prof h
 /* ---------- v7 : annuler, favoris, écoute, copie ---------- */
 let tt;function toast(m,u){let t=$('toast');if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t)}
   t.innerHTML='<span>'+E(m)+'</span>'+(u?'<button>Annuler</button>':'');t.classList.add('on');if(u)t.querySelector('button').onclick=()=>{u();t.classList.remove('on')};clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),u?6000:2200)}
-const snap=()=>({c:JSON.stringify(custom),o:JSON.stringify(rd('cnhov','{}')),d:JSON.stringify(rd('cnhdel','[]'))});
-const undoer=n=>()=>{custom=JSON.parse(n.c);save();wr('cnhov',JSON.parse(n.o));wr('cnhdel',JSON.parse(n.d));render();home()};
+const snap=()=>({c:JSON.stringify(custom),o:JSON.stringify(rd('cnhov','{}')),d:JSON.stringify(rd('cnhdel','[]')),r:JSON.stringify(rd('cnhtrash','[]'))});
+const undoer=n=>()=>{custom=JSON.parse(n.c);save();wr('cnhov',JSON.parse(n.o));wr('cnhdel',JSON.parse(n.d));wr('cnhtrash',JSON.parse(n.r||'[]'));render();home()};
 const nm=e=>e.t.split('|')[0],pl=n=>n>1?'s':'';
 Object.assign(LEXV,{
   del(i){const e=LS[i],n=snap();removeEntry(e);render();home();toast('« '+nm(e)+' » supprimé',undoer(n))},
@@ -1930,7 +1934,7 @@ const ac0=applyCfg;applyCfg=function(){ac0();applyLx()};const fs0=fillSet;fillSe
 custom.forEach(e=>{e.t=e.t.split('|').map(x=>x.trim()).filter(Boolean).join('|')});save();
 LEXV.filt=v=>{FL=v;$('lxf').value=v;ret='';$('s').value='';go('lex');draw()};
 {const S=document.createElement('div');S.id='sc5';S.className='scr';
- const it=[['⏱','<span class="dur">60</span> s',"go('ch');play('time')"],['♾️','Illimité',"go('ch');play('inf')"],['📝','Erreurs',"go('ch');play('err')"],['🎯','Évaluer',"go('ev')"],['🏆','Cursus',"go('cur')"],['⭐','Favoris',"LEXV.filt('fav')"],['📖','Lexique',"go('lex')"],['➕','Ajouter',"go('ad')"]];
+ const it=[['⏱','<span class="dur">60</span> s',"go('ch');play('time')"],['♾️','Illimité',"go('ch');play('inf')"],['📝','Erreurs',"go('ch');play('err')"],['🎯','Évaluer',"go('ev')"],['🏆','Cursus',"go('cur')"],['⭐','Favoris',"LEXV.filt('fav')"],['📖','Lexique',"go('lex')"],['🎲','Hasard',"LEXV.rnd()"],['➕','Ajouter',"go('ad')"]];
  S.innerHTML=it.map(x=>`<button onclick="${x[2]}"><i><b>${x[0]}</b></i><span>${x[1]}</span></button>`).join('');
  $('home').insertBefore(S,$('hero').nextSibling)}
 {const L=document.createElement('div');L.id='lb';L.innerHTML='<div class="lbx" onclick="LB.x()">✕</div><div class="lbi" id="lbi"></div><div class="lba"><button onclick="LB.ch()">📷 Changer</button><button onclick="LB.rm()">🗑 Retirer</button></div>';document.body.appendChild(L);
@@ -1949,6 +1953,7 @@ const h10=home;home=function(){h10();document.querySelectorAll('.dur').forEach(e
 const XF={
  dump(){const d={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);d[k]=gs(k)}return JSON.stringify({app:'qg',v:1,date:new Date().toISOString(),data:d})},
  load(txt){let o;try{o=JSON.parse(txt)}catch(e){return alert('Code ou fichier invalide')}
+  if(o&&!o.data&&(o.custom||o.cfg||o.cur)){if(!confirm('Importer cette ancienne sauvegarde dans la matière active ?'))return;if(o.custom){custom=o.custom;save()}if(o.best)wr('cnhb',o.best);if(o.err)wr('cnhe',o.err);if(o.cfg)wr('cnhc',o.cfg);if(o.cur)wr('cnhcur',o.cur);if(o.plan)wr('cnhplan',o.plan);alert('Données restaurées ✓');return location.reload()}
   const d=o&&o.data;if(!d||o.app!=='qg')return alert('Ce n\'est pas une sauvegarde du QG');
   if(!confirm('Remplacer les données de cet appareil par la sauvegarde ('+Object.keys(d).length+' éléments) ?'))return;
   Object.keys(d).forEach(k=>ss(k,d[k]));alert('Données restaurées ✓');location.reload()},
@@ -1964,11 +1969,32 @@ const h12=home;home=function(){h12();let t=$('tip');
   if(!need){if(t)t.remove();return}
   if(!t){t=document.createElement('div');t.id='tip';t.className='c';t.innerHTML='<b>📲 Tes données sont dans Safari ?</b><p style="margin:6px 0 10px;color:var(--mu);font-size:14px">Cette version a sa propre mémoire. Dans Safari : Ajouter › Sauvegarde › « Copier tout ». Reviens ici et colle.</p><button class="b" onclick="XF.paste()">📥 Coller ma sauvegarde</button><button class="b g" onclick="XF.later(this)">Plus tard</button>';$('home').insertBefore(t,$('hero'))}};
 
+/* ---------- v13 : corbeille, objectif du jour, hasard ---------- */
+wr('cnhtrash',rd('cnhtrash','[]').filter(x=>Date.now()-x.x<30*864e5));
+const re0=removeEntry;removeEntry=function(e){const tr=rd('cnhtrash','[]');tr.unshift({t:e.t,d:e.d,s:e.s||'',b:e.b||'',c:custom.includes(e)?1:0,x:Date.now()});wr('cnhtrash',tr.slice(0,500));re0(e)};
+function drawTrash(){const T=rd('cnhtrash','[]');LS=[];
+  $('n').textContent=T.length+' dans la corbeille · gardés 30 jours';$('lxb').innerHTML='';$('lxr').style.display='none';
+  $('list').innerHTML=T.length?`<div class="c" style="display:flex;gap:8px"><button class="b g" style="flex:1;margin:0" onclick="LEXV.tr(-1)">↩ Tout restaurer</button><button class="b g" style="flex:1;margin:0" onclick="LEXV.te()">🗑 Vider</button></div>`+T.map((x,i)=>`<div class="c term"><div class="tb"><div class="th"><b>${E(x.t.split('|')[0])}</b></div><p>${E(x.d)}</p><small>Supprimé le ${new Date(x.x).toLocaleDateString('fr-FR')}</small><div class="act" style="display:flex"><button onclick="LEXV.tr(${i})"><i>↩</i>Restaurer</button><button class="dg" onclick="LEXV.tx(${i})"><i>✕</i>Définitivement</button></div></div></div>`).join(''):'<div class="c" style="text-align:center"><p>La corbeille est vide 🎉</p></div>'}
+Object.assign(LEXV,{
+  tr(i){const T=rd('cnhtrash','[]'),L=i<0?T.slice():[T[i]],dl=rd('cnhdel','[]');if(!L.length)return;
+    L.forEach(x=>{if(x.c){const o={t:x.t,d:x.d};if(x.s)o.s=x.s;custom.push(o)}else{const j=dl.indexOf(x.b||x.t);if(j>=0)dl.splice(j,1)}});
+    save();wr('cnhdel',dl);wr('cnhtrash',i<0?[]:T.filter((_,j)=>j!==i));render();home();toast(L.length+' terme'+pl(L.length)+' restauré'+pl(L.length)+' ✓')},
+  tx(i){const T=rd('cnhtrash','[]');T.splice(i,1);wr('cnhtrash',T);draw()},
+  te(){if(confirm('Vider définitivement la corbeille ?')){wr('cnhtrash',[]);draw()}},
+  rnd(){const A=all();if(!A.length)return;LEXV.search(A[Math.random()*A.length|0].t.split('|')[0])}
+});
+{const b=document.createElement('button');b.className='b g';b.textContent='🗑 Ouvrir la corbeille';b.onclick=()=>LEXV.filt('trash');sc[5].appendChild(b)}
+function gd(){const d=rd('cnhgoal','{}'),t=new Date().toDateString();if(d.d!==t){d.d=t;d.n=0;d.ok=0;d.hit=0}if(!d.g)d.g=20;return d}
+const sf0=sfx;sfx=function(ok){sf0(ok);try{if(!document.body.classList.contains('play'))return;const d=gd();d.n++;if(ok)d.ok++;if(d.n>=d.g&&!d.hit){d.hit=1;setTimeout(()=>CELEB('Objectif atteint !',d.n+' questions aujourd\'hui','1'),700)}wr('cnhgoal',d)}catch(e){}};
+window.GOAL={set(){const d=gd(),n=prompt('Objectif : combien de questions par jour ?',d.g);if(n&&+n>0){d.g=Math.round(+n);d.hit=d.n>=d.g?1:0;wr('cnhgoal',d);home()}}};
+const h13=home;home=function(){h13();const d=gd();$('hc').insertAdjacentHTML('beforeend',`<span onclick="GOAL.set()" style="cursor:pointer">🎯 ${d.n}/${d.g} aujourd'hui</span>`)};
+if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)location.reload()})}
+
 /* ---------- navigation ---------- */
 const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(['lex','ch','cur','ev'].includes(id))markDay();if(id!=='lex'&&SM)LEXV.sm(0)};document.body.dataset.sec='home';
 render();home();
 })();
 </script>
-  
+
 </body>
 </html>
