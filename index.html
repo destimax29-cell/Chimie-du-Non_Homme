@@ -1669,6 +1669,12 @@ nav button.on::before{content:'';position:absolute;top:-6px;left:25%;right:25%;h
 /* v13 */
 #hero .hrow{align-items:flex-start}#hero .ht{padding:50px 0 0}
 </style>
+<style>
+/* v14 */
+#motto{order:9;text-align:center;margin:20px 12px 6px;color:var(--mu);font-family:Georgia,serif;font-size:13px}
+#motto i{display:block;margin:4px 0;color:var(--tx);font-size:14px}#motto small{letter-spacing:.2em;text-transform:uppercase;font-size:10px}
+#cm .shb{max-height:94vh;overflow:auto}
+</style>
 <script>
 /* ===== AJOUTS v5 ===== */
 (function(){
@@ -1990,11 +1996,123 @@ window.GOAL={set(){const d=gd(),n=prompt('Objectif : combien de questions par jo
 const h13=home;home=function(){h13();const d=gd();$('hc').insertAdjacentHTML('beforeend',`<span onclick="GOAL.set()" style="cursor:pointer">🎯 ${d.n}/${d.g} aujourd'hui</span>`)};
 if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)location.reload()})}
 
+/* ---------- v14 : identité LUFTWAFFE, document officiel, cartes à partager ---------- */
+const MOTTO='Nous sommes le phénix, le feu, la cendre et le chant qui jaillit du néant.';
+const PHX=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd24a"/><stop offset=".55" stop-color="#f08a1c"/><stop offset="1" stop-color="#c1272d"/></linearGradient></defs><g fill="url(#g)"><path d="M100 30c9 14 11 34 6 56 7 16 7 40-6 64-13-24-13-48-6-64-5-22-3-42 6-56z"/><path d="M94 96C72 84 44 78 18 52c28 4 52 8 72 22z"/><path d="M92 108C66 100 38 104 10 84c30-2 56 2 80 10z"/><path d="M92 120c-22-2-46 10-70-2 24-6 48-10 68-8z"/><path d="M106 96c22-12 50-18 76-44-28 4-52 8-72 22z"/><path d="M108 108c26-8 54-4 82-24-30-2-56 2-80 10z"/><path d="M108 120c22-2 46 10 70-2-24-6-48-10-68-8z"/><path d="M100 150c-8 20-14 34 0 46 14-12 8-26 0-46z"/><path d="M94 146c-14 14-20 30-12 42 8-12 10-26 12-42z"/><path d="M106 146c14 14 20 30 12 42-8-12-10-26-12-42z"/></g></svg>`;
+const loadImg=u=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(u)});
+document.head.insertAdjacentHTML('beforeend','<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500;1,700&family=Montserrat:wght@500;600;800;900&display=swap">');
+sc[0].insertAdjacentHTML('beforeend','<div class="row"><span>Équipe</span><input type="text" id="c_team" placeholder="LUFTWAFFE" oninput="set(\'team\',this.value)" style="width:60%"></div><div class="row"><span>Grade</span><input type="text" id="c_rank" placeholder="Soldat" oninput="set(\'rank\',this.value)" style="width:60%"></div><div class="row"><span>Devise</span><input type="text" id="c_motto" placeholder="Nous sommes le phénix…" oninput="set(\'motto\',this.value)" style="width:60%"></div>');
+const fs14=fillSet;fillSet=function(){fs14();$('c_team').value=cfg.team||'';$('c_rank').value=cfg.rank||'';$('c_motto').value=cfg.motto||''};
+{const m=document.createElement('div');m.id='motto';m.className='mo';$('home').appendChild(m)}
+const h14=home;home=function(){h14();const tm=cfg.team||'LUFTWAFFE';$('motto').innerHTML='<span>🔥</span><i>'+E(cfg.motto||MOTTO)+'</i><small>'+E(tm)+' · Le QG</small>';$('hc').insertAdjacentHTML('afterbegin','<span>🔥 '+E(tm)+'</span>')};
+
+/* --- document officiel --- */
+function qgDoc(list,word){
+  const team=(cfg.team||'LUFTWAFFE').toUpperCase(),mot=cfg.motto||MOTTO,cl=$('xc')?$('xc').value:'USAGE INTERNE',now=new Date(),
+  dt=now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}).toUpperCase(),
+  ref='QG/'+team.slice(0,3)+'/'+now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0'),sub=SN.toUpperCase(),secs=[],
+  ph=n=>word?'':PHX.replace('<svg ','<svg width="'+n+'" height="'+n+'" ');
+  list.forEach(e=>{const l=(norm(e.t.split('|')[0])[0]||'#').toUpperCase();let c=secs[secs.length-1];if(!c||c.l!==l){c={l,a:[]};secs.push(c)}c.a.push(e)});
+  const body=secs.map(c=>`<div class="sec" id="s${c.l}"><span class="sl">${c.l}</span><span class="st">SECTION ${c.l} &middot; ${c.a.length} TERME${c.a.length>1?'S':''}</span></div>`+c.a.map((e,i)=>{const p=e.t.split('|').map(x=>x.trim()).filter(Boolean);return `<div class="art"><span class="no">${c.l}&middot;${String(i+1).padStart(2,'0')}</span><div><b>${E(p[0]||'')}</b>${p.length>1?` <i class="sy">Syn. : ${E(p.slice(1).join(', '))}</i>`:''}<p>${E(e.d)}</p></div></div>`}).join('')).join('');
+  const toc=secs.map(c=>`<a href="#s${c.l}">${c.l}<small>${c.a.length}</small></a>`).join(' ');
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Lexique officiel · ${E(sub)}</title><style>
+@page{size:A4;margin:15mm 14mm 17mm}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;font-family:Georgia,'Times New Roman',serif;color:#1c1a16;font-size:10.3pt;line-height:1.45;background:#fff}
+.cv{width:100%;border-collapse:collapse;page-break-after:always}.cv td{background:#0a0a10;color:#f4ecd8;text-align:center;padding:40px 30px;height:985px;vertical-align:middle;border:3px double #d4a017}
+.k{font:700 10pt Arial,sans-serif;letter-spacing:.42em;color:#d4a017}.team{font:900 44pt Arial,sans-serif;letter-spacing:.2em;color:#f4ecd8;margin:6px 0}
+.tt{font:700 25pt Georgia,serif;color:#d4a017;letter-spacing:.06em}
+.stamp{display:inline-block;border:3px solid #b3202a;color:#e0343f;font:900 12pt Arial;letter-spacing:.3em;padding:6px 16px;transform:rotate(-4deg);margin:26px 0}
+.mot{font:italic 13pt Georgia,serif;color:#e8c766;margin:30px 40px 0}
+.pg{page-break-after:always;padding-top:10px}h2.rg{font:800 11pt Arial;letter-spacing:.3em;color:#b3202a;border-bottom:2px solid #d4a017;padding-bottom:6px}
+.ar{margin:10px 0}.ar b{color:#0a0a10}
+.toc a{display:inline-block;text-decoration:none;color:#0a0a10;font:800 13pt Arial;border:1.5px solid #d4a017;border-radius:6px;padding:4px 10px;margin:3px}.toc small{font:600 7pt Arial;color:#b3202a;margin-left:5px}
+.sec{margin:16px 0 8px;background:#0a0a10;color:#f4ecd8;padding:5px 12px;page-break-after:avoid;column-span:all}
+.sl{font:900 17pt Arial;color:#d4a017;margin-right:12px}.st{font:700 8.5pt Arial;letter-spacing:.25em}
+.body{column-count:${word?1:2};column-gap:9mm}
+.art{display:flex;gap:8px;margin:0 0 8px;page-break-inside:avoid;break-inside:avoid;border-left:2px solid #d4a017;padding-left:8px}
+.no{font:800 7.5pt Arial;color:#b3202a;min-width:30px;padding-top:3px}.art b{font-size:11pt;color:#0a0a10}.art p{margin:1px 0 0;color:#2a2822}.sy{color:#8a6a10;font-size:9pt}
+.fin{text-align:center;margin-top:40px;page-break-before:always}
+.pf{position:fixed;bottom:0;left:0;right:0;text-align:center;font:7pt Arial;letter-spacing:.22em;color:#8a7a50;border-top:1px solid #d4a017;padding-top:3px}
+</style></head><body>
+<table class="cv"><tr><td><div class="k">QUARTIER GÉNÉRAL</div><div style="margin:22px 0">${ph(170)}</div><div class="team">${E(team)}</div><div class="k" style="color:#f4ecd8">LE QG &middot; ÉTAT-MAJOR DU SAVOIR</div>
+<div style="height:3px;width:120px;background:#d4a017;margin:30px auto"></div><div class="tt">LEXIQUE OFFICIEL</div><div class="k" style="margin-top:10px;font-size:13pt">${E(sub)}</div>
+<div class="stamp">${E(cl)}</div><div style="font:9pt Arial;letter-spacing:.15em;color:#bdb08a;line-height:1.9">RÉF. ${E(ref)} &middot; ÉDITION DU ${dt}<br>EFFECTIF : ${list.length} TERMES &middot; ${secs.length} SECTIONS</div>
+<div class="mot">« ${E(mot)} »</div></td></tr></table>
+<div class="pg"><h2 class="rg">DISPOSITIONS GÉNÉRALES</h2>
+<p class="ar"><b>Article 1 — Objet.</b> Le présent lexique réunit les ${list.length} termes de référence de la matière « ${E(sub)} » à l'usage des membres de la ${E(team)}.</p>
+<p class="ar"><b>Article 2 — Organisation.</b> Les termes sont classés par ordre alphabétique et répartis en ${secs.length} sections. Chaque entrée porte une référence (A·01, A·02…) ; les synonymes admis sont signalés par la mention « Syn. ».</p>
+<p class="ar"><b>Article 3 — Emploi.</b> Tout membre est tenu de maîtriser les termes avant les évaluations. La révision est quotidienne, l'entraînement méthodique, l'erreur analysée.</p>
+<p class="ar"><b>Article 4 — Diffusion.</b> Document classé « ${E(cl)} ». Il ne sort pas du cercle de l'équipe sans l'accord du Quartier Général.</p>
+<p class="ar"><b>Article 5 — Devise.</b> « ${E(mot)} »</p>
+<h2 class="rg" style="margin-top:26px">SOMMAIRE DES SECTIONS</h2><div class="toc">${toc}</div></div>
+<div class="body">${body}</div>
+<div class="fin"><div>${ph(120)}</div><h2 class="rg" style="display:inline-block;border:0">CLAUSE FINALE</h2><p style="font:italic 17pt Georgia,serif;color:#0a0a10;margin:14px 50px">« ${E(mot)} »</p><p class="k" style="color:#b3202a">FAIT AU QUARTIER GÉNÉRAL, LE ${dt}</p><p style="font:9pt Arial;letter-spacing:.2em">LE COMMANDEMENT &middot; ${E(team)}</p></div>
+<div class="pf">LE QG &middot; ${E(team)} &middot; ${E(cl)} &middot; ${E(ref)}</div></body></html>`;
+}
+$('xs').insertAdjacentHTML('beforeend','<option value="fav">⭐ Mes favoris</option><option value="err">📝 Mes erreurs</option>');
+exp.querySelector('button.wide').insertAdjacentHTML('beforebegin','<div class="row"><span>Classification</span><select id="xc"><option>CONFIDENTIEL</option><option selected>USAGE INTERNE</option><option>DIFFUSION LIBRE</option></select></div>');
+const lg0=LEXX.go;LEXX.go=function(){const f=$('xf').value;if(f!=='pdf'&&f!=='doc'&&f!=='html')return lg0();
+  const so=$('xs').value,fv=FV(),sn=new Set();
+  let l=all().filter(e=>so==='mine'?custom.includes(e):so==='fav'?fv.has(fkey(e)):so==='err'?err[e.t]:1).sort((a,b)=>a.t.localeCompare(b.t,'fr')).filter(e=>{const k=norm(e.t.split('|')[0])+'#'+norm(e.d);return sn.has(k)?0:(sn.add(k),1)});
+  if(!l.length)return alert('Aucun terme à exporter.');
+  const w=f==='doc',h=qgDoc(l,w);
+  if(f==='pdf'){const x=window.open('','_blank');if(!x)return alert('Autorise les pop-ups pour ce site, ou choisis « Page web ».');x.document.write(h.replace('</body>','<script>setTimeout(function(){print()},900)<\/script></body>'));x.document.close()}
+  else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h],{type:w?'application/msword':'text/html'}));a.download='QG-Lexique-'+(norm(SN)||'termes')+'-'+new Date().toISOString().slice(0,10)+(w?'.doc':'.html');document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000)}
+  $('xn').textContent=' '+l.length+' termes exportés'};
+
+/* --- carte à partager --- */
+const TH={clair:{bg:'#f7f8fc',ink:'#0b1030',gold:'#f2b705',blue:'#1f4fbf',mu:'#6b7390',ring:'#fff'},sombre:{bg:'#0b0e17',ink:'#f1f3fa',gold:'#f2b705',blue:'#8db0ff',mu:'#8a93ad',ring:'#1a1f30'},phenix:{bg:'#160707',ink:'#fff1de',gold:'#ffb000',blue:'#ff8a5c',mu:'#c79a85',ring:'#2a0d0d'}};
+let CE=null,CT='clair',CC=null;
+async function cardDraw(e,tn){
+  const t=TH[tn],W=1080,c=document.createElement('canvas');c.width=c.height=W;const g=c.getContext('2d'),SF='"Playfair Display",Georgia,serif',SS='Montserrat,"Helvetica Neue",Arial,sans-serif';
+  try{await Promise.race([Promise.all([document.fonts.load('italic 700 40px "Playfair Display"'),document.fonts.load('italic 500 40px "Playfair Display"'),document.fonts.load('900 40px Montserrat'),document.fonts.load('800 40px Montserrat')]),new Promise(r=>setTimeout(r,1800))])}catch(x){}
+  g.fillStyle=t.bg;g.fillRect(0,0,W,W);
+  if(tn==='phenix'){const r=g.createRadialGradient(W,W,50,W,W,950);r.addColorStop(0,'rgba(193,39,45,.5)');r.addColorStop(1,'rgba(193,39,45,0)');g.fillStyle=r;g.fillRect(0,0,W,W)}
+  for(let x=0;x<520;x+=22)for(let y=0;y<300;y+=22){g.fillStyle=t.mu;g.globalAlpha=.4*(1-x/520)*(1-y/300);g.beginPath();g.arc(x+20,y+20,2,0,7);g.fill()}
+  g.globalAlpha=.12;g.strokeStyle=t.mu;g.lineWidth=3;[0,60].forEach(o=>{g.beginPath();g.moveTo(760+o,640);g.lineTo(900+o,1040);g.stroke();g.beginPath();g.moveTo(880+o,620);g.lineTo(1020+o,1040);g.stroke()});g.globalAlpha=1;
+  const sp=(s,x,y,gap,right)=>{s=[...s];const w=s.reduce((a,ch)=>a+g.measureText(ch).width+gap,-gap);let cx=right?x-w:x;s.forEach(ch=>{g.fillText(ch,cx,y);cx+=g.measureText(ch).width+gap})};
+  const team=(cfg.team||'LUFTWAFFE').toUpperCase(),term=e.t.split('|')[0],syn=e.t.split('|').slice(1).filter(Boolean).join(' · '),let0=(norm(term)[0]||'#').toUpperCase();
+  g.font='900 112px '+SS;g.fillStyle=t.ink;g.fillText('LE ',80,190);const w1=g.measureText('LE ').width;g.fillStyle=t.gold;g.fillText('QG',80+w1,190);const bw=w1+g.measureText('QG').width;
+  g.fillStyle=t.mu;g.globalAlpha=.4;g.fillRect(80+bw+36,100,2,100);g.globalAlpha=1;
+  g.fillStyle=t.ink;g.font='600 22px '+SS;sp('ÉDITION',80+bw+66,132,5);g.fillStyle=t.blue;g.font='800 46px '+SS;g.fillText(team,80+bw+66,184);
+  const lo=await loadImg(PHX);g.save();g.shadowColor='rgba(0,0,0,.3)';g.shadowBlur=30;g.fillStyle=tn==='clair'?'#fff':t.ring;g.beginPath();g.arc(960,150,78,0,7);g.fill();g.restore();if(lo)g.drawImage(lo,900,90,120,120);
+  g.fillStyle=t.ink;g.font='800 22px '+SS;sp('LEXIQUE | '+SN.toUpperCase()+' | LETTRE '+let0,80,318,4);
+  g.strokeStyle=t.gold;g.lineWidth=12;g.lineCap='round';g.lineJoin='round';[0,34].forEach(o=>{g.beginPath();g.moveTo(132+o,430);g.lineTo(92+o,490);g.lineTo(132+o,550);g.stroke()});
+  const wrap=(s,mw)=>{const L=[];let cu='';s.split(' ').forEach(w=>{const x=cu?cu+' '+w:w;if(g.measureText(x).width>mw&&cu){L.push(cu);cu=w}else cu=x});if(cu)L.push(cu);return L};
+  let ds=44,TL,DL,SL;
+  for(;ds>=24;ds-=2){g.font='italic 700 '+(ds+16)+'px '+SF;TL=wrap(term,800);g.font='italic 500 '+ds+'px '+SF;DL=wrap(e.d,800);SL=syn?wrap('Syn. : '+syn,800):[];if(TL.length*(ds+30)+16+DL.length*ds*1.38+(SL.length?SL.length*ds*1.3+14:0)<=430)break}
+  const room=430-TL.length*(ds+30)-16-(SL.length?SL.length*ds*1.3+14:0),mx=Math.max(2,Math.floor(room/(ds*1.38)));if(DL.length>mx){DL=DL.slice(0,mx);DL[mx-1]=DL[mx-1].replace(/.{0,3}$/,'…')}
+  let y=395;g.fillStyle=t.ink;g.font='italic 700 '+(ds+16)+'px '+SF;TL.forEach(l=>{y+=ds+30;g.fillText(l,200,y-6)});
+  y+=16;g.font='italic 500 '+ds+'px '+SF;DL.forEach(l=>{y+=ds*1.38;g.fillText(l,200,y)});
+  if(SL.length){y+=14;g.fillStyle=t.blue;SL.forEach(l=>{y+=ds*1.3;g.fillText(l,200,y)})}
+  g.fillStyle='#0b1030';g.beginPath();g.arc(150,890,60,0,7);g.fill();g.strokeStyle=t.gold;g.lineWidth=8;g.stroke();
+  g.fillStyle=t.gold;g.font='800 68px '+SS;g.textAlign='center';g.fillText(let0,150,914);g.textAlign='left';
+  g.fillStyle=t.ink;g.font='800 44px '+SS;g.fillText(cfg.name||'Le Non_Homme',240,888);g.fillStyle=t.blue;g.font='600 28px '+SS;g.fillText((cfg.rank||'Soldat')+' · '+team,240,928);g.fillStyle=t.mu;g.font='500 24px '+SS;g.fillText(SN,240,964);
+  g.font='900 38px '+SS;g.fillStyle=t.gold;g.textAlign='right';g.fillText('PHÉNIX',1000,886);const pw=g.measureText('PHÉNIX').width;g.fillStyle=t.ink;g.fillText('QG-',1000-pw,886);
+  g.font='italic 500 26px '+SF;g.fillStyle=t.blue;g.fillText('Nous sommes le phénix',1000,926);g.textAlign='left';
+  g.globalAlpha=.3;g.fillStyle=t.mu;g.fillRect(80,990,920,2);g.globalAlpha=1;
+  if(lo)g.drawImage(lo,80,1004,56,56);g.fillStyle=t.mu;g.font='600 15px '+SS;sp('ORGANISÉ PAR',152,1024,4);g.fillStyle=t.ink;g.font='800 28px '+SS;g.fillText(team+' · LE QG',152,1054);
+  g.textAlign='right';g.fillStyle=t.mu;g.font='italic 500 22px '+SF;g.fillText('Le feu · La cendre · Le chant',1000,1040);g.textAlign='left';
+  return c}
+const CM=document.createElement('div');CM.id='cm';CM.className='sh';
+CM.innerHTML='<div class="shb"><b>📤 Partager « <span id="cmt"></span> »</b><img id="cmi" alt="" style="width:100%;border-radius:14px;margin:10px 0;display:block"><div class="seg" style="position:static;padding:0;margin:0 0 8px;border:0;background:none"><button data-t="clair" class="on">☀️ Clair</button><button data-t="sombre">🌙 Sombre</button><button data-t="phenix">🔥 Phénix</button></div><div class="row2"><button class="b" onclick="CARD.share()">📤 Partager l\'image</button><button class="b g" onclick="CARD.save()">⬇ Enregistrer</button></div><div class="row2"><button class="b g" onclick="CARD.text()">📝 En texte</button><button class="b g" onclick="CARD.x()">Fermer</button></div></div>';
+document.body.appendChild(CM);CM.onclick=e=>{if(e.target===CM)CARD.x()};
+const fname=()=>'QG-'+(norm(nm(CE))||'terme')+'.png';
+window.CARD={async open(e){CE=e;$('cmt').textContent=nm(e);CM.classList.add('on');await CARD.rd()},
+  async rd(){$('cmi').style.opacity=.4;CC=await cardDraw(CE,CT);$('cmi').src=CC.toDataURL('image/png');$('cmi').style.opacity=1},
+  x(){CM.classList.remove('on')},blob:()=>new Promise(r=>CC.toBlob(r,'image/png')),
+  async share(){const f=new File([await CARD.blob()],fname(),{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:nm(CE)}).catch(()=>{});else CARD.save()},
+  async save(){const a=document.createElement('a');a.href=URL.createObjectURL(await CARD.blob());a.download=fname();document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000)},
+  text(){const t='*'+nm(CE)+'*\n'+CE.d+'\n\n— Le QG · '+(cfg.team||'LUFTWAFFE');if(navigator.share)navigator.share({text:t}).catch(()=>{});else{try{navigator.clipboard.writeText(t);toast('Copié 📋')}catch(x){}}}};
+CM.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{CT=b.dataset.t;CM.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));CARD.rd()});
+LEXV.cp=i=>CARD.open(LS[i]);
+
 /* ---------- navigation ---------- */
 const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(['lex','ch','cur','ev'].includes(id))markDay();if(id!=='lex'&&SM)LEXV.sm(0)};document.body.dataset.sec='home';
 render();home();
 })();
 </script>
+
 
 </body>
 </html>
