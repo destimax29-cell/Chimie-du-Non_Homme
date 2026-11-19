@@ -2728,8 +2728,23 @@ render();home();
   }
   function ld(w,src){return new Promise(function(ok,ko){var s=w.document.createElement('script');s.src=src;s.onload=ok;s.onerror=function(){ko(new Error('Chargement impossible : '+src))};w.document.head.appendChild(s)})}
   function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+  /* logos SVG -> vraies images (Safari ne capture pas les SVG intégrés) */
+  async function svgToImg(w){
+    var d=w.document,list=d.querySelectorAll('.pg svg'),jobs=[];
+    for(var i=0;i<list.length;i++){
+      (function(s){
+        if(!s.getAttribute('xmlns'))s.setAttribute('xmlns','http://www.w3.org/2000/svg');
+        var xml=new w.XMLSerializer().serializeToString(s),im=d.createElement('img');
+        jobs.push(new Promise(function(r){im.onload=r;im.onerror=r}));
+        im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
+        s.parentNode.replaceChild(im,s);
+      })(list[i]);
+    }
+    await Promise.all(jobs);
+  }
+  /* color-mix() -> rgb() calculé, uniquement pour la capture */
   function flatten(w){
-    var d=w.document,P=['color','backgroundColor','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor','outlineColor','boxShadow','textDecorationColor','fill','stroke'];
+    var d=w.document,P=['color','backgroundColor','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor','outlineColor','boxShadow','textDecorationColor'];
     function conv(v){
       return v.replace(/color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)(?: \/ ([\d.]+))?\)/g,function(m,r,g,b,a){
         var R=Math.round(r*255),G=Math.round(g*255),B=Math.round(b*255);
@@ -2764,13 +2779,11 @@ render();home();
     }
     window.__fmt=function(f,cap){READY=null;cur=f;w.document.open();dw(build(f,cap));w.document.close()};
     async function one(pg,q){
-      var opt={quality:q,scale:2,bgcolor:'#fff',cacheBust:true,disableEmbedFonts:true};
+      var opt={scale:2,backgroundColor:'#fff',useCORS:true,logging:false,scrollX:0,scrollY:0,windowWidth:1000,windowHeight:1400,imageTimeout:15000},er;
       for(var t=0;t<2;t++){
-        try{return await w.domtoimage.toJpeg(pg,opt)}catch(e){await wait(400)}
+        try{var c=await w.html2canvas(pg,opt);return c.toDataURL('image/jpeg',q)}catch(e){er=e;await wait(500)}
       }
-      if(!w.html2canvas)await ld(w,'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-      var c=await w.html2canvas(pg,{scale:2,backgroundColor:'#fff',useCORS:true,logging:false});
-      return c.toDataURL('image/jpeg',q);
+      throw er;
     }
     function msg(e){return(e&&e.message)||(e&&e.type?'erreur de rendu ('+e.type+')':String(e))}
     function toFiles(imgs){
@@ -2788,9 +2801,14 @@ render();home();
         window.__fmt(f,1);
         await new Promise(function(r){var t=setInterval(function(){if(w.__ready){clearInterval(t);r()}},200)});
         var b=w.document.getElementById(btn);b.textContent='⏳ Préparation…';
-        if(!w.domtoimage)await ld(w,'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.3.0/dist/dom-to-image-more.min.js');
+        if(!w.html2canvas)await ld(w,'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
         w.document.documentElement.className='';
-        await wait(600);flatten(w);await wait(300);
+        try{await w.document.fonts.ready}catch(e){}
+        await wait(500);
+        await svgToImg(w);
+        flatten(w);
+        w.scrollTo(0,0);
+        await wait(400);
         var pgs=w.document.querySelectorAll('.pg'),imgs=[];
         for(var i=0;i<pgs.length;i++){b.textContent='⏳ Page '+(i+1)+' / '+pgs.length;imgs.push(await one(pgs[i],q))}
         var files;
@@ -2831,7 +2849,6 @@ render();home();
   };
 })();
 </script>
-
 
 
 </body>
