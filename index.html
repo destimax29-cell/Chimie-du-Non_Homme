@@ -2728,21 +2728,22 @@ render();home();
   }
   function ld(w,src){return new Promise(function(ok,ko){var s=w.document.createElement('script');s.src=src;s.onload=ok;s.onerror=function(){ko(new Error('Chargement impossible : '+src))};w.document.head.appendChild(s)})}
   function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
-  /* logos SVG -> PNG avec taille explicite */
+  /* logos SVG -> PNG (xmlns ajouté une seule fois) */
   async function svgToImg(w){
     var d=w.document,list=[].slice.call(d.querySelectorAll('.pg svg')),S=3;
     for(var i=0;i<list.length;i++){
       var s=list[i],r=s.getBoundingClientRect(),W=Math.max(2,Math.round(r.width)),H=Math.max(2,Math.round(r.height));
-      if(!s.getAttribute('xmlns'))s.setAttribute('xmlns','http://www.w3.org/2000/svg');
-      var c=s.cloneNode(true);c.setAttribute('width',W*S);c.setAttribute('height',H*S);
-      var xml=new w.XMLSerializer().serializeToString(c);
+      var xml=s.outerHTML.replace(/^<svg\b([^>]*)>/,function(m,a){
+        a=a.replace(/\s(width|height|xmlns|xmlns:xlink)="[^"]*"/g,'');
+        return '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"'+a+' width="'+(W*S)+'" height="'+(H*S)+'">';
+      });
       var png=await new Promise(function(res){
         var im=new w.Image();
         im.onload=function(){try{var cv=d.createElement('canvas');cv.width=W*S;cv.height=H*S;cv.getContext('2d').drawImage(im,0,0,W*S,H*S);res(cv.toDataURL('image/png'))}catch(e){res(null)}};
         im.onerror=function(){res(null)};
         im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
       });
-      if(!png)continue;
+      if(!png){svgFail++;continue}
       await new Promise(function(done){
         var img=d.createElement('img');
         img.onload=done;img.onerror=done;
@@ -2752,7 +2753,8 @@ render();home();
       });
     }
   }
-  /* texte vertical du rail -> image (writing-mode non géré par l'outil) */
+  var svgFail=0;
+  /* texte vertical du rail -> image */
   function railToImg(w){
     var d=w.document,L=d.querySelectorAll('.pg .rl span'),S=3;
     for(var n=0;n<L.length;n++){
@@ -2837,6 +2839,7 @@ render();home();
         w.document.documentElement.className='';
         try{await w.document.fonts.ready}catch(e){}
         await wait(500);
+        svgFail=0;
         await svgToImg(w);
         railToImg(w);
         flatten(w);
@@ -2854,6 +2857,7 @@ render();home();
         READY=files;b.textContent=label;
         var g=w.document.getElementById('bgo');g.style.display='inline-block';
         g.textContent='📤 Partager '+(kind==='pdf'?'le PDF':files.length>1?'les '+files.length+' images':"l'image");
+        if(svgFail)w.alert('Attention : '+svgFail+' logo(s) n\'ont pas pu être convertis.');
       }catch(e){
         var bb=w.document.getElementById(btn);if(bb)bb.textContent=label;
         w.alert('Préparation impossible : '+msg(e));
