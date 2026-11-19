@@ -2718,9 +2718,9 @@ render();home();
   +".ks:after,.cf-d{background:var(--ac)!important}.tb0{display:none!important}}"
   +".tb0{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:8px;background:#111}"
   +".tb0 button{border:0;border-radius:10px;padding:10px 14px;font:700 14px Arial;background:#d4a72c;color:#111}";
-  function css(f,pdf){
+  function css(f,cap){
     var L=f==='letter',W=L?'215.9mm':'210mm',
-    H=L?(IOS&&!pdf?'262mm':'279.4mm'):(IOS&&!pdf?'278mm':'297mm');
+    H=L?(IOS&&!cap?'262mm':'279.4mm'):(IOS&&!cap?'278mm':'297mm');
     return BASE+"@page{size:"+(L?'letter':'A4')+";margin:0}"
     +".pg,.po{width:"+W+"!important;height:"+H+"!important}"
     +".cf{height:calc("+H+" - 18mm)!important}";
@@ -2730,40 +2730,65 @@ render();home();
     var w=ow.apply(window,arguments);
     if(!w||!w.document)return w;
     var dw=w.document.write.bind(w.document),raw='';
-    function build(f,pdf){
-      var h=raw.replace('</style>',css(f,pdf)+'</style>');
-      if(IOS&&!pdf)h=h.replace('<body class="','<body class="ios ');
+    function build(f,cap){
+      var h=raw.replace('</style>',css(f,cap)+'</style>');
+      if(IOS&&!cap)h=h.replace('<body class="','<body class="ios ');
       var tb='<div class="tb0"><button onclick="opener.__fmt(\'a4\')">A4</button>'
         +'<button onclick="opener.__fmt(\'letter\')">Lettre</button>'
         +'<button onclick="print()">🖨 Imprimer</button>'
-        +'<button id="bpdf" onclick="opener.__pdf()">📄 PDF</button></div><div id="pages">';
+        +'<button id="bpdf" onclick="opener.__pdf()">📄 PDF</button>'
+        +'<button id="bimg" onclick="opener.__img()">🖼 Image</button></div><div id="pages">';
       return h.replace('<div id="pages">',tb);
     }
-    window.__fmt=function(f,pdf){cur=f;w.document.open();dw(build(f,pdf));w.document.close()};
+    window.__fmt=function(f,cap){cur=f;w.document.open();dw(build(f,cap));w.document.close()};
+    /* capture des pages en images */
+    async function shoot(btn,label,type,quality){
+      var f=cur;
+      window.__fmt(f,1);
+      await new Promise(function(r){var t=setInterval(function(){if(w.__ready){clearInterval(t);r()}},200)});
+      var b=w.document.getElementById(btn);b.textContent='⏳ Préparation…';
+      if(!w.domtoimage)await ld(w,'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.3.0/dist/dom-to-image-more.min.js');
+      w.document.documentElement.className='';
+      var pgs=w.document.querySelectorAll('.pg'),out=[];
+      try{await w.domtoimage.toJpeg(pgs[0],{quality:.5})}catch(e){}
+      for(var i=0;i<pgs.length;i++){
+        b.textContent='⏳ Page '+(i+1)+' / '+pgs.length;
+        var d=await (type==='png'?w.domtoimage.toPng(pgs[i],{scale:2,bgcolor:'#fff'}):w.domtoimage.toJpeg(pgs[i],{quality:quality,scale:2,bgcolor:'#fff'}));
+        out.push(d);
+      }
+      return{imgs:out,f:f,reset:function(){b.textContent=label}};
+    }
     window.__pdf=async function(){
-      var f=cur,L=f==='letter',pw=L?215.9:210,ph=L?279.4:297;
+      var s;
       try{
-        window.__fmt(f,1);
-        await new Promise(function(r){var t=setInterval(function(){if(w.__ready){clearInterval(t);r()}},200)});
-        var b=w.document.getElementById('bpdf');b.textContent='⏳ Préparation…';
-        if(!w.domtoimage)await ld(w,'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.3.0/dist/dom-to-image-more.min.js');
+        s=await shoot('bpdf','📄 PDF','jpeg',.92);
         if(!w.jspdf)await ld(w,'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-        w.document.documentElement.className='';
-        var pgs=w.document.querySelectorAll('.pg'),pdf=new w.jspdf.jsPDF({unit:'mm',format:[pw,ph]});
-        try{await w.domtoimage.toJpeg(pgs[0],{quality:.5})}catch(e){}
-        for(var i=0;i<pgs.length;i++){
-          b.textContent='⏳ Page '+(i+1)+' / '+pgs.length;
-          var img=await w.domtoimage.toJpeg(pgs[i],{quality:.92,scale:2,bgcolor:'#fff'});
-          if(i)pdf.addPage([pw,ph]);
-          pdf.addImage(img,'JPEG',0,0,pw,ph);
-        }
+        var L=s.f==='letter',pw=L?215.9:210,ph=L?279.4:297,pdf=new w.jspdf.jsPDF({unit:'mm',format:[pw,ph]});
+        s.imgs.forEach(function(img,i){if(i)pdf.addPage([pw,ph]);pdf.addImage(img,'JPEG',0,0,pw,ph)});
         var blob=pdf.output('blob'),file=new File([blob],'QG-document.pdf',{type:'application/pdf'});
-        b.textContent='📄 PDF';
+        s.reset();
         if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'Document du QG'});
         else{var a=w.document.createElement('a');a.href=URL.createObjectURL(blob);a.download='QG-document.pdf';w.document.body.appendChild(a);a.click()}
       }catch(e){
         var bb=w.document.getElementById('bpdf');if(bb)bb.textContent='📄 PDF';
         if(e&&e.name!=='AbortError')w.alert('PDF impossible : '+(e.message||e));
+      }
+    };
+    window.__img=async function(){
+      var s;
+      try{
+        s=await shoot('bimg','🖼 Image','jpeg',.95);
+        var files=s.imgs.map(function(d,i){
+          var bin=atob(d.split(',')[1]),u=new Uint8Array(bin.length);
+          for(var k=0;k<bin.length;k++)u[k]=bin.charCodeAt(k);
+          return new File([u],'QG-document-'+(i+1)+'.jpg',{type:'image/jpeg'});
+        });
+        s.reset();
+        if(navigator.canShare&&navigator.canShare({files:files}))await navigator.share({files:files,title:'Document du QG'});
+        else files.forEach(function(file,i){setTimeout(function(){var a=w.document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;w.document.body.appendChild(a);a.click()},i*500)});
+      }catch(e){
+        var bb=w.document.getElementById('bimg');if(bb)bb.textContent='🖼 Image';
+        if(e&&e.name!=='AbortError')w.alert('Image impossible : '+(e.message||e));
       }
     };
     w.document.write=function(h){
