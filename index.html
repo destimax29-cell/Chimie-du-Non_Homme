@@ -2726,6 +2726,7 @@ render();home();
     +".cf{height:calc("+H+" - 18mm)!important}";
   }
   function ld(w,src){return new Promise(function(ok,ko){var s=w.document.createElement('script');s.src=src;s.onload=ok;s.onerror=function(){ko(new Error('Chargement impossible : '+src))};w.document.head.appendChild(s)})}
+  function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
   window.open=function(){
     var w=ow.apply(window,arguments);
     if(!w||!w.document)return w;
@@ -2741,27 +2742,36 @@ render();home();
       return h.replace('<div id="pages">',tb);
     }
     window.__fmt=function(f,cap){cur=f;w.document.open();dw(build(f,cap));w.document.close()};
-    /* capture des pages en images */
-    async function shoot(btn,label,type,quality){
+    /* capture d'une page : 3 essais, puis deuxième outil */
+    async function one(pg,q){
+      var opt={quality:q,scale:2,bgcolor:'#fff',cacheBust:true,disableEmbedFonts:true};
+      for(var t=0;t<3;t++){
+        try{return await w.domtoimage.toJpeg(pg,opt)}catch(e){await wait(500)}
+      }
+      if(!w.html2canvas)await ld(w,'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+      var c=await w.html2canvas(pg,{scale:2,backgroundColor:'#fff',useCORS:true,logging:false});
+      return c.toDataURL('image/jpeg',q);
+    }
+    async function shoot(btn,label,quality){
       var f=cur;
       window.__fmt(f,1);
       await new Promise(function(r){var t=setInterval(function(){if(w.__ready){clearInterval(t);r()}},200)});
       var b=w.document.getElementById(btn);b.textContent='⏳ Préparation…';
       if(!w.domtoimage)await ld(w,'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.3.0/dist/dom-to-image-more.min.js');
       w.document.documentElement.className='';
+      await wait(800);
       var pgs=w.document.querySelectorAll('.pg'),out=[];
-      try{await w.domtoimage.toJpeg(pgs[0],{quality:.5})}catch(e){}
       for(var i=0;i<pgs.length;i++){
         b.textContent='⏳ Page '+(i+1)+' / '+pgs.length;
-        var d=await (type==='png'?w.domtoimage.toPng(pgs[i],{scale:2,bgcolor:'#fff'}):w.domtoimage.toJpeg(pgs[i],{quality:quality,scale:2,bgcolor:'#fff'}));
-        out.push(d);
+        out.push(await one(pgs[i],quality));
       }
       return{imgs:out,f:f,reset:function(){b.textContent=label}};
     }
+    function msg(e){return(e&&e.message)||(e&&e.type?'erreur de rendu ('+e.type+')':String(e))}
     window.__pdf=async function(){
       var s;
       try{
-        s=await shoot('bpdf','📄 PDF','jpeg',.92);
+        s=await shoot('bpdf','📄 PDF',.92);
         if(!w.jspdf)await ld(w,'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
         var L=s.f==='letter',pw=L?215.9:210,ph=L?279.4:297,pdf=new w.jspdf.jsPDF({unit:'mm',format:[pw,ph]});
         s.imgs.forEach(function(img,i){if(i)pdf.addPage([pw,ph]);pdf.addImage(img,'JPEG',0,0,pw,ph)});
@@ -2771,13 +2781,13 @@ render();home();
         else{var a=w.document.createElement('a');a.href=URL.createObjectURL(blob);a.download='QG-document.pdf';w.document.body.appendChild(a);a.click()}
       }catch(e){
         var bb=w.document.getElementById('bpdf');if(bb)bb.textContent='📄 PDF';
-        if(e&&e.name!=='AbortError')w.alert('PDF impossible : '+(e.message||e));
+        if(e&&e.name!=='AbortError')w.alert('PDF impossible : '+msg(e));
       }
     };
     window.__img=async function(){
       var s;
       try{
-        s=await shoot('bimg','🖼 Image','jpeg',.95);
+        s=await shoot('bimg','🖼 Image',.95);
         var files=s.imgs.map(function(d,i){
           var bin=atob(d.split(',')[1]),u=new Uint8Array(bin.length);
           for(var k=0;k<bin.length;k++)u[k]=bin.charCodeAt(k);
@@ -2788,7 +2798,7 @@ render();home();
         else files.forEach(function(file,i){setTimeout(function(){var a=w.document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;w.document.body.appendChild(a);a.click()},i*500)});
       }catch(e){
         var bb=w.document.getElementById('bimg');if(bb)bb.textContent='🖼 Image';
-        if(e&&e.name!=='AbortError')w.alert('Image impossible : '+(e.message||e));
+        if(e&&e.name!=='AbortError')w.alert('Image impossible : '+msg(e));
       }
     };
     w.document.write=function(h){
@@ -2802,7 +2812,6 @@ render();home();
   };
 })();
 </script>
-
 
 </body>
 </html>
