@@ -2703,7 +2703,6 @@ render();home();
 })();
 </script>
 
-
 <script>
 (function(){
   var ow=window.open,cur='a4';
@@ -2718,7 +2717,8 @@ render();home();
   +".hl span{background:none!important;box-shadow:inset 0 -.28em 0 color-mix(in srgb,var(--ac) 55%,var(--pp))}"
   +".ks:after,.cf-d{background:var(--ac)!important}.tb0{display:none!important}}"
   +".tb0{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:8px;background:#111}"
-  +".tb0 button{border:0;border-radius:10px;padding:10px 14px;font:700 14px Arial;background:#d4a72c;color:#111}";
+  +".tb0 button{border:0;border-radius:10px;padding:10px 14px;font:700 14px Arial;background:#d4a72c;color:#111}"
+  +".tb0 button.go{background:#1f9d55;color:#fff}";
   function css(f,cap){
     var L=f==='letter',W=L?'215.9mm':'210mm',
     H=L?(IOS&&!cap?'262mm':'279.4mm'):(IOS&&!cap?'278mm':'297mm');
@@ -2728,12 +2728,9 @@ render();home();
   }
   function ld(w,src){return new Promise(function(ok,ko){var s=w.document.createElement('script');s.src=src;s.onload=ok;s.onerror=function(){ko(new Error('Chargement impossible : '+src))};w.document.head.appendChild(s)})}
   function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
-  /* remplace color-mix() par des couleurs rgb() calculées, uniquement pour la capture */
   function flatten(w){
-    var d=w.document,P=['color','backgroundColor','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor','outlineColor','boxShadow','textDecorationColor','fill','stroke'],
-    cv=d.createElement('canvas').getContext('2d');
+    var d=w.document,P=['color','backgroundColor','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor','outlineColor','boxShadow','textDecorationColor','fill','stroke'];
     function conv(v){
-      if(!v||v.indexOf('color(')<0&&v.indexOf('color-mix')<0)return v;
       return v.replace(/color\(srgb ([\d.]+) ([\d.]+) ([\d.]+)(?: \/ ([\d.]+))?\)/g,function(m,r,g,b,a){
         var R=Math.round(r*255),G=Math.round(g*255),B=Math.round(b*255);
         return a!==undefined&&a!==''&&+a<1?'rgba('+R+','+G+','+B+','+a+')':'rgb('+R+','+G+','+B+')';
@@ -2746,85 +2743,81 @@ render();home();
         var p=P[k],v=cs[p];
         if(v&&(v.indexOf('color(')>-1||v.indexOf('color-mix')>-1))el.style.setProperty(p.replace(/[A-Z]/g,function(c){return '-'+c.toLowerCase()}),conv(v),'important');
       }
-      ['backgroundImage'].forEach(function(p){
-        var v=cs[p];
-        if(v&&(v.indexOf('color(')>-1||v.indexOf('color-mix')>-1))el.style.setProperty('background-image',conv(v),'important');
-      });
+      var v2=cs.backgroundImage;
+      if(v2&&(v2.indexOf('color(')>-1||v2.indexOf('color-mix')>-1))el.style.setProperty('background-image',conv(v2),'important');
     }
   }
   window.open=function(){
     var w=ow.apply(window,arguments);
     if(!w||!w.document)return w;
-    var dw=w.document.write.bind(w.document),raw='';
+    var dw=w.document.write.bind(w.document),raw='',READY=null;
     function build(f,cap){
       var h=raw.replace('</style>',css(f,cap)+'</style>');
       if(IOS&&!cap)h=h.replace('<body class="','<body class="ios ');
       var tb='<div class="tb0"><button onclick="opener.__fmt(\'a4\')">A4</button>'
         +'<button onclick="opener.__fmt(\'letter\')">Lettre</button>'
         +'<button onclick="print()">🖨 Imprimer</button>'
-        +'<button id="bpdf" onclick="opener.__pdf()">📄 PDF</button>'
-        +'<button id="bimg" onclick="opener.__img()">🖼 Image</button></div><div id="pages">';
+        +'<button id="bpdf" onclick="opener.__prep(\'pdf\')">📄 PDF</button>'
+        +'<button id="bimg" onclick="opener.__prep(\'img\')">🖼 Image</button>'
+        +'<button id="bgo" class="go" style="display:none" onclick="opener.__send()">📤 Partager</button></div><div id="pages">';
       return h.replace('<div id="pages">',tb);
     }
-    window.__fmt=function(f,cap){cur=f;w.document.open();dw(build(f,cap));w.document.close()};
+    window.__fmt=function(f,cap){READY=null;cur=f;w.document.open();dw(build(f,cap));w.document.close()};
     async function one(pg,q){
-      var opt={quality:q,scale:2,bgcolor:'#fff',cacheBust:true,disableEmbedFonts:true},er;
+      var opt={quality:q,scale:2,bgcolor:'#fff',cacheBust:true,disableEmbedFonts:true};
       for(var t=0;t<2;t++){
-        try{return await w.domtoimage.toJpeg(pg,opt)}catch(e){er=e;await wait(400)}
+        try{return await w.domtoimage.toJpeg(pg,opt)}catch(e){await wait(400)}
       }
       if(!w.html2canvas)await ld(w,'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
       var c=await w.html2canvas(pg,{scale:2,backgroundColor:'#fff',useCORS:true,logging:false});
       return c.toDataURL('image/jpeg',q);
     }
-    async function shoot(btn,label,quality){
-      var f=cur;
-      window.__fmt(f,1);
-      await new Promise(function(r){var t=setInterval(function(){if(w.__ready){clearInterval(t);r()}},200)});
-      var b=w.document.getElementById(btn);b.textContent='⏳ Préparation…';
-      if(!w.domtoimage)await ld(w,'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.3.0/dist/dom-to-image-more.min.js');
-      w.document.documentElement.className='';
-      await wait(600);
-      flatten(w);
-      await wait(300);
-      var pgs=w.document.querySelectorAll('.pg'),out=[];
-      for(var i=0;i<pgs.length;i++){
-        b.textContent='⏳ Page '+(i+1)+' / '+pgs.length;
-        out.push(await one(pgs[i],quality));
-      }
-      return{imgs:out,f:f,reset:function(){b.textContent=label}};
-    }
     function msg(e){return(e&&e.message)||(e&&e.type?'erreur de rendu ('+e.type+')':String(e))}
-    window.__pdf=async function(){
-      var s;
+    function toFiles(imgs){
+      return imgs.map(function(d,i){
+        var bin=atob(d.split(',')[1]),u=new Uint8Array(bin.length);
+        for(var k=0;k<bin.length;k++)u[k]=bin.charCodeAt(k);
+        return new File([u],'QG-document-'+(i+1)+'.jpg',{type:'image/jpeg'});
+      });
+    }
+    function save(file){var a=w.document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;w.document.body.appendChild(a);a.click()}
+    /* étape 1 : préparer */
+    window.__prep=async function(kind){
+      var f=cur,btn=kind==='pdf'?'bpdf':'bimg',label=kind==='pdf'?'📄 PDF':'🖼 Image',q=kind==='pdf'?.92:.95;
       try{
-        s=await shoot('bpdf','📄 PDF',.92);
-        if(!w.jspdf)await ld(w,'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-        var L=s.f==='letter',pw=L?215.9:210,ph=L?279.4:297,pdf=new w.jspdf.jsPDF({unit:'mm',format:[pw,ph]});
-        s.imgs.forEach(function(img,i){if(i)pdf.addPage([pw,ph]);pdf.addImage(img,'JPEG',0,0,pw,ph)});
-        var blob=pdf.output('blob'),file=new File([blob],'QG-document.pdf',{type:'application/pdf'});
-        s.reset();
-        if(navigator.canShare&&navigator.canShare({files:[file]}))await navigator.share({files:[file],title:'Document du QG'});
-        else{var a=w.document.createElement('a');a.href=URL.createObjectURL(blob);a.download='QG-document.pdf';w.document.body.appendChild(a);a.click()}
+        window.__fmt(f,1);
+        await new Promise(function(r){var t=setInterval(function(){if(w.__ready){clearInterval(t);r()}},200)});
+        var b=w.document.getElementById(btn);b.textContent='⏳ Préparation…';
+        if(!w.domtoimage)await ld(w,'https://cdn.jsdelivr.net/npm/dom-to-image-more@3.3.0/dist/dom-to-image-more.min.js');
+        w.document.documentElement.className='';
+        await wait(600);flatten(w);await wait(300);
+        var pgs=w.document.querySelectorAll('.pg'),imgs=[];
+        for(var i=0;i<pgs.length;i++){b.textContent='⏳ Page '+(i+1)+' / '+pgs.length;imgs.push(await one(pgs[i],q))}
+        var files;
+        if(kind==='pdf'){
+          if(!w.jspdf)await ld(w,'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+          var L=f==='letter',pw=L?215.9:210,ph=L?279.4:297,pdf=new w.jspdf.jsPDF({unit:'mm',format:[pw,ph]});
+          imgs.forEach(function(img,i){if(i)pdf.addPage([pw,ph]);pdf.addImage(img,'JPEG',0,0,pw,ph)});
+          files=[new File([pdf.output('blob')],'QG-document.pdf',{type:'application/pdf'})];
+        }else files=toFiles(imgs);
+        READY=files;b.textContent=label;
+        var g=w.document.getElementById('bgo');g.style.display='inline-block';
+        g.textContent='📤 Partager '+(kind==='pdf'?'le PDF':files.length>1?'les '+files.length+' images':"l'image");
       }catch(e){
-        var bb=w.document.getElementById('bpdf');if(bb)bb.textContent='📄 PDF';
-        if(e&&e.name!=='AbortError')w.alert('PDF impossible : '+msg(e));
+        var bb=w.document.getElementById(btn);if(bb)bb.textContent=label;
+        w.alert('Préparation impossible : '+msg(e));
       }
     };
-    window.__img=async function(){
-      var s;
+    /* étape 2 : partager (nouveau toucher) */
+    window.__send=async function(){
+      if(!READY)return;
       try{
-        s=await shoot('bimg','🖼 Image',.95);
-        var files=s.imgs.map(function(d,i){
-          var bin=atob(d.split(',')[1]),u=new Uint8Array(bin.length);
-          for(var k=0;k<bin.length;k++)u[k]=bin.charCodeAt(k);
-          return new File([u],'QG-document-'+(i+1)+'.jpg',{type:'image/jpeg'});
-        });
-        s.reset();
-        if(navigator.canShare&&navigator.canShare({files:files}))await navigator.share({files:files,title:'Document du QG'});
-        else files.forEach(function(file,i){setTimeout(function(){var a=w.document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;w.document.body.appendChild(a);a.click()},i*500)});
+        if(navigator.canShare&&navigator.canShare({files:READY}))await navigator.share({files:READY,title:'Document du QG'});
+        else READY.forEach(function(file,i){setTimeout(function(){save(file)},i*500)});
       }catch(e){
-        var bb=w.document.getElementById('bimg');if(bb)bb.textContent='🖼 Image';
-        if(e&&e.name!=='AbortError')w.alert('Image impossible : '+msg(e));
+        if(e&&e.name==='AbortError')return;
+        READY.forEach(function(file,i){setTimeout(function(){save(file)},i*500)});
+        w.alert('Partage impossible, le fichier est téléchargé à la place.');
       }
     };
     w.document.write=function(h){
@@ -2838,6 +2831,8 @@ render();home();
   };
 })();
 </script>
+
+
 
 </body>
 </html>
