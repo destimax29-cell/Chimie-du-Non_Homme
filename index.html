@@ -2439,7 +2439,307 @@ window.DUEL={
 const duelHTML=()=>{const H=JSON.parse(gs('cnh_duels')||'[]');return`<div class="c"><b>⚔️ Défis</b><small style="display:block;margin:4px 0 10px">Lance un défi à un coéquipier ou à une autre équipe : mêmes questions, même chrono, le meilleur score gagne. Pas besoin d'être en ligne en même temps.</small><div class="row2"><button class="b" onclick="DUEL.new(8)">⚔️ Lancer (8 questions)</button><button class="b g" onclick="DUEL.new(15)">15 questions</button></div><button class="b g wide" onclick="DUEL.join()" style="margin-top:6px">📥 Relever un défi (coller le code)</button></div>${H.length?`<div class="c"><b>Derniers duels</b>${H.slice(0,8).map(x=>`<div class="row"><span>${E(x.t)}</span><b class="${x.w==='W'?'ok':x.w==='L'?'ko':''}">${x.w==='W'?'Victoire':x.w==='L'?'Défaite':x.w==='D'?'Égalité':x.sc+'/'+x.n}</b></div>`).join('')}</div>`:''}`};
 {const c0=HUB.c;HUB.c=function(){if(HUB.tab==='x'){$('qgc').innerHTML=duelHTML();return}c0.call(HUB)}}
 gateR();
+// ===== QG v19 : DESIGN GAZETTE + NOUVEAUX DOCUMENTS + NOUVEL EMBLÈME + CARTES « UNE » / « INFOGRAPHIE » =====
+// À COLLER dans index.html, dans le gros bloc <script> des « AJOUTS v5 », JUSTE AVANT la ligne :
+//      /* ---------- navigation ---------- */
+// (le code a besoin des fonctions de ce bloc : il doit donc être collé À L'INTÉRIEUR, pas après </script>)
+{
+/* ---------- 1. Emblème institutionnel (remplace le phénix « enfantin ») ---------- */
+const EMB_SVG=(()=>{
+  const half=`<path fill="#b3202a" stroke="#070d1f" stroke-width="1.5" d="M124 112Q150 40 190 26Q176 60 134 120Z"/>
+<path fill="url(#eg)" stroke="#070d1f" stroke-width="1.5" d="M124 110Q158 56 198 50Q176 76 124 118Z"/>
+<path fill="url(#eg)" stroke="#070d1f" stroke-width="1.5" d="M124 114Q168 72 212 74Q184 96 126 124Z"/>
+<path fill="url(#eg)" stroke="#070d1f" stroke-width="1.5" d="M126 120Q170 92 214 100Q186 116 128 130Z"/>
+<path fill="url(#eg)" stroke="#070d1f" stroke-width="1.5" d="M128 128Q166 114 204 126Q176 136 130 138Z"/>
+<path fill="url(#eg)" stroke="#070d1f" stroke-width="1.5" d="M126 166C142 178 146 196 142 210C132 198 126 184 126 166Z"/>`;
+  const center=`<path fill="url(#eg)" stroke="#070d1f" stroke-width="1.5" d="M120 70C132 78 136 100 132 126C130 142 126 156 120 176C114 156 110 142 108 126C104 100 108 78 120 70Z"/>
+<path fill="url(#eg)" stroke="#070d1f" stroke-width="1.5" d="M120 168C132 188 128 208 120 226C112 208 108 188 120 168Z"/>
+<path fill="url(#eg)" stroke="#070d1f" stroke-width="1.5" d="M120 54C127 46 125 36 120 26C115 36 113 46 120 54Z"/>
+<circle cx="120" cy="64" r="9" fill="url(#eg)" stroke="#070d1f" stroke-width="1.5"/>
+<path fill="#ffd24a" d="M127 61L140 66L127 70Z"/><circle cx="121" cy="62" r="1.8" fill="#070d1f"/>
+<path d="M113 96L120 104L127 96M113 108L120 116L127 108M114 120L120 127L126 120" fill="none" stroke="#a8321a" stroke-width="2"/>`;
+  const star=[...Array(10)].map((_,i)=>{const a=-Math.PI/2+i*Math.PI/5,r=i%2?3.8:9;return (120+r*Math.cos(a)).toFixed(1)+','+(30+r*Math.sin(a)).toFixed(1)}).join(' ');
+  const dots=[...Array(24)].map((_,i)=>{const a=i*Math.PI/12;return `<circle cx="${(120+104*Math.cos(a)).toFixed(1)}" cy="${(120+104*Math.sin(a)).toFixed(1)}" r="1.7"/>`}).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><defs>
+<linearGradient id="eg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".45" stop-color="#ffb52e"/><stop offset=".8" stop-color="#e8541c"/><stop offset="1" stop-color="#b3202a"/></linearGradient>
+<linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9e08e"/><stop offset=".5" stop-color="#c9921f"/><stop offset="1" stop-color="#f3d27a"/></linearGradient>
+<linearGradient id="nv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16295a"/><stop offset="1" stop-color="#070d1f"/></linearGradient></defs>
+<circle cx="120" cy="120" r="118" fill="url(#gd)"/><circle cx="120" cy="120" r="113.5" fill="#070d1f"/><circle cx="120" cy="120" r="109" fill="none" stroke="url(#gd)" stroke-width="1.2"/>
+<g fill="url(#gd)">${dots}</g><polygon points="${star}" fill="url(#gd)"/>
+<path d="M60 48H180V130C180 172 150 200 120 214C90 200 60 172 60 130Z" fill="url(#nv)" stroke="url(#gd)" stroke-width="3.5"/>
+<path d="M67 55H173V130C173 168 147 192 120 205C93 192 67 168 67 130Z" fill="none" stroke="url(#gd)" stroke-width=".9"/>
+<g transform="translate(120 132) scale(.62) translate(-120 -130)">${half}<g transform="translate(240 0) scale(-1 1)">${half}</g>${center}</g></svg>`;
+})();
+const EMB='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(EMB_SVG);
+// cfg.logo renvoie l'emblème tant qu'aucun logo personnel n'est choisi ; il n'est jamais enregistré comme logo perso
+function instLogo(){
+  const d=Object.getOwnPropertyDescriptor(cfg,'logo');if(d&&d.get)return;
+  let real=cfg.logo||'';
+  Object.defineProperty(cfg,'logo',{get:()=>real||EMB,set:v=>{real=v||''},enumerable:false,configurable:true});
+  Object.defineProperty(cfg,'toJSON',{value(){const o=Object.assign({},this);if(real)o.logo=real;return o},enumerable:false,configurable:true});
+}
+instLogo();
+{const a0=applyCfg;applyCfg=function(){instLogo();a0()}}
 
+/* ---------- 2. Palettes ---------- */
+ST.royal={dk:'#0b1b3f',ac:'#d9a928',ac2:'#b3202a',pp:'#fbf8f1',tx:'#1b2236',cv:'#f3ead2'};
+ST.emeraude={dk:'#06281f',ac:'#e0b84a',ac2:'#0f8a62',pp:'#fbfaf3',tx:'#14241f',cv:'#eaf5ee'};
+ST.pourpre={dk:'#2a0a2e',ac:'#f2b84b',ac2:'#c2185b',pp:'#fcf7fa',tx:'#241226',cv:'#fbeaf3'};
+{const SO=[['royal','Bleu royal & Or'],['noir','Noir & Or'],['parch','Parchemin'],['braise','Braise phénix'],['nuit','Bleu nuit'],['emeraude','Émeraude & Or'],['pourpre','Pourpre']].map(x=>`<option value="${x[0]}">${x[1].replace('&','&amp;')}</option>`).join('');
+ ['dm_st','xp_st'].forEach(i=>{const s=$(i);if(s)s.innerHTML=SO});
+ if(!gs('cnh_dopt'))ss('cnh_dopt',JSON.stringify({st:'royal',cl:'USAGE INTERNE'}));
+ if(!(cfg.xp&&cfg.xp.st))XP.st='royal'}
+
+/* ---------- 3. Feuille de style « gazette » des documents ---------- */
+const FF="'Playfair Display',Georgia,'Times New Roman',serif",SF="Montserrat,'Helvetica Neue',Arial,sans-serif";
+const gcss=(P,fs,cols,word)=>{const {dk,ac,ac2,pp,tx,cv}=P;return `@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,500;1,700&family=Montserrat:wght@500;700;800;900&display=swap');
+@page{size:A4;margin:0}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html,body{margin:0}body{font-family:${FF};color:${tx};font-size:${fs};line-height:1.5;background:${pp}}
+.pgx{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;break-after:page;background:${pp};padding:21mm 15mm 17mm 20mm}
+.pgx:last-child{page-break-after:auto;break-after:auto}
+.pgx:not(.pos)::before{content:'';position:absolute;left:0;top:0;bottom:0;width:7mm;background:linear-gradient(180deg,${dk},${ac2})}
+.pgx:not(.pos)::after{content:'';position:absolute;left:7mm;top:0;bottom:0;width:1.2mm;background:${ac}}
+.tp .pgx:first-child:not(.pos){padding-top:11mm}.tp .pgx:first-child .ph{visibility:hidden}
+.ph,.pf2{position:absolute;left:20mm;right:15mm;font:700 6.8pt ${SF};letter-spacing:.22em;display:flex;justify-content:space-between;text-transform:uppercase}
+.ph{top:7mm;color:${ac2};padding-bottom:1.6mm;border-bottom:.5mm solid ${dk}}
+.pf2{bottom:6mm;color:${dk};border-top:.5mm solid ${dk};padding-top:1.6mm}
+.bx{height:100%;overflow:hidden;column-count:${cols};column-gap:9mm;column-rule:.3mm solid ${ac};column-fill:auto}
+.mast{display:flex;align-items:center;gap:5mm;border-top:1.6mm solid ${dk};border-bottom:.5mm solid ${dk};padding:3mm 0;margin:0 0 1.2mm}
+.mast img{width:25mm;height:25mm;object-fit:contain;flex:none}
+.mast .mc{flex:1;text-align:center}.mast .mk{font:800 7pt ${SF};letter-spacing:.42em;color:${ac2}}
+.mast .mt{font:900 27pt/1.05 ${FF};color:${dk};text-transform:uppercase;margin:1mm 0}.mast .ms{font:italic 500 9pt ${FF};color:#555}
+.mast .ear{width:27mm;flex:none;text-align:center;font:700 6.2pt ${SF};letter-spacing:.14em;color:${dk};border:.4mm solid ${dk};padding:2mm 1mm}
+.mast .ear b{display:block;font:900 19pt ${FF};color:${ac2};letter-spacing:0}
+.mast.sm img{width:17mm;height:17mm}.mast.sm .mt{font-size:15pt}.mast.sm .ear{display:none}
+.mbar{display:flex;justify-content:space-between;gap:3mm;background:${dk};color:${cv};font:700 6.4pt ${SF};letter-spacing:.18em;padding:1.8mm 4mm;margin:0 0 5mm;border-bottom:.8mm solid ${ac};text-transform:uppercase}
+.hdl{font:900 26pt/1.08 ${FF};color:${dk};margin:0 0 2mm}.dek{font:italic 500 12.5pt ${FF};color:${ac2};border-left:1.2mm solid ${ac};padding-left:3.5mm;margin:0 0 5mm}
+.kick{font:800 7.5pt ${SF};letter-spacing:.38em;color:${ac2};margin:0 0 2mm;text-transform:uppercase}
+.tp{margin:0 0 3.2mm;text-align:justify;hyphens:auto}
+.dc:first-letter{float:left;font:900 40pt/.82 ${FF};color:${ac2};padding:1.2mm 2mm 0 0}
+.pq{margin:5mm 4mm;padding:4mm 0 3mm;border-top:.8mm solid ${dk};border-bottom:.8mm solid ${dk};text-align:center;font:italic 700 15pt/1.35 ${FF};color:${dk};break-inside:avoid}
+.pq::before{content:'\\201C';display:block;font:900 40pt/.6 ${FF};color:${ac};margin-bottom:2mm}
+.pq small{display:block;font:800 7pt ${SF};letter-spacing:.3em;color:${ac2};margin-top:2mm;font-style:normal;text-transform:uppercase}
+.sts{display:flex;margin:0 0 5mm;break-inside:avoid}.sts .st{flex:1;padding:3.5mm 2mm;text-align:center;background:${dk};color:${cv}}
+.sts .st:nth-child(2n){background:${ac2};color:#fff}.sts .st:nth-child(3n){background:${ac};color:${dk}}
+.sts b{display:block;font:900 20pt/1.1 ${FF}}.sts small{font:700 6.5pt ${SF};letter-spacing:.2em;text-transform:uppercase}
+.rib{background:${dk};color:${cv};font:800 8.5pt ${SF};letter-spacing:.3em;padding:2mm 4mm;margin:5mm 0 3mm;position:relative;break-inside:avoid;border-left:2.5mm solid ${ac};text-transform:uppercase;overflow:hidden}
+.rib::after{content:'';position:absolute;right:0;top:0;bottom:0;width:14mm;background:repeating-linear-gradient(135deg,transparent 0 1.2mm,${ac} 1.2mm 1.8mm)}
+.num{display:flex;gap:3mm;margin:0 0 2.6mm;font:10pt/1.45 ${SF};break-inside:avoid;align-items:flex-start;background:rgba(0,0,0,.04);padding:2.2mm 3mm;border-left:1mm solid ${ac2}}
+.num i{flex:none;width:7.5mm;height:7.5mm;background:${dk};color:${ac};font:900 10pt ${FF};display:flex;align-items:center;justify-content:center;font-style:normal;border-radius:50%}
+.kv{display:flex;flex-wrap:wrap;gap:2mm;margin:0 0 5mm;break-inside:avoid}.kv div{flex:1 1 40mm;border:.4mm solid ${dk};border-left:1.6mm solid ${ac};padding:2mm 3mm;font:9.5pt ${SF}}
+.kv small{display:block;font:800 6.5pt ${SF};letter-spacing:.25em;color:${ac2}}
+.tb{width:100%;border-collapse:collapse;margin:0 0 4mm;font:9.5pt ${SF};break-inside:avoid}.tb th{background:${dk};color:${ac};text-align:left;padding:2mm 2.5mm;font-size:7.5pt;letter-spacing:.15em;text-transform:uppercase}
+.tb td{padding:2mm 2.5mm;border-bottom:.3mm solid #c9c9c9}.tb.zb tr:nth-child(even) td{background:rgba(0,0,0,.045)}.tb.zb td{height:8mm}
+.mg{width:100%;border-collapse:collapse;table-layout:fixed;margin:0 0 4mm;break-inside:avoid}.mg th{background:${dk};color:${ac};font:700 8pt ${SF};padding:1.5mm}
+.mg td{border:1px solid #bbb;height:17mm;vertical-align:top;padding:1mm;font:7.5pt ${SF}}.mg td.ev{background:${ac}44}.mg td b{font-size:9pt}.mg small{display:block;color:${ac2};font-weight:700}
+.tln{border-left:.8mm solid ${ac};margin:0 0 4mm 3mm;padding-left:6mm}.tln div{position:relative;margin:0 0 3mm;font:10pt ${SF};break-inside:avoid}
+.tln div::before{content:'';position:absolute;left:-8.5mm;top:1.2mm;width:3.6mm;height:3.6mm;border-radius:50%;background:${ac2};border:.7mm solid ${pp}}
+.tln b{color:${dk}}.tln small{display:block;font:800 7pt ${SF};letter-spacing:.2em;color:${ac2};text-transform:uppercase}
+.tkt{display:flex;border:.6mm solid ${dk};margin:0 0 5mm;break-inside:avoid}.tkt .d{background:${dk};color:${ac};text-align:center;padding:5mm 7mm;min-width:38mm}
+.tkt .d b{display:block;font:900 36pt/1 ${FF}}.tkt .d small{display:block;font:800 8pt ${SF};letter-spacing:.2em;color:${cv}}
+.tkt .i{flex:1;display:flex;flex-direction:column;justify-content:center;gap:3mm;padding:4mm 6mm}.tkt .i small{font:800 7pt ${SF};letter-spacing:.3em;color:${ac2};display:block}.tkt .i b{font:900 15pt ${FF}}
+.rl{display:flex;justify-content:space-between;font:9.5pt ${SF};margin:0 0 4mm}.ob{font:800 11pt ${SF};margin:3mm 0 5mm;padding:2.5mm 4mm;background:${dk};color:${cv};border-left:2.5mm solid ${ac}}
+.lp{margin:0 0 3.4mm;text-align:justify;text-indent:9mm}
+.sg{margin-top:8mm;text-align:right;font:10pt ${SF};break-inside:avoid}.sg .ln{display:inline-block;border-top:.4mm solid ${tx};padding-top:2mm;min-width:60mm;text-align:center;margin-top:14mm}
+.pls{display:flex;flex-wrap:wrap;gap:2.5mm;margin:0 0 3mm}.pl{flex:0 0 calc(33.3% - 2mm);display:flex;align-items:center;gap:2.5mm;border:.4mm solid ${dk};border-bottom:1.2mm solid ${ac};padding:2mm;break-inside:avoid}
+.pl i{flex:none;width:10mm;height:10mm;background:${dk};color:${ac};font:900 12pt ${FF};display:flex;align-items:center;justify-content:center;font-style:normal}
+.pl b{font:800 9pt/1.2 ${SF};display:block}.pl small{font:700 6.5pt ${SF};letter-spacing:.15em;color:${ac2};text-transform:uppercase}
+.score{display:flex;align-items:stretch;background:${dk};color:${cv};margin:0 0 5mm;break-inside:avoid;border-bottom:1.2mm solid ${ac}}
+.score>div{flex:1;text-align:center;padding:4mm 2mm}.score small{display:block;font:800 7.5pt ${SF};letter-spacing:.25em;color:${ac};text-transform:uppercase}.score b{font:900 46pt/1 ${FF}}
+.score .mid{flex:0 0 32mm;background:${ac2};display:flex;flex-direction:column;justify-content:center;font:900 8pt ${SF};letter-spacing:.2em;color:#fff}.score .mid i{font:900 24pt ${FF};font-style:normal}
+.cmpw{margin:0 0 4mm}.leg{display:flex;justify-content:space-between;font:800 7pt ${SF};letter-spacing:.2em;text-transform:uppercase;margin-bottom:2mm}
+.cmp{margin:0 0 2.2mm;break-inside:avoid}.cmp .cl{font:800 7.5pt ${SF};letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-bottom:.8mm}
+.cmp .cb{display:flex;height:6.5mm;font:800 8pt ${SF}}.cmp .cb span{background:${dk};color:${ac};display:flex;align-items:center;padding-left:2mm}.cmp .cb u{background:${ac2};color:#fff;text-decoration:none;display:flex;align-items:center;justify-content:flex-end;padding-right:2mm}
+.mvp{display:flex;align-items:center;gap:4mm;background:${ac};color:${dk};padding:3mm 5mm;margin:4mm 0;break-inside:avoid}.mvp i{font:900 26pt ${FF};font-style:normal}.mvp small{display:block;font:800 7pt ${SF};letter-spacing:.3em}.mvp b{font:900 16pt ${FF}}
+.fel{background:linear-gradient(160deg,${dk} 0%,${dk} 55%,${ac2} 160%);color:${cv};text-align:center;padding:12mm 10mm;border:1.2mm double ${ac};margin:4mm 0 6mm;position:relative;overflow:hidden;break-inside:avoid}
+.fel::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 4mm,transparent 4mm 8mm)}.fel>*{position:relative}
+.fel img{width:32mm;height:32mm;object-fit:contain}.fel .k1{font:800 7.5pt ${SF};letter-spacing:.35em;color:${ac};margin:3mm 0}.fel .ft{font:900 30pt/1 ${FF};letter-spacing:.06em}
+.fel .fn{font:italic 700 30pt ${FF};color:${ac};margin:6mm 0;border-bottom:.4mm solid ${ac};display:inline-block;padding:0 8mm 2mm}.fel .fm{font:11pt/1.6 ${FF};margin:2mm 8mm 5mm}
+.sec2{display:flex;align-items:center;gap:3mm;background:${dk};color:${cv};margin:0 0 3mm;break-inside:avoid;border-bottom:.8mm solid ${ac}}
+.sec2 .sl{font:900 30pt/1 ${FF};color:${dk};background:${ac};padding:1mm 4.5mm}.sec2 b{font:800 8pt ${SF};letter-spacing:.3em}.sec2 small{display:block;font:700 6.5pt ${SF};letter-spacing:.2em;color:${ac}}
+.art{margin:0 0 3mm;break-inside:avoid;padding:0 0 2mm 3mm;border-left:.8mm solid ${ac};border-bottom:.2mm dotted #aaa}.art .no{font:800 6.5pt ${SF};letter-spacing:.15em;color:${ac2};display:block}
+.art b{font:700 11.5pt ${FF};color:${dk}}.art p{margin:.6mm 0 0;font-size:.95em}.art .sy{font:italic 8.5pt ${FF};color:${ac2}}
+.toc{margin:0 0 4mm}.toc a{display:inline-flex;align-items:baseline;gap:1.5mm;text-decoration:none;color:${cv};background:${dk};font:900 14pt ${FF};padding:1.5mm 3.5mm;margin:0 1.5mm 1.5mm 0;border-bottom:.8mm solid ${ac}}.toc small{font:700 6pt ${SF};color:${ac}}
+.pgx.pos{padding:0!important;background:linear-gradient(160deg,${dk} 0%,${dk} 58%,${ac2} 150%);color:${cv}}
+.pos .pt{position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 4mm,transparent 4mm 8mm)}
+.pos .in{position:absolute;inset:9mm;border:.6mm solid ${ac};display:flex;flex-direction:column;padding:9mm}
+.pos .in::before{content:'';position:absolute;inset:1.6mm;border:.25mm solid ${ac};opacity:.6;pointer-events:none}
+.pos .top{display:flex;align-items:center;gap:5mm}.pos .top img{width:22mm;height:22mm;object-fit:contain}.pos .tn{font:900 15pt ${SF};letter-spacing:.3em}.pos .ts{font:700 7pt ${SF};letter-spacing:.3em;color:${ac}}
+.pos .sub{font:700 9pt ${SF};letter-spacing:.3em;color:${ac}}
+.pos .big{font:900 50pt/.95 ${FF};text-transform:uppercase;margin:4mm 0 3mm;color:${cv}}.pos .big em{color:${ac};font-style:italic}
+.pos .vs{display:flex;align-items:center;justify-content:center;gap:7mm;margin:6mm 0}.pos .vs .tm{width:42mm;text-align:center;font:800 8pt ${SF};letter-spacing:.2em}
+.pos .vs .tm div{width:30mm;height:30mm;margin:0 auto 2mm;border-radius:50%;border:.8mm solid ${ac};display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);font:900 22pt ${FF};color:${ac};letter-spacing:0}
+.pos .vs .tm img{width:30mm;height:30mm;object-fit:contain;display:block;margin:0 auto 2mm}.pos .vs .x{font:900 30pt ${FF};color:${ac}}
+.pos .when{display:flex;gap:3mm}.pos .when>div{flex:1;border:.5mm solid ${ac};padding:3mm;text-align:center;font:800 8pt ${SF};letter-spacing:.15em}.pos .when b{display:block;font:900 24pt/1.1 ${FF};color:${ac};letter-spacing:0}
+.pos .msg{flex:1;min-height:0;margin:6mm 0;background:rgba(0,0,0,.28);border-left:1.5mm solid ${ac};padding:5mm 6mm;overflow:hidden;font-size:11pt;line-height:1.5}.pos .msg .tp{margin:0 0 2.5mm}.pos .dc:first-letter{color:${ac}}
+.pos .mots{display:flex;gap:3mm}.pos .mots div{flex:1;background:${ac};color:${dk};text-align:center;padding:3mm 1mm;font:900 11pt ${SF};letter-spacing:.14em;text-transform:uppercase}.pos .mots i{display:block;font:900 9pt ${FF};font-style:normal}
+.pos .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:6mm;font:700 7pt ${SF};letter-spacing:.2em;color:${ac}}.pos .foot .mot{font:italic 500 11pt ${FF};letter-spacing:0;color:${cv}}
+.pos .jn{position:absolute;top:14mm;right:14mm;width:30mm;height:30mm;border-radius:50%;background:${ac};color:${dk};display:flex;flex-direction:column;align-items:center;justify-content:center;font:900 18pt ${FF};z-index:3;transform:rotate(8deg);box-shadow:0 0 0 1.2mm ${dk},0 0 0 1.8mm ${ac}}.pos .jn small{font:800 5pt ${SF};letter-spacing:.1em;text-align:center}
+.pos .lets{display:flex;flex-wrap:wrap;gap:1.5mm}.pos .lets span{width:8mm;height:8mm;border:.3mm solid ${ac};color:${ac};font:900 9pt ${FF};display:flex;align-items:center;justify-content:center}
+.pos .nm{font:italic 700 34pt ${FF};color:${ac};border-bottom:.5mm solid ${ac};padding:0 8mm 2mm;margin:3mm 0 6mm}
+@media screen{body{background:#3a3a44}.pgx{margin:12px auto;box-shadow:0 4px 24px rgba(0,0,0,.45)}.z .pgx{zoom:.46;margin:8px auto}}
+${word?`.pgx{width:auto;height:auto;overflow:visible;padding:0 0 10mm}.pgx::before,.pgx::after{display:none}.bx{height:auto;column-count:1}.pgx.pos{background:${dk};padding:8mm!important}.pos .pt{display:none}.pos .in{position:static;border:.5mm solid ${ac}}.pos .jn{position:static;transform:none}`:''}`};
+/* pagination : une page n'est créée que s'il y a du contenu ; les titres restent collés à leur contenu */
+const pg2=(H,F)=>`(function(){var pg=document.getElementById('pages'),src=document.getElementById('src'),it=[].slice.call(src.children),H=${J(H)},F=${J(F)},bx=null;
+function np(){var p=document.createElement('div');p.className='pgx';p.innerHTML='<div class="ph">'+H+'</div><div class="bx"></div><div class="pf2">'+F+'</div>';pg.appendChild(p);return p.querySelector('.bx')}
+function ov(b){return b.scrollWidth>b.clientWidth+2||b.scrollHeight>b.clientHeight+2}
+it.forEach(function(el){if(!bx)bx=np();bx.appendChild(el);if(ov(bx)&&bx.children.length>1){var mv=[el],pv=el.previousElementSibling;bx.removeChild(el);if(pv&&/(^| )(sec2|rib|kick)( |$)/.test(pv.className)){bx.removeChild(pv);mv.unshift(pv)}bx=np();mv.forEach(function(m){bx.appendChild(m)})}});
+var fs=document.getElementById('fs');if(fs&&fs.firstElementChild)pg.appendChild(fs.firstElementChild);
+var ps=pg.querySelectorAll('.pgx');for(var i=0;i<ps.length;i++){var n=ps[i].querySelector('.pn');if(n)n.textContent=(i+1)+' / '+ps.length}
+function fit(){[].slice.call(document.querySelectorAll('.fit')).forEach(function(b){var s=parseFloat(getComputedStyle(b).fontSize),g=0;while(b.scrollHeight>b.clientHeight+1&&s>6&&g++<80){s-=.4;b.style.fontSize=s+'px'}})}
+fit();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+if(innerWidth<820)document.documentElement.className='z'})();`;
+shell=function(x){return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>${E(x.title)}</title><style>${gcss(x.P,x.fs,x.cols,x.word)}</style></head><body class="${(x.word?'word ':'')+(x.cls||'')}"><div id="pages">${x.pre||''}</div><div id="src"${x.word?'':' style="display:none"'}>${x.ent}</div><div id="fs"${x.word?'':' style="display:none"'}>${x.fin||''}</div>${x.word?'':`<script>${pg2(x.H,x.F)}<\/script>`}</body></html>`};
+
+/* ---------- 4. Briques de mise en page ---------- */
+const gd=d=>d?new Date(d+'T12:00'):null;
+const gdays=d=>{if(!d)return null;return Math.round((new Date(d+'T12:00')-new Date(new Date().toDateString()+' 12:00'))/864e5)};
+const gp=t=>PSP(t).map((x,i)=>`<p class="tp${i?'':' dc'}">${E(x)}</p>`);
+const gnum=t=>PSP(t).map((x,i)=>`<div class="num"><i>${i+1}</i><span>${E(x)}</span></div>`);
+const grib=t=>`<div class="rib">${E(t)}</div>`;
+const gpq=(t,by)=>t?`<div class="pq">${E(t)}<small>${E(by||'')}</small></div>`:'';
+const gsts=a=>`<div class="sts">${a.filter(x=>x[0]!==''&&x[0]!=null).map(x=>`<div class="st"><b>${E(x[0])}</b><small>${E(x[1])}</small></div>`).join('')}</div>`;
+const gkv=a=>{const r=a.filter(x=>x[1]);return r.length?`<div class="kv">${r.map(x=>`<div><small>${x[0]}</small>${E(x[1])}</div>`).join('')}</div>`:''};
+const ghd=(t,d)=>`<div class="hdl">${E(t||'')}</div>${d?`<div class="dek">${E(d)}</div>`:''}`;
+const gm=(c,t,s,sm)=>`<div class="mast${sm?' sm':''}"><img src="${c.logo}" alt=""><div class="mc"><div class="mk">${E(c.team)} · ÉQUIPE DE GÉNIE</div><div class="mt">${E(t)}</div><div class="ms">${E(s||c.I.name+' — '+c.I.city)}</div></div><div class="ear">ÉDITION<b>N° ${c.n}</b>${E(c.cl)}</div></div><div class="mbar"><span>${E(c.dt)}</span><span>Réf. ${E(c.ref)}</span><span>« ${E(c.I.motto)} »</span></div>`;
+const gsg=c=>`<div class="sg"><div>Pour la ${E(c.team)},</div><div class="ln"><b>${E(c.sg||'')}</b><br><small>${E(c.team)} · ${E(c.I.name)}</small></div></div>`;
+const gposter=(v,c,aff)=>{
+  const d=gd(v.date),n=gdays(v.date),words=String((aff?v.slg:v.obj)||(aff?'ON NE LÂCHE RIEN':'TOUS DERRIÈRE L’ÉQUIPE')).toUpperCase().split(/\s+/),k=Math.ceil(words.length/2),len=words.join(' ').length,fz=len>30?34:len>20?42:50,
+  ini=(v.adv||'?').split(/\s+/).map(w=>w[0]||'').join('').slice(0,3).toUpperCase(),mots=PSP(v.mots).slice(0,4),
+  when=`<div class="when"><div>${d?`<b>${d.getDate()}</b>${E((d.toLocaleDateString('fr-FR',{weekday:'long'})+' · '+d.toLocaleDateString('fr-FR',{month:'long'})).toUpperCase())}`:'<b>—</b>DATE'}</div><div><b>${E(v.heure||'—')}</b>HEURE</div><div><b style="font-size:13pt;padding:2.5mm 0 1.5mm">${E(v.lieu||'—')}</b>LIEU</div></div>`;
+  return `<div class="pgx pos"><div class="pt"></div>${n!=null&&n>=0?`<div class="jn"><b>${n?'J-'+n:'JOUR J'}</b><small>${n?'AVANT LE MATCH':'C’EST AUJOURD’HUI'}</small></div>`:''}<div class="in">`
+  +`<div class="top"><img src="${c.logo}" alt=""><div><div class="tn">${E(c.team)}</div><div class="ts">${E(c.I.name.toUpperCase())}</div></div></div>`
+  +`<div class="sub" style="margin-top:8mm">${aff?'MATCH OFFICIEL':'APPEL À LA MOBILISATION'}${v.comp?' · '+E(v.comp.toUpperCase()):''}</div>`
+  +`<div class="big" style="font-size:${fz}pt">${E(words.slice(0,k).join(' '))}<br><em>${E(words.slice(k).join(' '))}</em></div>`
+  +`<div class="vs"><div class="tm"><img src="${c.logo}" alt="">${E(c.team)}</div><div class="x">VS</div><div class="tm"><div>${E(ini)}</div>${E((v.adv||'ADVERSAIRE').toUpperCase())}</div></div>`
+  +when+(aff?'<div style="flex:1"></div>':`<div class="msg fit">${gp(v.body).join('')}</div>`)
+  +(mots.length?`<div class="mots">${mots.map(m=>`<div><i>★</i>${E(m)}</div>`).join('')}</div>`:'')
+  +`<div class="foot"><span class="mot">« ${E(c.motto)} »</span><span>${E(c.sg||c.team)} · ${E(c.ref)}</span></div></div></div>`};
+
+/* ---------- 5. Modèles de documents (anciens restylés + nouveaux) ---------- */
+const O=Object.assign({},TPL);Object.keys(TPL).forEach(k=>delete TPL[k]);
+Object.assign(TPL,{
+ mob:{n:'🔥 Mobilisation (match)',f:[['adv','Adversaire','t'],['comp','Compétition / occasion','t'],['date','Date du match','date'],['heure','Heure','t'],['lieu','Lieu','t'],['obj','Accroche (titre)','t'],['body','Message de motivation','a'],['mots',"Mots d’ordre (un par ligne, 3 idéal)",'a']],
+  d:{obj:'DEMAIN, ON ÉCRIT NOTRE HISTOIRE',mots:'Discipline\nUnité\nCourage',body:'Demain, nous n’entrons pas sur le terrain pour participer : nous y entrons pour tout donner.\nChaque entraînement, chaque sacrifice, chaque heure de travail nous a conduits jusqu’ici. Le moment est venu de le prouver.\nJouons ensemble, respectons-nous, soutenons-nous jusqu’au dernier instant. Quel que soit le score, que personne n’ait à baisser les yeux.\nNous sommes le phénix : on nous met à terre, nous renaissons plus forts. Tous derrière l’équipe !'},
+  r:(v,c)=>[gposter(v,c,0)]},
+ aff:{n:'🆚 Affiche de match',f:[['adv','Adversaire','t'],['comp','Compétition / occasion','t'],['date','Date du match','date'],['heure','Heure','t'],['lieu','Lieu','t'],['slg','Slogan','t']],d:{slg:'ON NE LÂCHE RIEN'},r:(v,c)=>[gposter(v,c,1)]},
+ compo:{n:'⚽ Composition d’équipe',f:[['adv','Adversaire','t'],['date','Date','date'],['lieu','Lieu','t'],['cap','Capitaine','t'],['rows','Joueurs (statut : T = titulaire, R = remplaçant)','r',[['N°','t'],['Nom','t'],['Poste','t'],['Statut','t']]],['tact','Consignes tactiques (une par ligne)','a']],d:{},
+  r:(v,c)=>{const R=(v.rows||[]).filter(r=>r.some(x=>x&&x.trim())),B=R.filter(r=>/^r/i.test((r[3]||'').trim())),T=R.filter(r=>!B.includes(r)),card=r=>`<div class="pl"><i>${E(r[0]||'')}</i><div><b>${E(r[1]||'')}</b><small>${E(r[2]||'')}</small></div></div>`;
+   return[gm(c,'FEUILLE DE MATCH','Composition officielle'),gsts([[T.length,'Titulaires'],[B.length,'Remplaçants'],[v.cap||'—','Capitaine']]),gkv([['ADVERSAIRE',v.adv],['DATE',v.date?fd(v.date):''],['LIEU',v.lieu]]),grib('Les titulaires'),`<div class="pls">${T.map(card).join('')}</div>`,...(B.length?[grib('Les remplaçants'),`<div class="pls">${B.map(card).join('')}</div>`]:[]),...(PSP(v.tact).length?[grib('Consignes tactiques'),...gnum(v.tact)]:[]),gsg(c)]}},
+ bilan:{n:'📰 Rapport de match',f:[['adv','Adversaire','t'],['date','Date','date'],['lieu','Lieu','t'],['sn','Notre score','t'],['sa','Score adverse','t'],['obj','Titre de la une','t'],['body','Récit du match','a'],['stat','Statistiques (une par ligne : Libellé | nous | eux)','a'],['hom','Homme du match','t'],['cit','Citation du capitaine','t']],d:{},
+  r:(v,c)=>{const st=PSP(v.stat).map(l=>l.split('|').map(x=>x.trim())).filter(a=>a.length>=3),nn=parseFloat(v.sn),na=parseFloat(v.sa),res=isNaN(nn)||isNaN(na)?'':nn>na?'VICTOIRE':nn<na?'DÉFAITE':'MATCH NUL',
+   bars=st.map(a=>{const x=parseFloat(a[1])||0,y=parseFloat(a[2])||0,t=(x+y)||1;return `<div class="cmp"><div class="cl">${E(a[0])}</div><div class="cb"><span style="width:${Math.max(12,x/t*100).toFixed(1)}%">${E(a[1])}</span><u style="width:${Math.max(12,y/t*100).toFixed(1)}%">${E(a[2])}</u></div></div>`}).join('');
+   return[gm(c,'LA GAZETTE DU MATCH',v.comp||'Édition spéciale'),`<div class="score"><div><small>${E(c.team)}</small><b>${E(v.sn||'-')}</b></div><div class="mid">${E(res)}<i>–</i></div><div><small>${E(v.adv||'Adversaire')}</small><b>${E(v.sa||'-')}</b></div></div>`,gkv([['DATE',v.date?fd(v.date):''],['LIEU',v.lieu]]),ghd(v.obj),...gp(v.body),gpq(v.cit,'Le capitaine'),...(bars?[grib('Les chiffres du match'),`<div class="cmpw"><div class="leg"><span>${E(c.team)}</span><span>${E(v.adv||'Adversaire')}</span></div>${bars}</div>`]:[]),...(v.hom?[`<div class="mvp"><i>★</i><div><small>HOMME DU MATCH</small><b>${E(v.hom)}</b></div></div>`]:[]),gsg(c)]}},
+ disc:{n:'🎤 Discours du capitaine',f:[['obj','Titre','t'],['cit','Phrase forte (mise en avant)','t'],['body','Texte du discours','a']],d:{},r:(v,c)=>[gm(c,'L’ÉDITORIAL','Le mot du capitaine'),ghd(v.obj),gpq(v.cit,c.team),...gp(v.body),gsg(c)]},
+ felic:{n:'🎉 Félicitations',f:[['nom','Pour','t'],['motif','Message','a'],['date','Date','date']],d:{},
+  r:(v,c)=>[`<div class="fel"><img src="${c.logo}" alt=""><div class="k1">${E(c.team)} · ${E(c.I.name.toUpperCase())}</div><div class="ft">FÉLICITATIONS</div><div class="fn">${E(v.nom||'')}</div><div class="fm">${PSP(v.motif).map(E).join('<br>')}</div><div class="k1">${E(c.I.city)}, le ${E(v.date?fd(v.date):c.dt)}</div></div>`,gsg(c)]},
+ comm:Object.assign({},O.comm,{r:(v,c)=>[gm(c,'COMMUNIQUÉ OFFICIEL','Diffusion à toute l’équipe'),ghd(v.obj),...gp(v.body),gsg(c)]}),
+ note:Object.assign({},O.note,{r:(v,c)=>[gm(c,'NOTE DE SERVICE','Communication interne'),gkv([['DE',c.team+' · QG'],['À',v.to],['DATE',c.dt],['OBJET',v.obj]]),...gp(v.body),...(PSP(v.mes).length?[grib('Mesures à prendre'),...gnum(v.mes)]:[]),gsg(c)]}),
+ conv:Object.assign({},O.conv,{r:(v,c)=>{const d=gd(v.date);return[gm(c,'CONVOCATION','Présence obligatoire'),v.obj?ghd(v.obj):'',v.to?`<p class="tp" style="text-align:center"><b>${E(v.to)}</b></p>`:'',`<div class="tkt"><div class="d">${d?`<b>${d.getDate()}</b><small>${E(d.toLocaleDateString('fr-FR',{month:'long'}).toUpperCase())}</small><small>${E(d.toLocaleDateString('fr-FR',{weekday:'long'}).toUpperCase())}</small>`:'<b>—</b>'}</div><div class="i"><div><small>HEURE</small><b>${E(v.heure||'—')}</b></div><div><small>LIEU</small><b>${E(v.lieu||'—')}</b></div></div></div>`,...(PSP(v.odj).length?[grib('Ordre du jour'),...gnum(v.odj)]:[]),'<p class="tp"><i>La présence de tous est exigée. La ponctualité est une marque de respect envers l’équipe.</i></p>',gsg(c)]}}),
+ lettre:Object.assign({},O.lettre,{r:(v,c)=>[gm(c,'LETTRE OFFICIELLE',c.I.name,1),`<div class="rl"><span>Réf. : ${E(c.ref)}</span><span>${E(c.I.city)}, le ${E(c.dt)}</span></div>`,v.to?`<div class="rl"><span><b>À l’attention de :</b> ${E(v.to)}</span></div>`:'',v.obj?`<div class="ob">Objet : ${E(v.obj)}</div>`:'',`<p class="lp" style="text-indent:0">${E(v.sal||'')}</p>`,...lpara(v.body),...lpara(v.fin),gsg(c)]}),
+ prog:Object.assign({},O.prog,{r:(v,c)=>{const R=(v.rows||[]).filter(r=>r.some(x=>x&&x.trim()));return[gm(c,'PROGRAMME D’ENTRAÎNEMENT',v.obj||''),gsts([[R.length,'Séances'],[v.per||'—','Période']]),gkv([['PROGRAMME',v.obj],['POUR',v.to]]),...(v.but?[grib('Objectif'),`<p class="tp">${E(v.but)}</p>`]:[]),grib('Les séances'),`<div class="tln">${R.map(r=>`<div><small>${E(r[0]||'')}${r[1]?' · '+E(r[1]):''}</small><b>${E(r[2]||'')}</b>${r[3]?' — '+E(r[3]):''}</div>`).join('')}</div>`,...(PSP(v.cons).length?[grib('Consignes'),...gnum(v.cons)]:[]),gsg(c)]}}),
+ cal:Object.assign({},O.cal,{r:(v,c)=>{const R=(v.rows||[]).filter(r=>r.some(x=>x&&x.trim())).sort((a,b)=>(a[0]||'').localeCompare(b[0]||''));return[gm(c,'CALENDRIER',v.obj||''),gkv([['TITRE',v.obj],['POUR',v.to]]),...mg(v.mois,v.rows),grib('Les rendez-vous'),`<div class="tln">${R.map(r=>`<div><small>${E(r[0]?fdc(r[0]):'')}${r[1]?' · '+E(r[1]):''}</small><b>${E(r[2]||'')}</b>${r[3]?' — '+E(r[3]):''}</div>`).join('')}</div>`,gsg(c)]}}),
+ cr:{n:'🗒 Compte rendu',f:[['obj','Réunion','t'],['date','Date','date'],['lieu','Lieu','t'],['pres','Présents (séparés par des virgules)','t'],['pts','Points discutés (un par ligne)','a'],['dec','Décisions prises (une par ligne)','a'],['rows','Actions à mener','r',[['Action','t'],['Responsable','t'],['Échéance','date']]]],d:{},
+  r:(v,c)=>{const R=(v.rows||[]).filter(r=>r.some(x=>x&&x.trim())).map(r=>[r[0],r[1],r[2]?fdc(r[2]):'']);return[gm(c,'COMPTE RENDU',v.obj||'Réunion'),gsts([[PSP(v.pts).length,'Points'],[PSP(v.dec).length,'Décisions'],[R.length,'Actions']]),gkv([['RÉUNION',v.obj],['DATE',v.date?fd(v.date):''],['LIEU',v.lieu],['PRÉSENTS',v.pres]]),...(PSP(v.pts).length?[grib('Points discutés'),...gnum(v.pts)]:[]),...(PSP(v.dec).length?[grib('Décisions'),...gnum(v.dec)]:[]),...(R.length?[grib('Plan d’action'),...tbl(['Action','Responsable','Échéance'],R,0,1)]:[]),gsg(c)]}},
+ pres:Object.assign({},O.pres,{r:(v,c)=>{let N=PSP(v.noms);if(!N.length)N=((PK&&PK.members)||[]).map(m=>m.name);const R=N.concat(['','','','']).map((x,i)=>[String(i+1),x,'','']);return[gm(c,'FEUILLE DE PRÉSENCE',v.obj||''),gkv([['SÉANCE',v.obj],['DATE',v.date?fd(v.date):''],['LIEU',v.lieu]]),...tbl(['N°','Nom','Signature','Observations'],R,0,1)]}}),
+ att:Object.assign({},O.att,{r:(v,c)=>[`<div class="pgx pos"><div class="pt"></div><div class="in" style="align-items:center;text-align:center;justify-content:center"><img src="${c.logo}" style="width:40mm;height:40mm;object-fit:contain" alt=""><div class="sub" style="margin-top:6mm">${E(c.I.name.toUpperCase())}</div><div class="big" style="font-size:40pt;margin:5mm 0 2mm">ATTESTATION</div><div class="sub">${E(c.team)} · ÉQUIPE DE GÉNIE</div><p style="font:italic 12pt ${FF};margin:8mm 0 0">Le Quartier Général atteste que</p><div class="nm">${E(v.nom||'')}</div><div style="margin:0 12mm;font:11.5pt/1.6 ${FF}">${PSP(v.motif).map(E).join('<br>')}</div><p style="font:700 8pt ${SF};letter-spacing:.2em;color:inherit;margin-top:10mm">FAIT À ${E(c.I.city.toUpperCase())}, LE ${E((v.date?fd(v.date):c.dt).toUpperCase())}</p><div class="foot" style="width:100%"><span class="mot">« ${E(c.motto)} »</span><span>${E(c.sg||c.team)} · ${E(c.ref)}</span></div></div></div>`]})
+});
+tplDoc=function(k,v,o,word){
+  const P=ST[o.st]||ST.royal,T=TPL[k],I=INST(),team=(cfg.team||'LUFTWAFFE').toUpperCase(),now=new Date(),n=(+gs('cnh_docn')||0)+1;ss('cnh_docn',String(n));
+  const ref='QG/'+team.slice(0,3)+'/'+now.getFullYear()+'-'+String(n).padStart(3,'0'),dt=now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
+  c={I,team,ref,dt,cl:o.cl,n,logo:cfg.logo||EMB,sg:o.sg,motto:cfg.motto||MOTTO},
+  parts=T.r(v,c),isP=x=>/^<div class="pgx pos/.test(x),
+  H=`<span>LA GAZETTE DU QG · ${E(team)}</span><span>${E(ref)}</span>`,F=`<span>${E(I.addr)}</span><span class="pn"></span>`;
+  return shell({P,fs:'10.5pt',cols:1,word,title:T.n,pre:parts.filter(isP).join(''),ent:parts.filter(x=>!isP(x)).join(''),fin:'',H,F,cls:'tp'});
+};
+/* l'atelier de documents affiche les nouveaux modèles */
+{const ds=$('dm_s');ds.innerHTML=Object.keys(TPL).map(k=>`<button data-k="${k}">${TPL[k].n}</button>`).join('');ds.querySelectorAll('button').forEach(b=>b.onclick=()=>DOC.form(b.dataset.k));DK='mob'}
+
+/* ---------- 6. Export du lexique : « grande une » + pages de gazette ---------- */
+qgDoc=function(list,word,o){
+  const P=ST[o.st]||ST.royal,team=(cfg.team||'LUFTWAFFE').toUpperCase(),mot=cfg.motto||MOTTO,now=new Date(),sub=SN.toUpperCase(),secs=[],I=INST(),lg=cfg.logo||EMB,
+  dt=now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}).toUpperCase(),
+  ref='QG/'+team.slice(0,3)+'/'+now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0'),
+  fs={s:'9.3pt',n:'10.2pt',l:'11.5pt'}[o.fs]||'10.2pt',c={I,team,ref,dt,cl:o.cl,n:1,logo:lg};
+  list.forEach(e=>{const l=(norm(e.t.split('|')[0])[0]||'#').toUpperCase();let k=secs[secs.length-1];if(!k||k.l!==l){k={l,a:[]};secs.push(k)}k.a.push(e)});
+  const ent=secs.map(k=>`<div class="sec2" id="s${k.l}"><span class="sl">${k.l}</span><div><b>SECTION ${k.l}</b><small>${k.a.length} TERME${k.a.length>1?'S':''}</small></div></div>`+k.a.map((e,i)=>{const p=e.t.split('|').map(x=>x.trim()).filter(Boolean);return `<div class="art">${o.ref?`<span class="no">${k.l}·${String(i+1).padStart(2,'0')}</span>`:''}<b>${E(p[0]||'')}</b>${o.sy&&p.length>1?` <i class="sy">Syn. : ${E(p.slice(1).join(', '))}</i>`:''}<p>${E(e.d)}</p></div>`}).join('')).join('');
+  const H=`<span>LE QG · ${E(team)}</span><span>${E(sub)} · ${E(ref)}</span>`,F=`<span>${E(o.cl)}</span><span class="pn"></span>`,words=String(o.ti||'LEXIQUE').toUpperCase().split(/\s+/),last=words.pop();
+  const cover=o.cv?`<div class="pgx pos"><div class="pt"></div><div class="in"><div class="top"><img src="${lg}" alt=""><div><div class="tn">${E(team)}</div><div class="ts">ÉQUIPE DE GÉNIE · ${E(I.name.toUpperCase())}</div></div></div><div class="sub" style="margin-top:12mm">LE QG · ÉDITION DU ${E(dt)}</div><div class="big" style="font-size:54pt">${E(words.join(' '))}${words.length?'<br>':''}<em>${E(last)}</em></div><div class="sub">${E(sub)}</div><div style="flex:1"></div><div class="lets">${secs.map(k=>`<span>${k.l}</span>`).join('')}</div><div class="when" style="margin-top:6mm"><div><b>${list.length}</b>TERMES</div><div><b>${secs.length}</b>SECTIONS</div><div><b>${now.getFullYear()}</b>ÉDITION</div></div><div class="foot"><span class="mot">« ${E(mot)} »</span><span>${E(o.cl)} · ${E(ref)}</span></div></div></div>`:'';
+  const gn=o.gn?`<div class="pgx"><div class="ph">${H}</div>${gm(c,'DISPOSITIONS GÉNÉRALES','Lexique officiel · '+sub)}${gsts([[list.length,'Termes'],[secs.length,'Sections'],[now.getFullYear(),'Édition']])}
+<p class="tp"><b>Article 1 — Objet.</b> Le présent lexique réunit les ${list.length} termes de référence de la matière « ${E(sub)} » à l’usage des membres de la ${E(team)}.</p>
+<p class="tp"><b>Article 2 — Organisation.</b> Les termes sont classés par ordre alphabétique et répartis en ${secs.length} sections. Les synonymes admis sont signalés par la mention « Syn. ».</p>
+<p class="tp"><b>Article 3 — Emploi.</b> Tout membre est tenu de maîtriser les termes avant les évaluations. La révision est quotidienne, l’entraînement méthodique, l’erreur analysée.</p>
+<p class="tp"><b>Article 4 — Diffusion.</b> Document classé « ${E(o.cl)} ». Il ne sort pas du cercle de l’équipe sans l’accord du Quartier Général.</p>
+${gpq(mot,'Article 5 — Devise')}${grib('Sommaire des sections')}<div class="toc">${secs.map(k=>`<a href="#s${k.l}">${k.l}<small>${k.a.length}</small></a>`).join('')}</div><div class="pf2">${F}</div></div>`:'';
+  const fin=o.fin?`<div class="pgx pos"><div class="pt"></div><div class="in" style="align-items:center;justify-content:center;text-align:center"><img src="${lg}" style="width:50mm;height:50mm;object-fit:contain" alt=""><div class="sub" style="margin-top:8mm">CLAUSE FINALE</div><div class="big" style="font-size:24pt;text-transform:none;font-style:italic;margin:6mm">« ${E(mot)} »</div><div class="sub">FAIT AU QUARTIER GÉNÉRAL, LE ${E(dt)}</div><div class="foot" style="width:100%"><span>LE COMMANDEMENT · ${E(team)}</span><span>${E(ref)}</span></div></div></div>`:'';
+  return shell({P,fs,cols:o.c2?2:1,word,title:o.ti+' · '+sub,pre:cover+gn,ent,fin,H,F});
+};
+
+/* ---------- 7. Cartes à partager : « À la une » et « Infographie » ---------- */
+CT_.royal={n:'👑 Royal',bg:'#070d1f',bg2:'#1a2f63',ink:'#f6efe0',mu:'#9fb0d6',ac:'#e8b93a',ac2:'#b3202a'};
+const cardNew=async function(e,o){
+  const T=Object.assign({},CT_[o.t]||CT_.royal);if(o.ac)T.ac=o.ac;
+  const W=1080,H={sq:1080,pt:1350,st:1920}[o.f]||1080,cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  const g=cv.getContext('2d'),SFp='"Playfair Display",Georgia,serif',SS='Montserrat,"Helvetica Neue",Arial,sans-serif';
+  try{await Promise.race([Promise.all([document.fonts.load('700 40px "Playfair Display"'),document.fonts.load('italic 500 40px "Playfair Display"'),document.fonts.load('900 40px Montserrat'),document.fonts.load('500 40px Montserrat')]),new Promise(r=>setTimeout(r,1800))])}catch(x){}
+  const team=(cfg.team||'LUFTWAFFE').toUpperCase(),parts=e.t.split('|').map(x=>x.trim()).filter(Boolean),term=parts[0]||'',syn=parts.slice(1,5),L0=(norm(term)[0]||'#').toUpperCase(),lo=await logoImg(),short=(cfg.motto||MOTTO).split(',')[0],M=84,
+  sig=o.st||((cfg.rank||'Soldat')+' '+(cfg.name||'')).trim();
+  const mw=(s,k)=>[...s].reduce((a,ch)=>a+g.measureText(ch).width+k,-k),
+  sp=(s,x,y,k,al)=>{const w=mw(s,k);let cx=al==='c'?x-w/2:al==='r'?x-w:x;[...s].forEach(ch=>{g.fillText(ch,cx,y);cx+=g.measureText(ch).width+k})},
+  rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()},
+  wrap=(s,m)=>{const L=[];let cu='';s.split(' ').forEach(w=>{const x=cu?cu+' '+w:w;if(g.measureText(x).width>m&&cu){L.push(cu);cu=w}else cu=x});if(cu)L.push(cu);return L},
+  fitH=(txt,font,w,hmax,s0,s1,lh)=>{let s=s0,L;for(;s>=s1;s-=2){g.font=font(s);L=wrap(txt,w);if(L.length*s*lh<=hmax)break}const mx=Math.max(1,Math.floor(hmax/(s*lh)));if(L.length>mx){L=L.slice(0,mx);L[mx-1]=L[mx-1].replace(/.{0,3}$/,'…')}return{s,L,lh:s*lh}};
+  g.fillStyle=T.bg;g.fillRect(0,0,W,H);
+  const gl=g.createRadialGradient(W*.85,H*.05,40,W*.85,H*.05,H*.9);gl.addColorStop(0,T.bg2);gl.addColorStop(1,T.bg);g.fillStyle=gl;g.fillRect(0,0,W,H);
+  g.save();g.textAlign='right';g.font='900 '+Math.round(H*.55)+'px '+SS;g.strokeStyle=T.ac;g.globalAlpha=.07;g.lineWidth=3;g.strokeText(L0,W+40,H*.9);g.restore();
+  if(o.l==='une'){
+    g.fillStyle=T.ink;g.fillRect(M,64,W-2*M,9);g.fillRect(M,82,W-2*M,2.5);
+    if(lo){g.drawImage(lo,M,104,112,112);g.drawImage(lo,W-M-112,104,112,112)}
+    g.textAlign='center';g.fillStyle=T.ink;g.font='700 64px '+SFp;g.fillText('LA GAZETTE DU QG',W/2,178);g.textAlign='left';
+    g.fillStyle=T.mu;g.font='700 17px '+SS;sp((team+' · '+SN).toUpperCase(),W/2,212,5,'c');
+    g.fillStyle=T.ink;g.fillRect(M,236,W-2*M,3);g.font='700 15px '+SS;
+    sp(new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase(),M,270,3);sp('PRIX : L’EFFORT',W-M,270,3,'r');
+    g.fillRect(M,288,W-2*M,9);
+    g.fillStyle=T.ac2;g.fillRect(M,322,W-2*M,54);g.fillStyle='#fff';g.font='800 20px '+SS;sp('ÉDITION SPÉCIALE · LA DÉFINITION',W/2,357,7,'c');
+    const top=410,bot=H-210;let ts=140,TL;
+    for(;ts>=64;ts-=4){g.font='700 '+ts+'px '+SFp;TL=wrap(term,W-2*M);if(TL.length<=2&&TL.length*ts*1.05<=250)break}
+    let y=top;g.fillStyle=T.ink;g.font='700 '+ts+'px '+SFp;TL.forEach(l=>{y+=ts*1.05;g.fillText(l,M,y-ts*.1)});
+    y+=26;g.fillStyle=T.ac;g.fillRect(M,y,W-2*M,6);y+=14;g.fillStyle=T.ink;g.fillRect(M,y,W-2*M,2);y+=48;
+    if(syn.length){g.fillStyle=T.ac;g.font='italic 700 34px '+SFp;g.fillText('alias : '+syn.join(' · '),M,y);y+=26}
+    const df=fitH(e.d,s=>'500 '+s+'px '+SS,W-2*M-30,bot-y-10,H>1500?50:44,22,1.55);
+    g.fillStyle=T.ac;g.fillRect(M,y+8,7,df.L.length*df.lh);g.fillStyle=T.ink;g.font='500 '+df.s+'px '+SS;df.L.forEach(l=>{y+=df.lh;g.fillText(l,M+30,y-df.s*.3)});
+  }else{
+    if(lo)g.drawImage(lo,M,64,84,84);g.fillStyle=T.ink;g.font='800 28px '+SS;sp(team,M+106,102,5);g.fillStyle=T.mu;g.font='600 18px '+SS;sp('LE QG',M+106,132,6);
+    const sub=SN.toUpperCase();g.font='700 19px '+SS;const pw=mw(sub,3)+44;g.strokeStyle=T.ac;g.lineWidth=2;rr(W-M-pw,84,pw,46,23);g.stroke();g.fillStyle=T.ac;sp(sub,W-M-pw+22,115,3);
+    const big=H>1300,R=big?118:70,cy=190+R+(big?30:10);
+    g.save();g.strokeStyle=T.ac;g.globalAlpha=.4;g.lineWidth=3;g.setLineDash([4,12]);g.beginPath();g.arc(W/2,cy,R*1.32,0,7);g.stroke();g.setLineDash([]);g.globalAlpha=.2;g.beginPath();g.arc(W/2,cy,R*1.55,0,7);g.stroke();g.restore();
+    const cg=g.createLinearGradient(W/2-R,cy-R,W/2+R,cy+R);cg.addColorStop(0,T.ac);cg.addColorStop(1,T.ac2);g.fillStyle=cg;g.beginPath();g.arc(W/2,cy,R,0,7);g.fill();
+    g.fillStyle=T.bg;g.textAlign='center';g.font='700 '+Math.round(R*1.25)+'px '+SFp;g.fillText(L0,W/2,cy+R*.43);
+    let ty=cy+R*1.55+62,ts=big?92:78,TL;for(;ts>=48;ts-=4){g.font='700 '+ts+'px '+SFp;TL=wrap(term,W-2*M);if(TL.length<=2)break}
+    g.fillStyle=T.ink;TL.forEach(l=>{g.fillText(l,W/2,ty);ty+=ts*1.1});g.textAlign='left';
+    g.fillStyle=T.mu;g.font='600 19px '+SS;sp('— DÉFINITION —',W/2,ty+6,6,'c');ty+=40;
+    if(big){const tw=(W-2*M-3*18)/4,th=150,it=[[L0,'LETTRE'],[String([...term].length),'LETTRES'],[String(syn.length),'SYNONYMES'],[String(e.d.split(/\s+/).length),'MOTS']];
+      it.forEach((a,i)=>{const x=M+i*(tw+18);g.globalAlpha=.07;g.fillStyle=T.ink;rr(x,ty,tw,th,22);g.fill();g.globalAlpha=.6;g.strokeStyle=T.ac;g.lineWidth=2;g.stroke();g.globalAlpha=1;g.fillStyle=T.ac;g.textAlign='center';g.font='900 56px '+SS;g.fillText(a[0],x+tw/2,ty+80);g.textAlign='left';g.fillStyle=T.mu;g.font='700 15px '+SS;sp(a[1],x+tw/2,ty+118,4,'c')});ty+=th+26}
+    const cb=H-215,ch=cb-ty,pillH=syn.length?70:0;
+    g.globalAlpha=.07;g.fillStyle=T.ink;rr(M,ty,W-2*M,ch,26);g.fill();g.globalAlpha=1;g.fillStyle=T.ac;rr(M,ty,W-2*M,10,5);g.fill();
+    const df=fitH(e.d,s=>'500 '+s+'px '+SS,W-2*M-80,ch-60-pillH,H>1500?46:40,20,1.5);
+    g.fillStyle=T.ink;g.font='500 '+df.s+'px '+SS;let yy=ty+44;df.L.forEach(l=>{yy+=df.lh;g.fillText(l,M+40,yy-df.s*.3)});
+    if(syn.length){g.font='600 22px '+SS;let x=M+40;const py=ty+ch-62;syn.forEach(sn=>{const t='= '+sn,w=g.measureText(t).width+32;if(x+w>W-M-30)return;g.strokeStyle=T.ac;g.lineWidth=2;rr(x,py,w,42,21);g.stroke();g.fillStyle=T.ac;g.fillText(t,x+16,py+29);x+=w+10})}
+  }
+  const fy=H-170,hl=g.createLinearGradient(M,0,W-M,0);hl.addColorStop(0,T.ac);hl.addColorStop(1,T.bg);g.fillStyle=hl;g.fillRect(M,fy,W-2*M,2);
+  g.textAlign='left';if(o.sig){g.fillStyle=T.ink;g.font='800 30px '+SS;g.fillText(sig,M,fy+56);g.fillStyle=T.mu;g.font='600 17px '+SS;sp(team+' · LE QG',M,fy+88,5)}
+  g.textAlign='right';g.fillStyle=T.mu;g.font='italic 500 26px '+SFp;g.fillText(short,W-M,fy+60);g.textAlign='left';
+  const eb=g.createLinearGradient(0,0,W,0);eb.addColorStop(0,T.ac2);eb.addColorStop(.5,T.ac);eb.addColorStop(1,T.ac2);g.fillStyle=eb;g.fillRect(0,H-14,W,14);
+  return cv};
+cardDraw=async function(e){const o=Object.assign({t:'braise',f:'sq',sig:1},cfg.shc||{});if(o.l==='une'||o.l==='info')return cardNew(e,o);return(o.l&&o.l!=='fiche')?cardAlt(e,o):cardFiche(e)};
+$('cml').insertAdjacentHTML('afterbegin','<button data-l="une">À la une</button><button data-l="info">Infographie</button>');
+$('cml').querySelectorAll('button').forEach(b=>b.onclick=()=>{CARD.o('l',b.dataset.l);CARD.fl()});
+$('cmth').insertAdjacentHTML('afterbegin','<button data-t="royal">👑 Royal</button>');
+$('cmth').querySelectorAll('button').forEach(b=>b.onclick=()=>{CARD.o('t',b.dataset.t);CARD.fl()});
+cfg.shc=Object.assign({t:'royal',l:'une'},cfg.shc||{});
+}
+
+  
 /* ---------- navigation ---------- */
 const g5=go;go=function(id){g5(id);document.body.dataset.sec=id;if(['lex','ch','cur','ev'].includes(id))markDay();if(id!=='lex'&&SM)LEXV.sm(0);if(id==='qg')HUB.r()};document.body.dataset.sec='home';
 render();home();
