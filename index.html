@@ -2531,15 +2531,7 @@ async function cardRays(e,o){
  const lb=document.querySelector('#cml');if(lb){lb.insertAdjacentHTML('beforeend','<button data-l="une">Une</button><button data-l="rayons">Rayons</button>');lb.querySelectorAll('button').forEach(b=>b.onclick=()=>{CARD.o('l',b.dataset.l);CARD.fl()})}}
 setTimeout(()=>{const s=document.getElementById('dm_st');if(s)s.innerHTML='<option value="noir">Marine &amp; Or (gazette)</option><option value="parch">Parchemin</option><option value="braise">Braise phénix</option><option value="nuit">Bleu nuit</option>'},0);
 
-function tplDoc(k,v,o,word){
-  const P=ST[o.st]||ST.noir,T=TPL[k],I=INST(),team=(cfg.team||'LUFTWAFFE').toUpperCase(),now=new Date(),n=(+gs('cnh_docn')||0)+1;ss('cnh_docn',String(n));
-  const ref='QG/'+team.slice(0,3)+'/'+now.getFullYear()+'-'+String(n).padStart(3,'0'),dt=now.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}),
-  lg=cfg.logo?`<img src="${cfg.logo}" alt="">`:phx('t'+n,88),c={I,team,ref,dt,cl:o.cl,lg,n},
-  sg=`<div class="sg"><div>Pour la ${E(team)},</div><div class="ln"><b>${E(o.sg||'')}</b><br><small>${E(team)} &middot; ${E(I.name)}</small></div></div>`,
-  ent=T.r(v,c).concat(k==='att'||k==='pres'?[]:[sg]).join(''),
-  H=`<span>${E(team)} &middot; ${E(I.name)}</span><span>${E(ref)}</span>`,F=`<span>${E(I.addr)}</span><span class="pn"></span>`;
-  return shell({P,fs:'10.5pt',cols:1,word,title:T.n,pre:'',ent,fin:'',H,F,cls:'tp'});
-}
+
 /* @tpl-end */
 let ent_='';
 function outDoc(h,f,name){if(f==='pdf'){const x=window.open('','_blank');if(!x)return alert('Autorise les pop-ups pour ce site, ou choisis « Web ».');x.document.write(h.replace('</body>','<script>setTimeout(function(){print()},1800)<\/script></body>'));x.document.close()}else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h],{type:f==='doc'?'application/msword':'text/html'}));a.download=name+'-'+new Date().toISOString().slice(0,10)+(f==='doc'?'.doc':'.html');document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000)}}
