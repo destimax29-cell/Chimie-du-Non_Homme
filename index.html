@@ -2728,19 +2728,52 @@ render();home();
   }
   function ld(w,src){return new Promise(function(ok,ko){var s=w.document.createElement('script');s.src=src;s.onload=ok;s.onerror=function(){ko(new Error('Chargement impossible : '+src))};w.document.head.appendChild(s)})}
   function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
-  /* logos SVG -> vraies images (Safari ne capture pas les SVG intégrés) */
+  /* logos SVG -> PNG avec taille explicite */
   async function svgToImg(w){
-    var d=w.document,list=d.querySelectorAll('.pg svg'),jobs=[];
+    var d=w.document,list=[].slice.call(d.querySelectorAll('.pg svg')),S=3;
     for(var i=0;i<list.length;i++){
-      (function(s){
-        if(!s.getAttribute('xmlns'))s.setAttribute('xmlns','http://www.w3.org/2000/svg');
-        var xml=new w.XMLSerializer().serializeToString(s),im=d.createElement('img');
-        jobs.push(new Promise(function(r){im.onload=r;im.onerror=r}));
+      var s=list[i],r=s.getBoundingClientRect(),W=Math.max(2,Math.round(r.width)),H=Math.max(2,Math.round(r.height));
+      if(!s.getAttribute('xmlns'))s.setAttribute('xmlns','http://www.w3.org/2000/svg');
+      var c=s.cloneNode(true);c.setAttribute('width',W*S);c.setAttribute('height',H*S);
+      var xml=new w.XMLSerializer().serializeToString(c);
+      var png=await new Promise(function(res){
+        var im=new w.Image();
+        im.onload=function(){try{var cv=d.createElement('canvas');cv.width=W*S;cv.height=H*S;cv.getContext('2d').drawImage(im,0,0,W*S,H*S);res(cv.toDataURL('image/png'))}catch(e){res(null)}};
+        im.onerror=function(){res(null)};
         im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(xml);
-        s.parentNode.replaceChild(im,s);
-      })(list[i]);
+      });
+      if(!png)continue;
+      await new Promise(function(done){
+        var img=d.createElement('img');
+        img.onload=done;img.onerror=done;
+        img.style.cssText='width:'+W+'px;height:'+H+'px;display:block';
+        img.src=png;
+        s.parentNode.replaceChild(img,s);
+      });
     }
-    await Promise.all(jobs);
+  }
+  /* texte vertical du rail -> image (writing-mode non géré par l'outil) */
+  function railToImg(w){
+    var d=w.document,L=d.querySelectorAll('.pg .rl span'),S=3;
+    for(var n=0;n<L.length;n++){
+      var sp=L[n],rl=sp.parentNode,r=rl.getBoundingClientRect(),W=Math.round(r.width),H=Math.round(r.height);
+      if(!W||!H)continue;
+      var cs=w.getComputedStyle(sp),fs=parseFloat(cs.fontSize)||8,gap=parseFloat(cs.letterSpacing);
+      if(isNaN(gap))gap=fs*.4;
+      var cv=d.createElement('canvas');cv.width=W*S;cv.height=H*S;
+      var g=cv.getContext('2d');
+      g.scale(S,S);g.translate(W/2,H/2);g.rotate(-Math.PI/2);
+      g.font=cs.fontWeight+' '+fs+'px '+cs.fontFamily;g.fillStyle=cs.color;g.textBaseline='middle';
+      var t=sp.textContent,tw=0,i;
+      for(i=0;i<t.length;i++)tw+=g.measureText(t[i]).width+gap;
+      tw-=gap;
+      var x=-tw/2;
+      for(i=0;i<t.length;i++){g.fillText(t[i],x,0);x+=g.measureText(t[i]).width+gap}
+      var img=d.createElement('img');
+      img.src=cv.toDataURL('image/png');
+      img.style.cssText='width:'+W+'px;height:'+H+'px;display:block';
+      rl.replaceChild(img,sp);
+    }
   }
   /* color-mix() -> rgb() calculé, uniquement pour la capture */
   function flatten(w){
@@ -2794,7 +2827,6 @@ render();home();
       });
     }
     function save(file){var a=w.document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;w.document.body.appendChild(a);a.click()}
-    /* étape 1 : préparer */
     window.__prep=async function(kind){
       var f=cur,btn=kind==='pdf'?'bpdf':'bimg',label=kind==='pdf'?'📄 PDF':'🖼 Image',q=kind==='pdf'?.92:.95;
       try{
@@ -2806,6 +2838,7 @@ render();home();
         try{await w.document.fonts.ready}catch(e){}
         await wait(500);
         await svgToImg(w);
+        railToImg(w);
         flatten(w);
         w.scrollTo(0,0);
         await wait(400);
@@ -2826,7 +2859,6 @@ render();home();
         w.alert('Préparation impossible : '+msg(e));
       }
     };
-    /* étape 2 : partager (nouveau toucher) */
     window.__send=async function(){
       if(!READY)return;
       try{
@@ -2849,6 +2881,7 @@ render();home();
   };
 })();
 </script>
+
 
 
 </body>
