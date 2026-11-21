@@ -2843,7 +2843,13 @@ render();home();
         await svgToImg(w);
         railToImg(w);
         flatten(w);
+                var stx=w.document.createElement('style');
+        stx.textContent='.pg p,.pg .tp{text-align:left!important;-webkit-hyphens:none!important;hyphens:none!important;word-spacing:normal!important}'
+          +'.lead::first-letter{float:none!important;font:inherit!important;color:inherit!important;padding:0!important}'
+          +'.pg{text-rendering:geometricPrecision}';
+        w.document.head.appendChild(stx);
         w.scrollTo(0,0);
+
         await wait(400);
         var pgs=w.document.querySelectorAll('.pg'),imgs=[];
         for(var i=0;i<pgs.length;i++){b.textContent='⏳ Page '+(i+1)+' / '+pgs.length;imgs.push(await one(pgs[i],q))}
