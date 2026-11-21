@@ -2844,13 +2844,16 @@ render();home();
         railToImg(w);
         flatten(w);
                 var stx=w.document.createElement('style');
-        stx.textContent='.pg p,.pg .tp{text-align:left!important;-webkit-hyphens:none!important;hyphens:none!important;word-spacing:normal!important}'
+                stx.textContent='.pg,.pg *{font-kerning:none!important;font-variant-ligatures:none!important;-webkit-font-feature-settings:"kern" 0,"liga" 0!important;font-feature-settings:"kern" 0,"liga" 0!important;text-rendering:optimizeSpeed!important;letter-spacing:normal}'
+          +'.pg p,.pg .tp{text-align:left!important;-webkit-hyphens:none!important;hyphens:none!important;word-spacing:normal!important}'
           +'.lead::first-letter{float:none!important;font:inherit!important;color:inherit!important;padding:0!important}'
-          +'.pg{text-rendering:geometricPrecision}';
+          +'.pg .ks,.pg .hk,.pg .m-top,.pg .m-bar,.pg .ft,.pg .rh,.pg .pn,.pg small{letter-spacing:inherit}';
+
         w.document.head.appendChild(stx);
         w.scrollTo(0,0);
 
-        await wait(400);
+        await wait(60);
+        
         var pgs=w.document.querySelectorAll('.pg'),imgs=[];
         for(var i=0;i<pgs.length;i++){b.textContent='⏳ Page '+(i+1)+' / '+pgs.length;imgs.push(await one(pgs[i],q))}
         var files;
