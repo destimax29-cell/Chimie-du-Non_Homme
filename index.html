@@ -2894,6 +2894,201 @@ render();home();
   };
 })();
 </script>
+<script>
+(function(){
+  var E=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var PRE={
+   'Après une défaite':{pill:'APRÈS LA DÉFAITE',body:"Je veux te parler directement, de joueur à joueur. Cette défaite fait mal, et c'est normal : ça fait mal parce que tu t'investis.\nUn match perdu ne dit pas qui tu es. Il montre ce qu'il reste à construire. Les meilleurs ne sont pas ceux qui ne tombent jamais, ce sont ceux qui reviennent plus forts.",cit:"On ne perd jamais vraiment : on apprend, on se relève, on revient.",forces:"Courage :: Tu es resté debout jusqu'au bout.\nSolidarité :: Ton équipe compte sur toi, et tu comptes sur elle.\nPotentiel :: Ce que tu peux devenir dépasse ce match.",defi:"Au prochain entraînement, donne 100 % sur un seul point à améliorer.",mot:"La LUFTWAFFE ne lâche personne. On avance ensemble."},
+   'Après une victoire':{pill:'VICTOIRE',body:"Bravo. Ce résultat, tu l'as construit séance après séance, dans l'effort et la discipline.\nProfite de ce moment, mais garde les pieds sur terre : les grandes équipes restent humbles et continuent de travailler.",cit:"La victoire se savoure une soirée, le travail continue toute l'année.",forces:"Effort :: Tu as tout donné sur le terrain.\nEsprit d'équipe :: Tu as joué pour les autres.\nExemple :: Tu tires tout le groupe vers le haut.",defi:"Garde ce niveau d'exigence dès le prochain entraînement.",mot:"Fiers de toi. Fiers de nous. LUFTWAFFE !"},
+   'Motivation':{pill:'MOTIVATION',body:"Je t'écris parce que je crois en toi. Il y a des jours où tout semble lourd, mais c'est justement là que se forment les vrais joueurs.\nChaque effort que tu fais aujourd'hui te rapproche de la version de toi que tu veux devenir.",cit:"Le talent ouvre la porte, le travail te fait entrer.",forces:"Volonté :: Tu sais te donner quand il le faut.\nProgrès :: Tu t'améliores plus que tu ne le penses.\nConfiance :: Nous avons besoin de toi.",defi:"Cette semaine, ne manque aucune séance et donne ton maximum.",mot:"Continue. On est derrière toi."},
+   'Mobilisation avant match':{pill:'MOBILISATION',body:"Demain, nous avons besoin de toi à 100 %. Pas seulement ton corps : ta tête, ton cœur et ta voix.\nNous portons le nom de notre collège. Joue pour les tiens, joue pour ceux qui travaillent à tes côtés.",cit:"Un seul groupe. Une seule voix. Une seule victoire.",forces:"Rôle :: Ta place dans l'équipe est importante.\nConcentration :: Reste focus du début à la fin.\nSolidarité :: Soutiens chaque coéquipier.",defi:"Dors tôt, mange bien, arrive à l'heure et prêt à tout donner.",mot:"LUFTWAFFE ! On ne recule pas, on ne renonce pas."},
+   'Encouragement':{pill:'ENCOURAGEMENT',body:"Je sais que tu traverses une période difficile. Tu n'es pas seul : l'équipe est là, et elle ne t'oublie pas.\nPrends le temps de te relever. Ce qui compte, ce n'est pas la vitesse, c'est de ne pas abandonner.",cit:"Même lentement, avancer, c'est déjà gagner.",forces:"Force :: Tu en as plus que tu ne l'imagines.\nPlace :: Ta place t'attend dans l'équipe.\nSoutien :: Tu peux compter sur nous.",defi:"Fais un petit pas aujourd'hui, un autre demain.",mot:"Nous sommes avec toi, toujours."},
+   'Félicitations':{pill:'FÉLICITATIONS',body:"Je tiens à te féliciter personnellement. Ce que tu as fait est un exemple pour tout le groupe.\nCe n'est pas le fruit du hasard : c'est le résultat de ton sérieux et de ta persévérance.",cit:"L'exemple est la meilleure des leçons.",forces:"Sérieux :: Tu fais les choses avec rigueur.\nPersévérance :: Tu ne lâches rien.\nInfluence :: Tu inspires les autres.",defi:"Continue, et aide un coéquipier à progresser à son tour.",mot:"La LUFTWAFFE est fière de toi."},
+   'Rappel de discipline':{pill:'DISCIPLINE',body:"Je te parle franchement, parce que je tiens à toi. Certains comportements ne correspondent pas à ce que nous attendons de l'équipe.\nJe ne veux pas te punir, je veux t'aider à redevenir le joueur sur qui on peut compter.",cit:"La discipline, c'est choisir ce qui compte plutôt que ce qui est facile.",forces:"Respect :: Des règles et des autres.\nPonctualité :: Être présent, à l'heure.\nÉcoute :: Écouter avant de répondre.",defi:"Pendant deux semaines, applique ces trois règles sans exception.",mot:"Je crois en toi. Montre-le-nous."},
+   'Bienvenue':{pill:'BIENVENUE',body:"Bienvenue dans la famille. Ici, on travaille dur, on se respecte et on avance ensemble.\nTu as ta place parmi nous. Pose des questions, apprends, et donne le meilleur de toi-même.",cit:"Ici, personne n'avance seul.",forces:"Respect :: Pour chacun, quel que soit son niveau.\nEffort :: Donne toujours le maximum.\nEsprit d'équipe :: Joue pour le groupe.",defi:"Retiens le nom de chaque coéquipier cette semaine.",mot:"Bienvenue à la LUFTWAFFE."},
+   'Remerciement':{pill:'MERCI',body:"Je voulais te dire merci, simplement et sincèrement. Ce que tu apportes à l'équipe se voit, même quand tu ne le crois pas.\nLes gens qui donnent sans compter sont ceux qui font vivre un groupe.",cit:"Un merci sincère vaut plus que mille discours.",forces:"Engagement :: Tu es toujours présent.\nGénérosité :: Tu donnes sans rien attendre.\nLoyauté :: On peut compter sur toi.",defi:"Continue d'être toi, c'est exactement ce qu'il nous faut.",mot:"Merci, de la part de toute l'équipe."},
+   'Anniversaire':{pill:'ANNIVERSAIRE',body:"Joyeux anniversaire ! Aujourd'hui, c'est ton jour, et toute l'équipe pense à toi.\nQue cette nouvelle année t'apporte la santé, la réussite et de belles victoires.",cit:"Une année de plus, une année de mieux.",forces:"Santé :: Prends soin de toi.\nRéussite :: Dans tes études comme sur le terrain.\nJoie :: Que chaque jour t'apporte du bonheur.",defi:"Fais-toi plaisir aujourd'hui, tu l'as bien mérité !",mot:"Toute la LUFTWAFFE te souhaite un joyeux anniversaire."},
+   'Carte libre':{pill:'MESSAGE PERSONNEL',body:"",cit:"",forces:"",defi:"",mot:""}
+  };
+  var TH={braise:{n:'🔥 Braise',bg:'#0d0a0a',bg2:'#3a130c',ink:'#f6efe6',mu:'#b3a69b',ac:'#ff9a1f',ac2:'#e0343f'},
+   or:{n:'🌑 Noir & or',bg:'#08080c',bg2:'#1c1708',ink:'#f5efe0',mu:'#a89f8a',ac:'#d4a72c',ac2:'#b3202a'},
+   nuit:{n:'🌌 Nuit',bg:'#070d1c',bg2:'#13306b',ink:'#eaf1ff',mu:'#8a9bc2',ac:'#5cc8ff',ac2:'#7a6bff'},
+   foret:{n:'🌲 Forêt',bg:'#06110b',bg2:'#124226',ink:'#e9fbef',mu:'#8fb59c',ac:'#4ade80',ac2:'#f2a30f'},
+   parchemin:{n:'📜 Parchemin',bg:'#f3ead7',bg2:'#e2cfa5',ink:'#2a1f12',mu:'#7d6a4e',ac:'#9c6b12',ac2:'#b3202a'},
+   aube:{n:'🌅 Aube',bg:'#f8fafd',bg2:'#dbe6fb',ink:'#0b1226',mu:'#5d6a88',ac:'#2457e6',ac2:'#f2a30f'}};
+  var FK=['pill','body','cit','forces','defi','mot'];
+  var cust=function(){return rd('cnhcartes','[]')};
+  var S=Object.assign({pre:'Après une défaite',nom:'',th:'braise',f:'sq',ac:'',fs:100,sig:''},rd('cnhcarte','{}'));
+  if(!S.body&&!S.pill)Object.assign(S,PRE[S.pre]||PRE['Après une défaite']);
+  if(!S.sig)S.sig=((cfg.rank||'')+' '+(cfg.name||'')).trim();
+  var BL=null,tm=0;
+  function savS(){wr('cnhcarte',S)}
+  function lines(t){return String(t||'').split(/\n+/).map(function(x){return x.trim()}).filter(Boolean)}
+  function loadImg(u){return new Promise(function(r){if(!u)return r(null);var i=new Image();i.onload=function(){r(i)};i.onerror=function(){r(null)};i.src=u})}
+  async function render(){
+    var T=Object.assign({},TH[S.th]||TH.braise);if(S.ac)T.ac=S.ac;
+    var W=1080,H={sq:1080,pt:1350,st:1920}[S.f]||1080,M=70,
+    SF='"Playfair Display",Georgia,serif',SS='Montserrat,"Helvetica Neue",Arial,sans-serif';
+    try{await Promise.race([Promise.all([document.fonts.load('900 40px "Playfair Display"'),document.fonts.load('italic 700 40px "Playfair Display"'),document.fonts.load('700 40px "Playfair Display"'),document.fonts.load('800 40px Montserrat'),document.fonts.load('500 40px Montserrat')]),new Promise(function(r){setTimeout(r,1500)})])}catch(e){}
+    var lo=await loadImg(cfg.logo),team=(cfg.team||'LUFTWAFFE').toUpperCase();
+    function paint(g,s){
+      function mw(t,gap){var a=0;for(var i=0;i<t.length;i++)a+=g.measureText(t[i]).width+gap;return a-gap}
+      function sp(t,x,y,gap,al){var w=mw(t,gap),cx=al==='c'?x-w/2:al==='r'?x-w:x;for(var i=0;i<t.length;i++){g.fillText(t[i],cx,y);cx+=g.measureText(t[i]).width+gap}}
+      function rr(x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+      function wrap(t,max){var L=[],c='';String(t).split(' ').forEach(function(w){var x=c?c+' '+w:w;if(g.measureText(x).width>max&&c){L.push(c);c=w}else c=x});if(c)L.push(c);return L}
+      g.clearRect(0,0,W,H);g.textAlign='left';
+      g.fillStyle=T.bg;g.fillRect(0,0,W,H);
+      var gl=g.createRadialGradient(W*.85,0,20,W*.85,0,H*.9);gl.addColorStop(0,T.bg2);gl.addColorStop(1,T.bg);g.fillStyle=gl;g.fillRect(0,0,W,H);
+      /* haut */
+      var tx=M;if(lo){g.drawImage(lo,M,52,84,84);tx=M+106}
+      g.fillStyle=T.ink;g.font='800 26px '+SS;sp(team,tx,90,5);
+      g.fillStyle=T.mu;g.font='600 16px '+SS;sp('LE QG',tx,118,6);
+      var pt=(S.pill||'').toUpperCase();
+      if(pt){g.font='700 17px '+SS;var pw=mw(pt,3)+44;g.strokeStyle=T.ac;g.lineWidth=2;rr(W-M-pw,70,pw,46,23);g.stroke();g.fillStyle=T.ac;sp(pt,W-M-pw+22,100,3)}
+      g.fillStyle=T.ac;g.fillRect(M,160,W-2*M,2);
+      /* médaille + nom */
+      var y0=200,r=74,cx=M+r,cy=y0+r;
+      var mg=g.createLinearGradient(cx-r,cy-r,cx+r,cy+r);mg.addColorStop(0,T.ac);mg.addColorStop(1,T.ac2);
+      g.fillStyle=mg;g.beginPath();g.arc(cx,cy,r,0,7);g.fill();
+      g.strokeStyle=T.ac;g.lineWidth=3;g.beginPath();g.arc(cx,cy,r+10,0,7);g.stroke();
+      g.fillStyle=T.bg;g.textAlign='center';g.font='900 '+(r*1.05)+'px '+SF;g.fillText(((S.nom||'?')[0]||'?').toUpperCase(),cx,cy+r*.36);g.textAlign='left';
+      var nx=M+2*r+40,nmax=W-M-nx,ns=100*Math.min(s,1.15),nm=S.nom||'Nom du joueur';
+      for(;ns>32;ns-=3){g.font='900 '+ns+'px '+SF;if(g.measureText(nm).width<=nmax)break}
+      g.fillStyle=T.ac;g.font='800 17px '+SS;sp('MESSAGE PERSONNEL POUR',nx,y0+44,5);
+      g.fillStyle=T.ink;g.font='900 '+ns+'px '+SF;g.fillText(nm,nx,y0+44+ns*.95+6);
+      var y=Math.max(y0+2*r+10,y0+44+ns+14)+34;
+      var fs=function(n){return n*s};
+      /* message */
+      g.font='500 '+fs(36)+'px '+SF;var lh=fs(36)*1.5;g.fillStyle=T.ink;
+      lines(S.body).forEach(function(p){wrap(p,W-2*M).forEach(function(l){y+=lh;g.fillText(l,M,y-lh*.25)});y+=lh*.35});
+      y+=fs(10);
+      /* phrase forte */
+      if(S.cit){
+        g.font='italic 700 '+fs(40)+'px '+SF;var ql=wrap(S.cit,W-2*M-90),qlh=fs(40)*1.35,qh=ql.length*qlh+fs(44);
+        g.fillStyle=T.ac+'24';g.fillRect(M,y,W-2*M,qh);g.fillStyle=T.ac2;g.fillRect(M,y,8,qh);
+        g.fillStyle=T.ac;g.font='900 '+fs(80)+'px '+SF;g.fillText('\u201C',M+22,y+fs(66));
+        g.fillStyle=T.ink;g.font='italic 700 '+fs(40)+'px '+SF;
+        var qy=y+fs(24);ql.forEach(function(l){qy+=qlh;g.fillText(l,M+78,qy-qlh*.22)});y+=qh+fs(30);
+      }
+      /* forces */
+      var F=lines(S.forces);
+      if(F.length){
+        g.fillStyle=T.ac;g.font='800 '+fs(19)+'px '+SS;sp('\u2605  CE QUE JE VOIS EN TOI',M,y+fs(10),5);
+        g.fillRect(M+mw('\u2605  CE QUE JE VOIS EN TOI',5)+24,y+fs(4),W-2*M-mw('\u2605  CE QUE JE VOIS EN TOI',5)-24,2);
+        y+=fs(40);
+        F.forEach(function(x,i){
+          var p=x.indexOf('::'),ti=p>-1?x.slice(0,p).trim():'',tx2=p>-1?x.slice(p+2).trim():x;
+          var rr2=fs(22);g.fillStyle=T.ac;g.beginPath();g.arc(M+rr2,y+rr2+2,rr2,0,7);g.fill();
+          g.fillStyle=T.bg;g.textAlign='center';g.font='900 '+fs(24)+'px '+SS;g.fillText(String(i+1),M+rr2,y+rr2+fs(10));g.textAlign='left';
+          var bx=M+rr2*2+22,yy=y;
+          if(ti){g.fillStyle=T.ac;g.font='800 '+fs(24)+'px '+SS;g.fillText(ti.toUpperCase(),bx,yy+fs(24));yy+=fs(32)}
+          g.fillStyle=T.ink;g.font='500 '+fs(29)+'px '+SF;var l2=fs(29)*1.4;
+          wrap(tx2,W-M-bx).forEach(function(l){yy+=l2;g.fillText(l,bx,yy-l2*.22)});
+          y=Math.max(yy,y+rr2*2)+fs(18);
+        });
+        y+=fs(6);
+      }
+      /* défi */
+      if(S.defi){
+        g.font='700 '+fs(32)+'px '+SF;var dl=wrap(S.defi,W-2*M-60),dlh=fs(32)*1.4,dh=dl.length*dlh+fs(68);
+        g.strokeStyle=T.ac;g.lineWidth=3;rr(M,y,W-2*M,dh,18);g.stroke();
+        g.fillStyle=T.ac;g.font='800 '+fs(17)+'px '+SS;sp('TON DÉFI',M+30,y+fs(36),6);
+        g.fillStyle=T.ink;g.font='700 '+fs(32)+'px '+SF;var dy=y+fs(40);dl.forEach(function(l){dy+=dlh;g.fillText(l,M+30,dy-dlh*.22)});
+        y+=dh+fs(20);
+      }
+      /* pied */
+      var fy=H-200;
+      g.fillStyle=T.ac;g.fillRect(M,fy,W-2*M,2);
+      g.textAlign='center';g.fillStyle=T.ink;
+      var cs=32,cl;for(;cs>20;cs-=2){g.font='italic 700 '+cs+'px '+SF;cl=wrap(S.mot||'',W-2*M);if(cl.length<=2)break}
+      (cl||[]).slice(0,2).forEach(function(l,i){g.fillText(l,W/2,fy+52+i*cs*1.35)});
+      g.fillStyle=T.mu;g.font='700 18px '+SS;sp(((S.sig?S.sig+'  \u00B7  ':'')+team).toUpperCase(),W/2,H-52,4,'c');g.textAlign='left';
+      var eb=g.createLinearGradient(0,0,W,0);eb.addColorStop(0,T.ac2);eb.addColorStop(.5,T.ac);eb.addColorStop(1,T.ac2);g.fillStyle=eb;g.fillRect(0,H-14,W,14);
+      return y;
+    }
+    var sc=document.createElement('canvas');sc.width=W;sc.height=H;
+    var s=(S.fs/100)*({sq:1,pt:1.12,st:1.35}[S.f]||1),lim=H-225;
+    for(var i=0;i<16;i++){var yy=paint(sc.getContext('2d'),s);if(yy<=lim)break;s*=.94}
+    var cv=document.createElement('canvas');cv.width=W;cv.height=H;paint(cv.getContext('2d'),s);
+    return cv;
+  }
+  async function refresh(){
+    var im=document.getElementById('crt_i');if(!im)return;im.style.opacity=.4;
+    var cv=await render();im.src=cv.toDataURL('image/png');im.style.opacity=1;
+    cv.toBlob(function(b){BL=b},'image/png');
+  }
+  function later(){clearTimeout(tm);tm=setTimeout(refresh,250)}
+  /* fenêtre */
+  var M=document.createElement('div');M.id='crtm';M.className='sh';M.style.zIndex=145;
+  function opts(){return Object.keys(PRE).map(function(k){return '<option value="p:'+E(k)+'">'+E(k)+'</option>'}).join('')+cust().map(function(c,i){return '<option value="c:'+i+'">⭐ '+E(c.name)+'</option>'}).join('')}
+  M.innerHTML='<div class="shb" style="max-height:94vh;overflow:auto"><b>💌 Carte personnelle</b>'
+   +'<img id="crt_i" alt="" style="width:100%;max-height:46vh;object-fit:contain;border-radius:14px;margin:10px 0;display:block">'
+   +'<div class="row"><span>Modèle</span><select id="crt_pre"></select></div>'
+   +'<input id="crt_nom" placeholder="Nom du joueur">'
+   +'<input id="crt_pill" placeholder="Étiquette en haut à droite (ex : APRÈS LA DÉFAITE)">'
+   +'<textarea id="crt_body" rows="5" placeholder="Ton message (un paragraphe par ligne)"></textarea>'
+   +'<input id="crt_cit" placeholder="Phrase forte">'
+   +'<textarea id="crt_forces" rows="4" placeholder="Ce que je vois en toi (une par ligne : Titre :: explication)"></textarea>'
+   +'<input id="crt_defi" placeholder="Ton défi pour la suite">'
+   +'<input id="crt_mot" placeholder="Conclusion">'
+   +'<input id="crt_sig" placeholder="Signature (ex : Capitaine Non_Homme)">'
+   +'<div class="row"><span>Thème</span><select id="crt_th">'+Object.keys(TH).map(function(k){return '<option value="'+k+'">'+TH[k].n+'</option>'}).join('')+'</select></div>'
+   +'<div class="row"><span>Format</span><select id="crt_f"><option value="sq">Carré</option><option value="pt">Portrait</option><option value="st">Story</option></select></div>'
+   +'<div class="row"><span>Couleur d\'accent</span><span><input type="color" id="crt_ac"> <button class="b g sm" id="crt_acr">↺</button></span></div>'
+   +'<div class="row"><span>Taille du texte</span><input type="range" id="crt_fs" min="70" max="130" style="width:50%"></div>'
+   +'<div class="row2"><button class="b" id="crt_sh">📤 Partager l\'image</button><button class="b g" id="crt_sv">⬇ Enregistrer</button></div>'
+   +'<div class="row2"><button class="b g" id="crt_keep">💾 Garder comme modèle</button><button class="b g" id="crt_del">🗑 Supprimer ce modèle</button></div>'
+   +'<button class="b g wide" id="crt_x" style="margin-top:6px">Fermer</button></div>';
+  document.body.appendChild(M);
+  function q(id){return document.getElementById(id)}
+  function fill(){
+    q('crt_pre').innerHTML=opts();
+    q('crt_pre').value=S.sel||('p:'+S.pre);
+    q('crt_nom').value=S.nom||'';FK.forEach(function(k){q('crt_'+k).value=S[k]||''});
+    q('crt_sig').value=S.sig||'';q('crt_th').value=S.th;q('crt_f').value=S.f;
+    q('crt_ac').value=S.ac||TH[S.th].ac;q('crt_fs').value=S.fs;
+  }
+  ['nom','pill','body','cit','forces','defi','mot','sig'].forEach(function(k){q('crt_'+k).addEventListener('input',function(){S[k]=this.value;savS();later()})});
+  q('crt_th').onchange=function(){S.th=this.value;S.ac='';q('crt_ac').value=TH[S.th].ac;savS();later()};
+  q('crt_f').onchange=function(){S.f=this.value;savS();later()};
+  q('crt_ac').oninput=function(){S.ac=this.value;savS();later()};
+  q('crt_acr').onclick=function(){S.ac='';q('crt_ac').value=TH[S.th].ac;savS();later()};
+  q('crt_fs').oninput=function(){S.fs=+this.value;savS();later()};
+  q('crt_pre').onchange=function(){
+    var v=this.value,src=v.indexOf('p:')===0?PRE[v.slice(2)]:cust()[+v.slice(2)];
+    if(!src)return;S.sel=v;if(v.indexOf('p:')===0)S.pre=v.slice(2);
+    FK.forEach(function(k){S[k]=src[k]||''});savS();fill();later();
+  };
+  q('crt_keep').onclick=function(){
+    var n=prompt('Nom du modèle');if(!n||!n.trim())return;
+    var c=cust(),o={name:n.trim()};FK.forEach(function(k){o[k]=S[k]||''});c.push(o);wr('cnhcartes',c);
+    S.sel='c:'+(c.length-1);savS();fill();
+  };
+  q('crt_del').onclick=function(){
+    var v=q('crt_pre').value;if(v.indexOf('c:')!==0)return alert('Seuls tes propres modèles (⭐) peuvent être supprimés.');
+    if(!confirm('Supprimer ce modèle ?'))return;var c=cust();c.splice(+v.slice(2),1);wr('cnhcartes',c);S.sel='';savS();fill();
+  };
+  function fname(){return 'carte-'+(norm(S.nom)||'joueur')+'.png'}
+  q('crt_sh').onclick=function(){
+    if(!BL)return alert('Image en préparation, réessaie dans un instant.');
+    var f=new File([BL],fname(),{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'Carte pour '+(S.nom||'')}).catch(function(){});
+    else q('crt_sv').click();
+  };
+  q('crt_sv').onclick=function(){
+    if(!BL)return;var a=document.createElement('a');a.href=URL.createObjectURL(BL);a.download=fname();document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},3000);
+  };
+  q('crt_x').onclick=function(){M.classList.remove('on')};
+  M.onclick=function(e){if(e.target===M)M.classList.remove('on')};
+  window.CARTE={open:function(){fill();M.classList.add('on');refresh()}};
+  /* bouton dans les raccourcis de l'accueil */
+  var bar=document.getElementById('sc5');
+  if(bar){
+    var b=document.createElement('button');b.innerHTML='<i><b>💌</b></i><span>Carte</span>';b.onclick=function(){CARTE.open()};
+    bar.insertBefore(b,bar.children[1]||null);
+  }
+})();
+</script>
 
 
 
