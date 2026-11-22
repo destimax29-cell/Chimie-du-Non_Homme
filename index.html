@@ -3329,6 +3329,50 @@ render();home();
   };
 })();
 </script>
+<script>
+(function(){
+  var CSS='html{-webkit-text-size-adjust:100%!important;text-size-adjust:100%!important}'
+  +'.tp,.sal{font-size:14pt!important;line-height:1.5!important}'
+  +'.lead::first-letter{font-size:46pt!important}'
+  +'.pq{font-size:17pt!important}'
+  +'.hk{font-size:9.5pt!important}'
+  +'.ks{font-size:10.5pt!important}'
+  +'.dk{font-size:13pt!important}'
+  +'.fi div{font-size:12pt!important}.fi small{font-size:8pt!important}'
+  +'.tkt .i small{font-size:9pt!important}.tkt .i b{font-size:19pt!important}'
+  +'.tkt .d small{font-size:9.5pt!important}'
+  +'.sb2 .lb{font-size:9pt!important}.sb2 p{font-size:14pt!important}'
+  +'.num{font-size:13.5pt!important}'
+  +'.cd b{font-size:11.5pt!important}.cd p{font-size:12.5pt!important}'
+  +'.ti b{font-size:9pt!important}.ti p{font-size:13pt!important}'
+  +'.art2 b{font-size:11.5pt!important}.art2 p{font-size:13pt!important}'
+  +'.tb{font-size:11pt!important}.tb th{font-size:8pt!important}'
+  +'.duo p{font-size:12pt!important}.duo h4{font-size:9pt!important}'
+  +'.mi{font-size:10.5pt!important}.mi small{font-size:7pt!important}'
+  +'.mot2 p{font-size:16pt!important}'
+  +'.m-top,.m-bar{font-size:7.8pt!important}.m-tt small{font-size:8pt!important}.m-tt i{font-size:11pt!important}'
+  +'.rh,.ft{font-size:7.8pt!important}.pn{font-size:8pt!important}'
+  +'.sg2 .ln{font-size:11pt!important}.sg2 .ln small{font-size:9pt!important}.sg2 .ln span{font-size:9pt!important}'
+  +'.st small{font-size:8pt!important}.vs .tm small{font-size:7.5pt!important}';
+  var ow=window.open;
+  window.open=function(){
+    var w=ow.apply(window,arguments);
+    if(!w||!w.document)return w;
+    var dw=w.document.write;
+    w.document.write=function(h){
+      if(typeof h==='string'&&h.indexOf('--wm:')>-1)h=h.replace('</style>',CSS+'</style>');
+      return dw.call(w.document,h);
+    };
+    return w;
+  };
+  var OB=window.Blob;
+  window.Blob=function(p,o){
+    try{if(o&&/html|msword/.test(o.type||'')&&p&&p.length===1&&typeof p[0]==='string'&&p[0].indexOf('--wm:')>-1)p=[p[0].replace('</style>',CSS+'</style>')]}catch(e){}
+    return new OB(p,o);
+  };
+  window.Blob.prototype=OB.prototype;
+})();
+</script>
 
   
 
