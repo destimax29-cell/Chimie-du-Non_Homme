@@ -3183,5 +3183,119 @@ render();home();
 })();
 </script>
 
+<script>
+(function(){
+  var KEY='cnh_fix',CUR=null;
+  var E=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var RE=function(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')};
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+  function store(o){try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
+  function team(){return (cfg.team||'LUFTWAFFE').toUpperCase()}
+  var N1="La présence de tous est exigée. La ponctualité est une marque de respect envers l'équipe.";
+  var NOTES=[
+    ['Équipe entière',N1],
+    ['Un seul joueur',"Ta présence est exigée. La ponctualité est une marque de respect envers l'équipe et envers toi-même."],
+    ['Retour après suspension',"Ta suspension prend fin. Tu es attendu(e) à cette séance pour reprendre ta place dans l'équipe. Respecte les règles : c'est une seconde chance, à toi de la saisir."],
+    ["Rappel à l'ordre","Suite aux manquements constatés, tu es convoqué(e) pour t'expliquer devant le Quartier Général. Ta présence est obligatoire."],
+    ['Reprise après absence',"Tu as manqué plusieurs séances. Nous voulons comprendre et t'aider à reprendre. Ta présence est attendue."]
+  ];
+  var SIGN=['lettre','note','conv','comm','prog','cal','mot','bilan','felic','pv','charte'];
+  /* [texte d'origine, libellé, masquable ('hk'|'ks'|'sb'), long] */
+  function FX(T){return{
+    lettre:[['Correspondance officielle','Titre'],['Lettre de la '+T,'Sous-titre']],
+    note:[['Note de service','Titre'],['Instructions du Quartier Général','Sous-titre'],['INFORMATION INTERNE','Bandeau rouge','hk'],[T+' · Quartier Général','Expéditeur (champ DE)'],['À RETENIR',"Titre de l'encadré"],['MESURES À PRENDRE','Titre de la liste des mesures','ks']],
+    conv:[['Convocation','Titre'],['Votre présence est requise','Sous-titre'],['CONVOCATION OFFICIELLE','Bandeau rouge','hk'],['ORDRE DU JOUR',"Titre de l'ordre du jour",'ks'],['IMPORTANT',"Titre de l'encadré",'sb'],[N1,"Texte de l'encadré",0,1]],
+    comm:[['Communiqué officiel','Titre'],['Édition spéciale du Quartier Général','Sous-titre'],['À LA UNE','Bandeau rouge','hk']],
+    prog:[["Programme d'entraînement",'Titre'],['Chaque séance compte','Sous-titre'],['OBJECTIF','Titre de section','ks'],['LES SÉANCES','Titre de section','ks'],['CONSIGNES','Titre de section','ks']],
+    cal:[['Calendrier','Titre'],['Les rendez-vous à ne pas manquer','Sous-titre'],['LE DÉTAIL','Titre de section','ks']],
+    pres:[['Feuille de présence','Titre'],['Appel nominal','Sous-titre']],
+    match:[['Jour de match','Titre'],['Mobilisation générale de la '+T,'Sous-titre'],['★ ORDRE DE MOBILISATION ★','Étiquette du haut'],['MESSAGE DU COMMANDEMENT','Bandeau rouge','hk'],["LES RÈGLES D'OR",'Titre de section','ks'],['À EMPORTER · À RESPECTER','Titre de section','ks'],['— Le Quartier Général','Signature de la phrase forte']],
+    mot:[["L'éditorial du capitaine",'Titre'],["Parole de chef, parole d'équipe",'Sous-titre'],["MESSAGE À L'ÉQUIPE",'Bandeau rouge','hk'],['— Le Capitaine','Signature de la phrase forte'],['NOS ENGAGEMENTS','Titre de section','ks']],
+    bilan:[['Bilan de match','Titre'],["Ce qu'il faut retenir",'Sous-titre'],['LE RÉCIT','Titre de section','ks'],['▲ POINTS FORTS','Colonne de gauche'],['▼ À AMÉLIORER','Colonne de droite'],['HOMME DU MATCH',"Étiquette du joueur à l'honneur"]],
+    felic:[["Mention d'honneur",'Titre'],["Le Quartier Général salue l'exemple",'Sous-titre'],['BRAVO','Bandeau rouge','hk'],["MENTION À L'ORDRE DE L'ÉQUIPE",'Étiquette au-dessus du nom']],
+    pv:[['Compte rendu','Titre'],['Procès-verbal de réunion','Sous-titre'],['SUJETS ABORDÉS','Titre de section','ks'],['DÉCISIONS PRISES','Titre de section','ks'],["PLAN D'ACTION",'Titre de section','ks']],
+    charte:[['Règlement intérieur','Titre'],['Droits et devoirs des membres','Sous-titre'],['LES ARTICLES','Titre de section','ks'],['SANCTIONS',"Titre de l'encadré"]]
+  }}
+  function list(k,T){var L=(FX(T)[k]||[]).slice();if(SIGN.indexOf(k)>-1)L.push(['Pour la '+T+',','Formule de signature']);return L}
+  var CSS='.vs .vx{width:46mm}.vx .sc{font-size:23pt}.seal{font-size:5.4pt;letter-spacing:.05em;line-height:1.35}.sg2{margin-top:2mm}';
+  function hide(h,e){
+    var f=RE(e[0]);
+    if(e[2]==='sb')return h.replace(new RegExp('<div class="sb2"><span class="lb">'+f+'<\\/span>[\\s\\S]*?<\\/div>'),'');
+    return h.replace(new RegExp('<div class="'+e[2]+' kw">'+f+'<\\/div>','g'),'');
+  }
+  function patch(h){
+    if(typeof h!=='string'||h.indexOf('--wm:')<0||!CUR)return h;
+    var T=team(),L=list(CUR,T),V=load()[CUR]||{};
+    L.forEach(function(e,i){
+      var v=V[i];if(!v)return;
+      if(v.h&&e[2]){h=hide(h,e);return}
+      if(v.t!=null&&v.t!==e[0]&&String(v.t).trim()!=='')h=h.split('>'+e[0]+'<').join('>'+E(v.t)+'<');
+    });
+    return h.replace('</head>','<style>'+CSS+(V._s?'.sg2{display:none!important}':'')+'</style></head>');
+  }
+  /* PDF / image : passe par window.open */
+  var o2=window.open;
+  window.open=function(){
+    var w=o2.apply(window,arguments);
+    if(!w||!w.document)return w;
+    var dw=w.document.write;
+    w.document.write=function(h){return dw.call(w.document,typeof h==='string'?patch(h):h)};
+    return w;
+  };
+  /* Word / page web : passe par Blob */
+  var OB=window.Blob;
+  window.Blob=function(parts,opt){
+    try{if(opt&&/html|msword/.test(opt.type||'')&&parts&&parts.length===1&&typeof parts[0]==='string')parts=[patch(parts[0])]}catch(e){}
+    return new OB(parts,opt);
+  };
+  window.Blob.prototype=OB.prototype;
+  /* interface */
+  function put(k,i,f,v){var o=load();o[k]=o[k]||{};o[k][i]=o[k][i]||{};o[k][i][f]=v;store(o)}
+  function ui(k){
+    var T=team(),L=list(k,T),V=load()[k]||{};
+    var h='<details class="c" id="fx_d"><summary><b>🛠 Textes automatiques de ce document</b></summary><small style="display:block;margin:6px 0 8px">Phrases écrites d\'avance par le modèle. Modifie-les ou masque-les pour qu\'elles correspondent à ta situation.</small>';
+    if(k==='conv')h+='<div class="row"><span>Type de convocation</span><select id="fx_pre"><option value="">— Choisir —</option>'+NOTES.map(function(n,i){return '<option value="'+i+'">'+E(n[0])+'</option>'}).join('')+'</select></div>';
+    L.forEach(function(e,i){
+      var v=V[i]||{},val=v.t!=null?v.t:e[0];
+      h+='<div style="margin:10px 0"><small>'+E(e[1])+'</small>';
+      h+=(e[3]||val.length>55)?'<textarea rows="3" data-i="'+i+'">'+E(val)+'</textarea>':'<input data-i="'+i+'" value="'+E(val)+'">';
+      if(e[2])h+='<div class="row"><span>'+(e[2]==='sb'?"Masquer tout l'encadré":'Masquer cette ligne')+'</span><input type="checkbox" data-h="'+i+'"'+(v.h?' checked':'')+'></div>';
+      h+='</div>';
+    });
+    if(SIGN.indexOf(k)>-1)h+='<div class="row"><span>Masquer la signature et le sceau</span><input type="checkbox" data-s="1"'+(V._s?' checked':'')+'></div>';
+    return h+'</details>';
+  }
+  function wire(k){
+    var d=document.getElementById('fx_d');if(!d)return;
+    d.addEventListener('input',function(ev){var t=ev.target;if(t.dataset&&t.dataset.i!=null)put(k,t.dataset.i,'t',t.value)});
+    d.addEventListener('change',function(ev){
+      var t=ev.target,ds=t.dataset||{};
+      if(ds.h!=null)put(k,ds.h,'h',t.checked?1:0);
+      else if(ds.s!=null){var o=load();o[k]=o[k]||{};o[k]._s=t.checked?1:0;store(o)}
+      else if(t.id==='fx_pre'&&t.value!==''){
+        var n=NOTES[+t.value],L=list(k,team()),ix=-1;
+        L.forEach(function(e,i){if(e[3])ix=i});
+        if(ix>=0){put(k,ix,'t',n[1]);var el=d.querySelector('[data-i="'+ix+'"]');if(el)el.value=n[1]}
+      }
+    });
+  }
+  if(window.DOC&&DOC.form&&!DOC.__fx){
+    var f0=DOC.form;
+    DOC.form=function(k){
+      CUR=k;
+      f0.apply(DOC,arguments);
+      try{
+        var old=document.getElementById('fx_d');if(old)old.remove();
+        document.getElementById('dm_f').insertAdjacentHTML('beforeend',ui(k));
+        wire(k);
+      }catch(e){}
+    };
+    DOC.__fx=1;
+  }
+})();
+</script>
+
+  
+
 </body>
 </html>
