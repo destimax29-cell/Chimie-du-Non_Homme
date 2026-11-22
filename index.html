@@ -3294,6 +3294,41 @@ render();home();
   }
 })();
 </script>
+<script>
+(function(){
+  var ow=window.open;
+  window.open=function(){
+    var w=ow.apply(window,arguments);
+    if(!w)return w;
+    var last=null;
+    var t=setInterval(function(){
+      try{
+        if(w.closed){clearInterval(t);return}
+        var d=w.document;
+        if(!d||!d.head||!d.getElementById('pages'))return;
+        /* l'aperçu ne doit jamais utiliser le zoom */
+        if(/(^|\s)z(\s|$)/.test(d.documentElement.className))d.documentElement.className=d.documentElement.className.replace(/(^|\s)z(\s|$)/,' ');
+        if(d===last)return;
+        last=d;
+        /* vraie taille de page, réduite à l'écran sans zoom */
+        var m=d.querySelector('meta[name=viewport]');
+        if(!m){m=d.createElement('meta');m.name='viewport';d.head.appendChild(m)}
+        m.content='width=840';
+        /* garde l'espacement des lettres à l'export */
+        new w.MutationObserver(function(rs){
+          rs.forEach(function(r){
+            [].forEach.call(r.addedNodes,function(n){
+              if(n.tagName==='STYLE'&&/letter-spacing:normal/.test(n.textContent))
+                n.textContent=n.textContent.replace(/;?\s*letter-spacing:normal/g,'');
+            });
+          });
+        }).observe(d.documentElement,{childList:true,subtree:true});
+      }catch(e){}
+    },120);
+    return w;
+  };
+})();
+</script>
 
   
 
