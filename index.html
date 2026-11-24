@@ -3719,8 +3719,93 @@ render();home();
   if(bar){var b=document.createElement('button');b.innerHTML='<i><b>❓</b></i><span>Quiz</span>';b.onclick=function(){go('qz')};bar.insertBefore(b,bar.children[2]||null)}
 })();
 </script>
+<script>
+(function(){
+  var E=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var lex=document.getElementById('lex');
+  function G(k){try{return RAW.g.call(localStorage,k)}catch(e){return null}}
+  function qs(){try{var v=JSON.parse(G('cnh_qa'));return Array.isArray(v)?v.filter(function(x){return x&&x.m===SUBJ}):[]}catch(e){return[]}}
+  function nLex(){try{return all().length}catch(e){return 0}}
+  function subName(){var h=document.querySelector('.hsub');return h?h.textContent:''}
+  var st={m:'auto',s:'',hide:false};
+  function mode(){return st.m==='auto'?((nLex()===0&&qs().length>0)?'q':'l'):st.m}
+  document.head.insertAdjacentHTML('beforeend','<style>#lex.qm>*:not(#qxbox){display:none!important}#lex:not(.qm) #qxlist{display:none}.qxh .qxa:not(.rv){filter:blur(7px);cursor:pointer}</style>');
+  var box=document.createElement('div');box.id='qxbox';
+  box.innerHTML='<div id="qxhead"></div><div id="qxlist"></div>';
+  lex.insertBefore(box,lex.firstChild);
+  function startCard(){
+    var nq=qs().length,nl=nLex();
+    return '<div class="c"><b>▶ Évaluation · '+E(subName())+'</b><small style="display:block;margin:4px 0 10px">'+nq+' question(s) · '+nl+' terme(s)</small>'
+     +'<button class="b wide" onclick="QX.go()">▶ Commencer l\'évaluation</button>'
+     +'<button class="b g wide" onclick="QX.cfg()" style="margin-top:6px">⚙️ Régler (matières, mode, chrono)</button></div>';
+  }
+  function head(){
+    var m=mode(),nq=qs().length;
+    lex.classList.toggle('qm',m==='q');
+    box.classList.toggle('qxh',st.hide);
+    document.getElementById('qxhead').innerHTML=
+      '<div class="seg" style="position:static;padding:0;margin:0 0 8px;border:0;background:none">'
+      +'<button class="'+(m==='l'?'on':'')+'" onclick="QX.m(\'l\')">📖 Lexique ('+nLex()+')</button>'
+      +'<button class="'+(m==='q'?'on':'')+'" onclick="QX.m(\'q\')">❓ Questionnaire ('+nq+')</button></div>'
+      +startCard()
+      +(m==='q'?'<input id="qxs" placeholder="🔍 Chercher une question ou une réponse…" value="'+E(st.s)+'" oninput="QX.s(this.value)"><div class="row2"><button class="b g" onclick="QX.hide()">'+(st.hide?'👁 Afficher les réponses':'🙈 Masquer les réponses')+'</button><button class="b g" onclick="go(\'ad\');QZ.tab(\'a\')" title="Ajouter">➕ Ajouter</button></div>':'');
+    list();
+  }
+  function list(){
+    var m=mode(),el=document.getElementById('qxlist');if(m!=='q'){el.innerHTML='';return}
+    var q=norm(st.s||''),L=qs().filter(function(x){return !q||norm(x.q).indexOf(q)>-1||norm(x.a).indexOf(q)>-1});
+    var h='<small>'+L.length+' question(s)'+(st.hide?' · touche une réponse pour la voir':'')+'</small>';
+    L.slice(0,150).forEach(function(x,i){
+      var V=String(x.a).split('|').map(function(s){return s.trim()}).filter(Boolean);
+      h+='<div class="c"><small>'+(i+1)+'</small> <b style="color:var(--tx)">'+E(x.q)+'</b>'
+       +'<p class="qxa" onclick="this.classList.toggle(\'rv\')" style="margin:6px 0 0;color:var(--ac)">→ '+E(V.join(' · '))+'</p>'
+       +(x.x?'<small class="qxa" onclick="this.classList.toggle(\'rv\')">💡 '+E(x.x)+'</small>':'')
+       +'<div class="row2" style="margin-top:8px"><button class="b g" onclick="QZ.edit(\''+x.id+'\')">✏️ Modifier</button><button class="b g" onclick="QZ.del(\''+x.id+'\')">🗑</button></div></div>';
+    });
+    if(L.length>150)h+='<small>… et '+(L.length-150)+' autres. Affine avec la recherche.</small>';
+    if(!L.length)h+='<div class="c" style="text-align:center"><small>Aucune question. Ajoute-en avec ➕ ou 🔄 Convertir dans ❓ Quiz.</small></div>';
+    el.innerHTML=h;
+  }
+  function go1(cfgOnly){
+    try{
+      QZ.tab('s');QZ.allSubs(0);QZ.sub(SUBJ,true);
+      QZ.set('useLex',nLex()>0);QZ.set('useQa',qs().length>0);
+      if(!cfgOnly)QZ.set('mode','eval');
+    }catch(e){}
+    go('qz');
+    if(!cfgOnly)QZ.start();
+  }
+  window.QX={
+    m:function(v){st.m=v;head()},
+    s:function(v){st.s=v;list()},
+    hide:function(){st.hide=!st.hide;head()},
+    go:function(){go1(0)},cfg:function(){go1(1)},
+    home:function(){st.m='q';go('lex')}
+  };
+  /* après modification / suppression dans le Quiz */
+  if(window.QZ){
+    var ok0=QZ.ok,del0=QZ.del;
+    QZ.ok=function(){ok0.apply(QZ,arguments);head()};
+    QZ.del=function(){del0.apply(QZ,arguments);head()};
+  }
+  /* accueil */
+  var hc=document.createElement('div');hc.id='qxhome';hc.className='c';hc.style.order='3';
+  document.getElementById('home').appendChild(hc);
+  function homeCard(){
+    var nq=qs().length;
+    if(!nq){hc.style.display='none';return}
+    hc.style.display='block';
+    hc.innerHTML='<b>❓ Questionnaire · '+E(subName())+'</b><small style="display:block;margin:4px 0 10px">'+nq+' question(s)</small>'
+     +'<div class="row2"><button class="b g" onclick="QX.home()">📋 Voir les questions</button><button class="b" onclick="QX.go()">▶ Évaluation</button></div>';
+  }
+  var h0=home;home=function(){h0();homeCard()};
+  var g0=go;go=function(id){if(id==='lex'&&st.m!=='q')st.m='auto';g0(id);if(id==='lex')head();if(id==='home')homeCard()};
+  var r0=render;render=function(){r0();head()};
+  head();homeCard();
+})();
+</script>
 
-  
+
 
 </body>
 </html>
