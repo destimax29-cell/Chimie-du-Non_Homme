@@ -3804,6 +3804,65 @@ render();home();
   head();homeCard();
 })();
 </script>
+<script>
+(function(){
+  function G(k){try{return RAW.g.call(localStorage,k)}catch(e){return null}}
+  function S(k,v){try{RAW.s.call(localStorage,k,v)}catch(e){}}
+  function all(){try{var v=JSON.parse(G('cnh_qa'));return Array.isArray(v)?v:[]}catch(e){return[]}}
+  var lex=document.getElementById('lex'),box=document.getElementById('qxbox');
+  if(!box)return;
+  document.head.insertAdjacentHTML('beforeend','<style>#lex:not(.qm) #qxfix{display:none}</style>');
+  var fx=document.createElement('div');fx.id='qxfix';
+  box.insertBefore(fx,document.getElementById('qxlist'));
+  var ask=/\?\s*$/;
+  function nums(s){return String(s).replace(/^\s*\d+\s*[.)\-–]\s*/,'').trim()}
+  function paint(){
+    var L=all().filter(function(x){return x.m===SUBJ});
+    var bad=L.filter(function(x){return ask.test(String(x.a).trim())&&!ask.test(String(x.q).trim())}).length;
+    var num=L.filter(function(x){return /^\s*\d+\s*[.)\-–]\s*/.test(x.q)}).length;
+    var bak=G('cnh_qa_bak');
+    fx.innerHTML='<details class="c"'+(bad?' open':'')+'><summary><b>🔧 Corriger l\'ordre question / réponse</b>'+(bad?' <span class="ko">· '+bad+' à l\'envers</span>':'')+'</summary>'
+     +'<small style="display:block;margin:6px 0 10px">Si la question apparaît comme réponse (et inversement), corrige ici. Une sauvegarde est faite avant chaque correction.</small>'
+     +'<button class="b wide" onclick="QFIX.auto()">↔ Inverser automatiquement ('+bad+' détectée'+(bad>1?'s':'')+')</button>'
+     +'<button class="b g wide" onclick="QFIX.all()" style="margin-top:6px">↔ Inverser toutes les questions de cette matière</button>'
+     +'<button class="b g wide" onclick="QFIX.num()" style="margin-top:6px">🧹 Enlever les numéros devant les questions ('+num+')</button>'
+     +(bak?'<button class="b g wide" onclick="QFIX.undo()" style="margin-top:6px">↩ Annuler la dernière correction</button>':'')
+     +'</details>';
+  }
+  function apply(fn,msg){
+    var A=all(),n=0;
+    S('cnh_qa_bak',JSON.stringify(A));
+    A.forEach(function(x){if(x.m===SUBJ&&fn(x))n++});
+    S('cnh_qa',JSON.stringify(A));
+    alert(n+' question(s) corrigée(s) '+msg);
+    location.reload();
+  }
+  function swap(x){var t=x.q;x.q=nums(x.a);x.a=String(t).trim()}
+  window.QFIX={
+    auto:function(){
+      var c=all().filter(function(x){return x.m===SUBJ&&ask.test(String(x.a).trim())&&!ask.test(String(x.q).trim())}).length;
+      if(!c)return alert('Aucune question à l\'envers détectée. Essaie « Inverser toutes » si besoin.');
+      if(!confirm('Inverser '+c+' question(s) ?'))return;
+      apply(function(x){if(ask.test(String(x.a).trim())&&!ask.test(String(x.q).trim())){swap(x);return 1}},'✓');
+    },
+    all:function(){
+      if(!confirm('Inverser TOUTES les questions de cette matière ?'))return;
+      apply(function(x){swap(x);return 1},'✓');
+    },
+    num:function(){
+      apply(function(x){var n=nums(x.q);if(n!==x.q){x.q=n;return 1}},'✓');
+    },
+    undo:function(){
+      var b=G('cnh_qa_bak');if(!b)return;
+      if(!confirm('Revenir à l\'état avant la dernière correction ?'))return;
+      S('cnh_qa',b);S('cnh_qa_bak','');location.reload();
+    }
+  };
+  var g0=go;go=function(id){g0(id);if(id==='lex')paint()};
+  new MutationObserver(paint).observe(document.getElementById('qxhead'),{childList:true});
+  paint();
+})();
+</script>
 
 
 
