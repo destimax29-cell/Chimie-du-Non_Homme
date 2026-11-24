@@ -3373,6 +3373,352 @@ render();home();
   window.Blob.prototype=OB.prototype;
 })();
 </script>
+<script>
+(function(){
+  var RGt=function(k){try{return (typeof RAW!=='undefined'&&RAW?RAW.g:Storage.prototype.getItem).call(localStorage,k)}catch(e){return null}};
+  var RSt=function(k,v){try{(typeof RAW!=='undefined'&&RAW?RAW.s:Storage.prototype.setItem).call(localStorage,k,v)}catch(e){}};
+  function jget(k,d){try{var v=JSON.parse(RGt(k));return v==null?d:v}catch(e){return d}}
+  function jset(k,v){RSt(k,JSON.stringify(v))}
+  var E=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var $$=function(id){return document.getElementById(id)};
+  function rnd(a){for(var i=a.length-1;i>0;i--){var j=Math.random()*(i+1)|0,t=a[i];a[i]=a[j];a[j]=t}return a}
+  function lev(a,b){var m=[],i,j;for(i=0;i<=b.length;i++)m[i]=i;for(i=1;i<=a.length;i++){var p=m[0];m[0]=i;for(j=1;j<=b.length;j++){var t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]}
+  var SSM={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9'};
+  function nz(s){return norm(String(s==null?'':s).replace(/[⁰¹²³⁴-⁹₀-₉]/g,function(c){return SSM[c]||c}))}
+  function variants(a){return String(a||'').split('|').map(function(x){return x.trim()}).filter(Boolean)}
+  function isLong(a){var v=variants(a)[0]||'';return v.length>45||v.split(/\s+/).length>6}
+  function okAns(input,a){
+    var b=nz(String(input).replace(/^\s*(c['’]?est|la réponse est)\s+/i,''));
+    if(!b)return false;
+    return variants(a).some(function(x){
+      var n=nz(x);if(!n)return false;if(n===b)return true;
+      var tol=n.length>=14?2:n.length>=7?1:0;
+      return tol>0&&Math.abs(n.length-b.length)<=tol&&lev(n,b)<=tol;
+    });
+  }
+  function curSubj(){return typeof SUBJ!=='undefined'?SUBJ:'chimie'}
+  function nid(){return 'q'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+  function subs(){
+    var B=[{id:'chimie',icon:'⚗️',name:'Chimie'},{id:'physique',icon:'⚛️',name:'Physique'}],U=jget('cnhsubjs',[]);
+    return B.concat(Array.isArray(U)?U.filter(function(x){return x&&x.id}):[]);
+  }
+  function subOf(id){var r=subs().filter(function(s){return s.id===id})[0];return r||{id:id,icon:'📘',name:id}}
+  function lexOf(id){
+    var P=id==='chimie'?'':id+'_',cu=jget(P+'cnh',[]),ov=jget(P+'cnhov',{}),dl=jget(P+'cnhdel',[]),
+      base=(typeof BASES!=='undefined'&&BASES[id])||'',out=[];
+    base.split('\n').forEach(function(l){var e=parse(l);if(!e||!e.t||!e.d||dl.indexOf(e.t)>-1)return;out.push(ov[e.t]?Object.assign({},e,ov[e.t]):e)});
+    (Array.isArray(cu)?cu:[]).forEach(function(e){if(e&&e.t&&e.d)out.push(e)});
+    return out;
+  }
+  var Q=jget('cnh_qa',[]);if(!Array.isArray(Q))Q=[];
+  function saveQ(){jset('cnh_qa',Q)}
+  var S=Object.assign({tab:'s',mode:'eval',subs:null,useLex:true,useQa:true,meth:'type',n:20,dur:60,tl:0,autoLong:true,letters:'',lastM:''},jget('cnh_mixset',{}));
+  var SES=null,LF={m:'*',s:''},CV={m:null},EID=null,tt;
+  function note(m){var t=$$('qzt');if(!t){t=document.createElement('div');t.id='qzt';t.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(110px + env(safe-area-inset-bottom));z-index:200;background:var(--tx);color:var(--bg);padding:12px 16px;border-radius:14px;font-weight:700;font-size:14px;max-width:90%;box-shadow:0 8px 24px rgba(0,0,0,.4)';document.body.appendChild(t)}t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(function(){t.style.display='none'},2800)}
+  function subSel(id,val,onch){return '<div class="row"><span>Matière</span><select id="'+id+'"'+(onch?' onchange="'+onch+'"':'')+'>'+subs().map(function(s){return '<option value="'+s.id+'"'+(s.id===val?' selected':'')+'>'+E(s.icon+' '+s.name)+'</option>'}).join('')+'</select></div>'}
+
+  /* ---------- parseur automatique ---------- */
+  function strip(s){return String(s).replace(/^\d+[.)]\s*/,'').trim()}
+  function parseQA(t){
+    var L=String(t).replace(/\r/g,'').split('\n').map(function(x){return x.trim()}).filter(Boolean),out=[],i=0;
+    while(i<L.length){
+      var l=L[i],p=l.indexOf('::'),m;
+      if(p>0){out.push({q:strip(l.slice(0,p)),a:l.slice(p+2).trim()});i++;continue}
+      m=l.match(/^(?:\d+[.)]\s*)?(?:q|question)\s*[:.)\-–]\s*(.+)$/i);
+      if(m&&i+1<L.length){
+        var r=L[i+1].match(/^(?:r|rép|rep|réponse|reponse|answer|a)\s*[:.)\-–]\s*(.+)$/i);
+        if(r){out.push({q:m[1].trim(),a:r[1].trim()});i+=2;continue}
+      }
+      if(/\?\s*$/.test(l)&&i+1<L.length&&!/\?\s*$/.test(L[i+1])){
+        out.push({q:strip(l),a:L[i+1].replace(/^(?:r|rép|réponse|reponse)\s*[:.)\-–]\s*/i,'').trim()});i+=2;continue}
+      i++;
+    }
+    return out.filter(function(e){return e.q&&e.a});
+  }
+
+  /* ---------- réservoir de questions ---------- */
+  function buildPool(){
+    var out=[],seen={},er=jget('cnh_mixerr',{}),letters=String(S.letters||'').toUpperCase().replace(/[^A-Z]/g,'');
+    subs().forEach(function(s){
+      if(S.subs.indexOf(s.id)<0)return;
+      if(S.useLex)lexOf(s.id).forEach(function(e){
+        var L=(nz(String(e.t).split('|')[0])[0]||'').toUpperCase();
+        if(letters&&letters.indexOf(L)<0)return;
+        out.push({q:e.d,a:e.t,x:'',m:s.id,k:'lex'});
+      });
+      if(S.useQa)Q.forEach(function(x){if(x.m===s.id&&x.q&&x.a)out.push({q:x.q,a:x.a,x:x.x||'',m:s.id,k:'qa'})});
+    });
+    out=out.filter(function(e){var k=e.k+'#'+nz(e.q)+'#'+nz(e.a);if(seen[k])return false;seen[k]=1;return true});
+    out.forEach(function(e){e.key=e.m+'|'+e.k+'|'+nz(variants(e.a)[0]).slice(0,40)+'|'+nz(e.q).slice(0,30)});
+    if(S.mode==='err')out=out.filter(function(e){return er[e.key]});
+    return out;
+  }
+  function mkOpts(e,P){
+    var good=variants(e.a)[0],seen={},pool=[];seen[nz(good)]=1;
+    var same=P.filter(function(x){return x.k===e.k}),src=same.length>=4?same:P;
+    src.forEach(function(x){var v=variants(x.a)[0];if(!v)return;var n=nz(v);if(!n||seen[n])return;seen[n]=1;pool.push(v)});
+    pool.sort(function(a,b){return Math.abs(a.length-good.length)-Math.abs(b.length-good.length)});
+    var top=rnd(pool.slice(0,14));
+    return rnd(top.slice(0,3).concat([good]));
+  }
+
+  /* ---------- écrans ---------- */
+  function tabsH(){return '<div class="seg" style="position:static;padding:0;margin:0 0 8px;border:0;background:none">'+[['s','🎯 Session'],['l','❓ Mes questions'],['a','➕ Ajouter'],['c','🔄 Convertir']].map(function(t){return '<button class="'+(S.tab===t[0]?'on':'')+'" onclick="QZ.tab(\''+t[0]+'\')">'+t[1]+'</button>'}).join('')+'</div>'}
+  function chk(k,label){return '<div class="row"><span>'+label+'</span><input type="checkbox" '+(S[k]?'checked':'')+' onchange="QZ.set(\''+k+'\',this.checked)"></div>'}
+  function sl(k,label,o){return '<div class="row"><span>'+label+'</span><select onchange="QZ.set(\''+k+'\',this.value)">'+o.map(function(x){return '<option value="'+x[0]+'"'+(String(x[0])===String(S[k])?' selected':'')+'>'+x[1]+'</option>'}).join('')+'</select></div>'}
+  function setupHTML(){
+    var cur=curSubj(),L=subs(),ids=L.map(function(s){return s.id});
+    S.subs=(S.subs||[cur]).filter(function(x){return ids.indexOf(x)>-1});if(!S.subs.length)S.subs=[cur];
+    var h='<div class="c"><b>🎯 Session multi-matières</b><small style="display:block;margin:4px 0 8px">Coche une ou plusieurs matières, comme tu choisissais des lettres dans l\'Évaluation.</small>';
+    L.forEach(function(s){
+      var nl=lexOf(s.id).length,nq=Q.filter(function(x){return x.m===s.id}).length;
+      h+='<label class="c ck"><input type="checkbox" '+(S.subs.indexOf(s.id)>-1?'checked':'')+' onchange="QZ.sub(\''+s.id+'\',this.checked)"><span>'+E(s.icon)+' <b style="color:var(--tx)">'+E(s.name)+'</b><br><small>'+nl+' termes · '+nq+' questions</small></span></label>';
+    });
+    h+='<div class="row2"><button class="b g" onclick="QZ.allSubs(1)">Toutes</button><button class="b g" onclick="QZ.allSubs(0)">Aucune</button></div>';
+    h+=chk('useLex','📖 Lexique (définition → terme)')+chk('useQa','❓ Questionnaire (question → réponse)');
+    h+=sl('mode','Mode',[['chrono','⏱ Challenge chrono'],['eval','🎯 Évaluation'],['err','📝 Mes erreurs']]);
+    h+=sl('meth','Réponse',[['type','✍️ Écrire / 🎤 dire'],['qcm','🔘 QCM (4 choix)'],['card','🃏 Carte (je me juge)']]);
+    if(S.mode==='chrono')h+=sl('dur','Durée',[[30,'30 s'],[60,'60 s'],[90,'90 s'],[120,'120 s'],[180,'180 s']]);
+    else h+=sl('n','Nombre de questions',[[10,'10'],[20,'20'],[30,'30'],[50,'50'],[0,'Toutes']])+sl('tl','Temps par question',[[0,'Illimité'],[10,'10 s'],[20,'20 s'],[30,'30 s']]);
+    h+='<div class="row"><span>Lettres du lexique (facultatif)</span><input type="text" value="'+E(S.letters)+'" placeholder="ex : A B C" oninput="QZ.set(\'letters\',this.value)" style="width:40%"></div>';
+    h+=chk('autoLong','Réponses longues : me juger moi-même');
+    h+='<p id="qz_cnt"></p><button class="b wide" onclick="QZ.start()">▶ Commencer</button></div>';
+    var H=jget('cnh_mixhist',[]);
+    if(H.length)h+='<div class="c"><b>Dernières sessions</b>'+H.slice(0,6).map(function(x){return '<div class="evh"><span>'+E(x.d)+' · '+E(x.t)+'</span><b class="'+(x.p>=80?'ok':x.p<50?'ko':'')+'">'+x.ok+'/'+x.n+' · '+x.p+'%</b></div>'}).join('')+'</div>';
+    return h;
+  }
+  function updCnt(){
+    var e=$$('qz_cnt');if(!e)return;
+    var n=buildPool().length,B=jget('cnh_mixbest',{}),r=B['t'+S.dur];
+    e.innerHTML='<b class="ok">'+n+'</b> question(s) disponible(s)'+(S.mode==='chrono'&&r?' · 🏆 record '+S.dur+' s : <b>'+r+'</b>':'');
+  }
+  function listH(){
+    return '<div class="c"><b>❓ Mes questions</b><div class="row"><span>Matière</span><select onchange="QZ.lf(this.value)"><option value="*">Toutes</option>'+subs().map(function(s){return '<option value="'+s.id+'"'+(LF.m===s.id?' selected':'')+'>'+E(s.icon+' '+s.name)+'</option>'}).join('')+'</select></div><input placeholder="🔍 Chercher…" value="'+E(LF.s)+'" oninput="QZ.ls(this.value)"></div><div id="qz_ls"></div>';
+  }
+  function drawList(){
+    var e=$$('qz_ls');if(!e)return;
+    var q=nz(LF.s),L=Q.filter(function(x){return (LF.m==='*'||x.m===LF.m)&&(!q||nz(x.q).indexOf(q)>-1||nz(x.a).indexOf(q)>-1)});
+    var h='<small>'+L.length+' question(s)</small>';
+    L.slice(0,80).forEach(function(x){
+      var s=subOf(x.m);
+      h+='<div class="c"><small>'+E(s.icon)+' '+E(s.name)+'</small><br><b style="color:var(--tx)">'+E(x.q)+'</b><p style="margin:6px 0 0;color:var(--ac)">→ '+E(variants(x.a).join(' · '))+'</p>'+(x.x?'<small>💡 '+E(x.x)+'</small>':'')+'<div class="row2" style="margin-top:8px"><button class="b g" onclick="QZ.edit(\''+x.id+'\')">✏️ Modifier</button><button class="b g" onclick="QZ.del(\''+x.id+'\')">🗑</button></div></div>';
+    });
+    if(L.length>80)h+='<small>… et '+(L.length-80)+' autres. Affine avec la recherche.</small>';
+    if(!L.length)h='<div class="c" style="text-align:center"><small>Aucune question ici. Ajoute-en dans l\'onglet ➕ Ajouter.</small></div>';
+    e.innerHTML=h;
+  }
+  function addH(){
+    var m=S.lastM||curSubj();
+    return '<div class="c"><b>➕ Ajouter une question</b>'+subSel('qa_m',m)+'<textarea id="qa_q" rows="3" placeholder="Question"></textarea><input id="qa_a" placeholder="Bonne réponse"><input id="qa_v" placeholder="Autres réponses acceptées (séparées par |, facultatif)"><input id="qa_x" placeholder="Explication (facultatif, affichée après la réponse)"><button class="b wide" onclick="QZ.add()">Ajouter</button></div>'
+     +'<div class="c"><b>📋 Ajout en masse</b><small style="display:block;margin:4px 0 8px">Colle tes questions. Formats reconnus automatiquement :<br>• <code>question :: réponse</code><br>• <code>Q: question</code> puis <code>R: réponse</code><br>• une ligne qui finit par <code>?</code> suivie de sa réponse</small>'+subSel('qb_m',m)+'<textarea id="qb_t" rows="8" placeholder="Colle ici…"></textarea><button class="b wide" onclick="QZ.bulk()">Importer</button></div>';
+  }
+  function convH(){
+    var cur=curSubj();CV.m=CV.m||cur;
+    var P=CV.m==='chimie'?'':CV.m+'_',L=jget(P+'cnh',[]);if(!Array.isArray(L))L=[];
+    var h='<div class="c"><b>🔄 Convertir des termes en questions</b><small style="display:block;margin:4px 0 8px">Si tu as saisi des questions dans le Lexique (la question dans « Terme », la réponse dans « Définition »), convertis-les ici. Elles quittent le lexique et passent dans le questionnaire : le Challenge et l\'Évaluation poseront la question et attendront la réponse.</small>'+subSel('cv_m',CV.m,'QZ.cvm(this.value)')+'<div class="row"><span>Inverser (la réponse est dans « Terme »)</span><input type="checkbox" id="cv_inv"></div><div class="row2"><button class="b g" onclick="QZ.cvall(1)">Tout cocher</button><button class="b g" onclick="QZ.cvall(0)">Tout décocher</button></div></div>';
+    var n=0;
+    L.forEach(function(e,i){if(!e||!e.t||!e.d)return;n++;h+='<label class="c ck"><input type="checkbox" class="cvk" data-i="'+i+'"><span><b>'+E(String(e.t).split('|')[0])+'</b><br><small>'+E(String(e.d).slice(0,140))+'</small></span></label>'});
+    if(!n)h+='<div class="c" style="text-align:center"><small>Aucun terme ajouté par toi dans cette matière.</small></div>';
+    else h+='<button class="b wide" onclick="QZ.cvgo()">🔄 Convertir la sélection</button>';
+    return h;
+  }
+  function qzR(){
+    if(SES)return;
+    var b=$$('qzbox');if(!b)return;
+    var h=tabsH();
+    if(S.tab==='s')h+=setupHTML();else if(S.tab==='l')h+=listH();else if(S.tab==='a')h+=addH();else h+=convH();
+    b.innerHTML=h;
+    if(S.tab==='l')drawList();if(S.tab==='s')updCnt();
+  }
+
+  /* ---------- session ---------- */
+  function paintQ(){
+    var s=SES,e=s.cur,sb=subOf(e.m),
+    lbl=(e.k==='qa'?'QUESTION':'DÉFINITION — TROUVE LE TERME')+' · '+sb.icon+' '+sb.name,
+    hd='<div class="hud"><button class="x" onclick="QZ.quit()">✕</button>'+
+      (S.mode==='chrono'?'<b id="qz_t" class="'+(s.left<=10?'ko':'ok')+'" style="font-size:26px">'+s.left+' s</b>':'<b>'+(s.asked+1)+' / '+s.N+'</b><b id="qz_qt"></b>')+
+      '<div class="sc"><small>SCORE</small><b>'+(+s.ok.toFixed(1))+'</b></div></div>'+
+      (S.mode!=='chrono'?'<div class="bar"><i style="width:'+(s.asked*100/s.N)+'%"></i></div>':''),
+    card='<div class="c q" style="margin-top:12px"><small class="lab">'+E(lbl)+'</small><div style="font-size:'+(e.q.length>140?17:20)+'px;line-height:1.5;font-weight:600">'+E(e.q)+'</div></div><div id="qz_fb" class="hl"></div>',inp;
+    if(s.meth==='qcm')inp=s.opts.map(function(o,i){return '<button class="b g opt" onclick="QZ.pick('+i+')">'+E(o)+'</button>'}).join('')+'<button class="b g wide" onclick="QZ.skip()" style="margin-top:6px">⏭ Passer</button>';
+    else if(s.meth==='card')inp='<div id="qz_r"></div><button class="b wide" id="qz_s" onclick="QZ.reveal()">👁 Voir la réponse</button><div id="qz_j" class="row2" style="display:none"><button class="b g" onclick="QZ.judge(0)">✗ Pas su</button><button class="b" onclick="QZ.judge(1)">✓ Je savais</button></div>';
+    else inp='<input id="qz_a" placeholder="Ta réponse…" autocomplete="off" autocapitalize="off" autocorrect="off" onkeydown="if(event.key===\'Enter\')QZ.ans(this.value)"><div class="row2"><button class="b" onclick="QZ.ans(document.getElementById(\'qz_a\').value)">Valider</button><button class="b g" onclick="QZ.mic()">🎤</button><button class="b g" onclick="QZ.hint()">💡</button><button class="b g" onclick="QZ.skip()">⏭</button></div>';
+    $$('qzbox').innerHTML=hd+card+inp;
+  }
+  function fb(h){var e=$$('qz_fb');if(e)e.innerHTML=h}
+  function nextQ(){
+    var s=SES;if(!s)return;
+    if(!s.bag.length){
+      if(S.mode==='chrono'){s.bag=rnd(s.P.slice());var L=s.bag.length;if(s.cur&&L>1&&s.bag[L-1]===s.cur){var t=s.bag[0];s.bag[0]=s.bag[L-1];s.bag[L-1]=t}}
+      else return endSession();
+    }
+    var e=s.cur=s.bag.pop();s.lock=false;s.hint=0;
+    var m=S.meth;
+    if(m==='type'&&S.autoLong&&isLong(e.a))m='card';
+    if(m==='qcm'){s.opts=mkOpts(e,s.P);if(s.opts.length<2)m='card'}
+    s.meth=m;paintQ();
+    var a=$$('qz_a');if(a)try{a.focus()}catch(x){}
+    if(S.mode!=='chrono'&&S.tl>0&&m!=='card'){
+      var t0=S.tl,el=$$('qz_qt');if(el)el.textContent=t0+' s';
+      s.qt=setInterval(function(){t0--;var z=$$('qz_qt');if(z){z.textContent=t0+' s';if(t0<=3)z.className='ko'}if(t0<=0){clearInterval(s.qt);if(SES===s&&!s.lock)QZ.skip()}},1000);
+    }
+    try{if(cfg.tts&&typeof say==='function')say(e.q)}catch(x){}
+  }
+  function grade(g,quiet){
+    var s=SES;if(!s||s.lock)return;s.lock=true;clearInterval(s.qt);
+    var e=s.cur,er=jget('cnh_mixerr',{}),first=variants(e.a)[0]||e.a;
+    s.asked++;(s.by[e.m]=s.by[e.m]||[0,0])[1]++;
+    if(g){var pt=s.hint?.5:1;s.ok+=pt;s.by[e.m][0]+=pt;s.streak++;if(S.mode==='err')delete er[e.key]}
+    else{s.streak=0;s.miss.push(e);er[e.key]=1}
+    jset('cnh_mixerr',er);
+    if(!quiet){
+      var ex=e.x?'<br><small>💡 '+E(e.x)+'</small>':'';
+      fb(g?'<b class="ok">✓ Correct'+(s.streak>=3?' 🔥 série de '+s.streak:'')+'</b>'+ex:'<b class="ko">✗ C\'était : '+E(first)+'</b>'+ex);
+    }
+    try{sfx(g);buzz(g?30:[80,40,80])}catch(x){}
+    var ch=S.mode==='chrono',d=g?(e.x?1100:(ch?250:380)):(e.x?2200:(ch?1000:1500));
+    if(quiet)d=250;
+    s.nt=setTimeout(function(){if(SES===s&&!(ch&&s.left<=0))nextQ()},d);
+  }
+  function endSession(){
+    var s=SES;if(!s)return;
+    clearInterval(s.tick);clearInterval(s.qt);clearTimeout(s.nt);SES=null;document.body.classList.remove('play');
+    var n=s.asked,ok=s.ok,p=n?Math.round(ok*100/n):0,rec=false,mode=S.mode;
+    if(mode==='chrono'){var B=jget('cnh_mixbest',{}),k='t'+S.dur;if(ok>(B[k]||0)){B[k]=ok;jset('cnh_mixbest',B);rec=true}}
+    var H=jget('cnh_mixhist',[]);
+    H.unshift({d:new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'short'}),t:({chrono:'Chrono',eval:'Évaluation',err:'Erreurs'})[mode]+' '+S.subs.map(function(i){return subOf(i).icon}).join(''),ok:+ok.toFixed(1),n:n,p:p});
+    jset('cnh_mixhist',H.slice(0,15));
+    var em=p===100?'🏆':p>=80?'🌟':p>=50?'👍':'💪',msg=p===100?'Parfait !':p>=80?'Excellent !':p>=50?'Pas mal, continue !':'Relis et réessaie';
+    var h='<div class="c"><div class="bigs">'+em+'</div><p class="t" style="text-align:center">'+(+ok.toFixed(1))+' / '+n+'</p><p style="text-align:center"><b class="'+(p>=50?'ok':'ko')+'">'+p+' % — '+msg+'</b></p>'+(rec?'<p class="ok" style="text-align:center">🏆 Nouveau record !</p>':'')
+     +'<b>Par matière :</b>'+Object.keys(s.by).map(function(id){var b=s.by[id],sb=subOf(id);return '<div class="row"><span>'+E(sb.icon+' '+sb.name)+'</span><b>'+(+b[0].toFixed(1))+' / '+b[1]+'</b></div>'}).join('')
+     +(s.miss.length?'<b style="display:block;margin-top:10px">À revoir (ajoutés à « Mes erreurs ») :</b>'+s.miss.map(function(m){return '<p><small>'+E(m.q)+'</small><br><b>→ '+E(variants(m.a)[0]||m.a)+'</b></p>'}).join(''):'<p class="ok">Aucune erreur 🎉</p>')
+     +'</div><button class="b" onclick="QZ.start()">↻ Rejouer</button><button class="b g" onclick="QZ.tab(\'s\')">⚙️ Changer</button><button class="b g" onclick="go(\'home\')">🏠 Accueil</button>';
+    $$('qzbox').innerHTML=h;window.scrollTo(0,0);
+    try{
+      if(rec&&ok>0)CELEB('Nouveau record !',(+ok.toFixed(1))+' bonnes réponses','1');
+      else if(mode!=='chrono'&&p>=80)CELEB(p===100?'Parfait !':'Excellent !',(+ok.toFixed(1))+' / '+n,p===100);
+      else{tone(523,.15,'sine',.3);tone(659,.15,'sine',.3,.15);tone(784,.3,'sine',.3,.3)}
+    }catch(x){}
+  }
+
+  /* ---------- fenêtre d'édition ---------- */
+  var SH=document.createElement('div');SH.id='qzs';SH.className='sh';SH.style.zIndex=150;
+  SH.innerHTML='<div class="shb" style="max-height:94vh;overflow:auto"><b id="qzs_t"></b><div class="row"><span>Matière</span><select id="qzs_m"></select></div><textarea id="qzs_q" rows="3" placeholder="Question"></textarea><textarea id="qzs_a" rows="2" placeholder="Réponse (variantes acceptées : sépare-les avec |)"></textarea><input id="qzs_x" placeholder="Explication (facultatif)"><div class="row2"><button class="b" onclick="QZ.ok()">✓ Enregistrer</button><button class="b g" onclick="QZ.no()">Annuler</button></div><button class="b g wide" onclick="QZ.swap()" style="margin-top:6px">↔ Inverser question et réponse</button></div>';
+  document.body.appendChild(SH);SH.onclick=function(e){if(e.target===SH)QZ.no()};
+
+  /* ---------- actions ---------- */
+  window.QZ={
+    open:function(){go('qz')},
+    tab:function(t){QZ.abort();S.tab=t;qzR()},
+    set:function(k,v){if(k==='n'||k==='dur'||k==='tl')v=+v;S[k]=v;jset('cnh_mixset',S);if(k==='mode')qzR();else updCnt()},
+    sub:function(id,on){S.subs=(S.subs||[]).filter(function(x){return x!==id});if(on)S.subs.push(id);jset('cnh_mixset',S);updCnt()},
+    allSubs:function(on){S.subs=on?subs().map(function(s){return s.id}):[];jset('cnh_mixset',S);qzR()},
+    start:function(){
+      try{unlock()}catch(e){}
+      if(!S.subs||!S.subs.length)return note('Coche au moins une matière');
+      if(!S.useLex&&!S.useQa)return note('Coche Lexique ou Questionnaire');
+      var P=buildPool();
+      if(!P.length)return note(S.mode==='err'?'Aucune erreur à réviser 🎉':'Aucune question dans cette sélection');
+      var bag=rnd(P.slice()),N=0;
+      if(S.mode!=='chrono'){N=S.n>0?Math.min(S.n,bag.length):bag.length;bag=bag.slice(0,N)}
+      SES={P:P,bag:bag,N:N,ok:0,asked:0,miss:[],by:{},streak:0,left:S.dur,cur:null,lock:false,hint:0};
+      document.body.classList.add('play');window.scrollTo(0,0);
+      var s=SES;
+      if(S.mode==='chrono')s.tick=setInterval(function(){
+        s.left--;var t=$$('qz_t');if(t){t.textContent=s.left+' s';if(s.left<=10)t.className='ko'}
+        if(s.left<=3&&s.left>0){try{tone(880,.1,'sine',.2)}catch(x){}}
+        if(s.left<=0&&SES===s)endSession();
+      },1000);
+      nextQ();
+    },
+    abort:function(){if(!SES)return;clearInterval(SES.tick);clearInterval(SES.qt);clearTimeout(SES.nt);SES=null;document.body.classList.remove('play');try{speechSynthesis.cancel()}catch(e){}},
+    quit:function(){QZ.abort();S.tab='s';qzR()},
+    ans:function(v){var s=SES;if(!s||s.lock)return;v=String(v==null?'':v);if(!v.trim())return;grade(okAns(v,s.cur.a))},
+    pick:function(i){if(SES&&SES.opts)QZ.ans(SES.opts[i])},
+    skip:function(){if(SES&&!SES.lock)grade(false)},
+    reveal:function(){
+      var s=SES;if(!s||s.lock)return;var e=s.cur,V=variants(e.a);
+      $$('qz_r').innerHTML='<div class="c"><small class="lab">RÉPONSE</small><b style="font-size:20px;color:var(--ac)">'+E(V[0]||e.a)+'</b>'+(V.length>1?'<br><small>aussi : '+E(V.slice(1).join(' · '))+'</small>':'')+(e.x?'<p style="margin:8px 0 0">💡 '+E(e.x)+'</p>':'')+'</div>';
+      $$('qz_s').style.display='none';$$('qz_j').style.display='flex';
+    },
+    judge:function(g){if(SES&&!SES.lock)grade(!!g,true)},
+    hint:function(){var s=SES;if(!s||s.lock||s.meth!=='type')return;s.hint=1;var t=variants(s.cur.a)[0]||'';fb('<b>💡 '+E(t[0]||'')+'… · '+t.length+' caractères (demi-point)</b>')},
+    mic:function(){
+      var s=SES;if(!s||s.lock)return;
+      if(typeof SR==='undefined'||!SR)return fb('<span class="ko">Micro indisponible sur ce navigateur.</span>');
+      try{speechSynthesis.cancel()}catch(e){}
+      var r=new SR(),tg=s.cur;r.lang='fr-FR';r.maxAlternatives=8;
+      r.onresult=function(ev){
+        if(SES!==s||s.cur!==tg||s.lock)return;
+        var a=[].slice.call(ev.results[0]).map(function(x){return x.transcript});
+        if(/^(passer|suivant)$/.test(norm(a[0]||'')))return QZ.skip();
+        var hit=a.filter(function(x){return okAns(x,tg.a)})[0];
+        QZ.ans(hit||a[0]);
+      };
+      r.onerror=function(){};
+      try{r.start();fb('<b>🎙 Je t\'écoute…</b>')}catch(e){}
+    },
+    lf:function(v){LF.m=v;drawList()},
+    ls:function(v){LF.s=v;drawList()},
+    edit:function(id){
+      var x=Q.filter(function(y){return y.id===id})[0];if(!x)return;EID=id;
+      $$('qzs_t').textContent='Modifier la question';
+      $$('qzs_m').innerHTML=subs().map(function(s){return '<option value="'+s.id+'">'+E(s.icon+' '+s.name)+'</option>'}).join('');
+      $$('qzs_m').value=x.m;$$('qzs_q').value=x.q;$$('qzs_a').value=x.a;$$('qzs_x').value=x.x||'';SH.classList.add('on');
+    },
+    ok:function(){
+      var q=$$('qzs_q').value.trim(),a=$$('qzs_a').value.trim();
+      if(!q||!a)return alert('Il faut une question et une réponse.');
+      var x=Q.filter(function(y){return y.id===EID})[0];if(!x)return;
+      x.m=$$('qzs_m').value;x.q=q;x.a=a;x.x=$$('qzs_x').value.trim();saveQ();SH.classList.remove('on');drawList();
+    },
+    no:function(){SH.classList.remove('on')},
+    swap:function(){var q=$$('qzs_q'),a=$$('qzs_a'),t=q.value;q.value=a.value;a.value=t},
+    del:function(id){if(!confirm('Supprimer cette question ?'))return;Q=Q.filter(function(y){return y.id!==id});saveQ();drawList()},
+    add:function(){
+      var q=$$('qa_q').value.trim(),a=$$('qa_a').value.trim(),v=$$('qa_v').value.split('|').map(function(x){return x.trim()}).filter(Boolean);
+      if(!q||!a)return note('Il faut une question et une réponse');
+      S.lastM=$$('qa_m').value;jset('cnh_mixset',S);
+      Q.push({id:nid(),m:S.lastM,q:q,a:[a].concat(v).join('|'),x:$$('qa_x').value.trim()});saveQ();
+      ['qa_q','qa_a','qa_v','qa_x'].forEach(function(i){$$(i).value=''});
+      note('Question ajoutée ✓ ('+Q.length+' au total)');$$('qa_q').focus();
+    },
+    bulk:function(){
+      var L=parseQA($$('qb_t').value);
+      if(!L.length)return alert('Aucune question détectée. Utilise « question :: réponse », ou « Q: … » puis « R: … ».');
+      var ex=L.slice(0,2).map(function(e){return '• '+e.q+' → '+e.a}).join('\n');
+      if(!confirm(L.length+' question(s) détectée(s).\n\n'+ex+'\n\nLes importer ?'))return;
+      var m=$$('qb_m').value;S.lastM=m;jset('cnh_mixset',S);
+      L.forEach(function(e){Q.push({id:nid(),m:m,q:e.q,a:e.a,x:''})});saveQ();
+      $$('qb_t').value='';note(L.length+' question(s) importée(s) ✓');
+    },
+    cvm:function(v){CV.m=v;qzR()},
+    cvall:function(on){[].forEach.call(document.querySelectorAll('.cvk'),function(c){c.checked=!!on})},
+    cvgo:function(){
+      var sel=[].filter.call(document.querySelectorAll('.cvk'),function(c){return c.checked}).map(function(c){return +c.dataset.i});
+      if(!sel.length)return note('Rien de coché');
+      if(!confirm('Convertir '+sel.length+' terme(s) en questions ? Ils quitteront le lexique.'))return;
+      var inv=$$('cv_inv')&&$$('cv_inv').checked,id=CV.m,P=id==='chimie'?'':id+'_',L=jget(P+'cnh',[]),keep=[],n=0;
+      L.forEach(function(e,i){
+        if(sel.indexOf(i)>-1&&e&&e.t&&e.d){
+          var q=String(e.t).split('|').map(function(x){return x.trim()}).filter(Boolean).join(' / '),a=String(e.d).trim();
+          if(inv){var t=q;q=a;a=t}
+          Q.push({id:nid(),m:id,q:q,a:a,x:''});n++;
+        }else keep.push(e);
+      });
+      saveQ();RSt(P+'cnh',JSON.stringify(keep));
+      if(id===curSubj()){custom=keep;try{render();home()}catch(x){}}
+      note(n+' question(s) créée(s) ✓');qzR();
+    }
+  };
+
+  /* ---------- intégration ---------- */
+  var sec=document.createElement('section');sec.id='qz';sec.className='sec';sec.innerHTML='<div id="qzbox"></div>';document.querySelector('main').appendChild(sec);
+  var g0=go;go=function(id){if(id!=='qz'&&SES)QZ.abort();g0(id);if(id==='qz')qzR()};
+  var bar=$$('sc5');
+  if(bar){var b=document.createElement('button');b.innerHTML='<i><b>❓</b></i><span>Quiz</span>';b.onclick=function(){go('qz')};bar.insertBefore(b,bar.children[2]||null)}
+})();
+</script>
 
   
 
